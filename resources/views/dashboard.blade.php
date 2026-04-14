@@ -40,6 +40,7 @@
                         <th class="p-2 border">Name</th>
                         <th class="p-2 border">Type</th>
                         <th class="p-2 border">Status</th>
+                        <th class="p-2 border">Action</th>
                     </tr>
                 </thead>
 
@@ -47,6 +48,8 @@
                     @foreach($recent as $leave)
                     <tr>
                         <td class="p-2 border">
+
+                        
                             {{ $leave->user->name ?? 'N/A' }}
                         </td>
                         <td class="p-2 border">{{ $leave->type }}</td>
@@ -55,6 +58,30 @@
                                 {{ $leave->status == 'Pending' ? 'bg-yellow-200' : ($leave->status == 'Approved' ? 'bg-green-200' : 'bg-red-200') }}">
                                 {{ $leave->status }}
                             </span>
+                        </td>
+
+                        <td class="p-2 border">
+                            @if($leave->status == 'Pending')
+
+                                <!-- ✅ APPROVE -->
+                                <form action="/leave/approve/{{ $leave->id }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <button class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600">
+                                        ✔ Approve
+                                    </button>
+                                </form>
+
+                                <!-- ❌ REJECT -->
+                                <form action="/leave/reject/{{ $leave->id }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <button class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600">
+                                        ✖ Reject
+                                    </button>
+                                </form>
+
+                            @else
+                                <span class="text-gray-400 text-xs">No Action</span>
+                            @endif
                         </td>
                     </tr>
                     @endforeach

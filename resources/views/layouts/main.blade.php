@@ -168,26 +168,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // INITIAL LOAD
     loadNotifications();
 
-    // REALTIME
-    setTimeout(() => {
-        if (window.Echo) {
-            console.log("Echo connected ✅");
-
-            let userId = window.userId;
-
-            window.Echo.private(`notifications.${userId}`)
-                .listen('.NewNotificationEvent', (e) => {
-                    console.log("🔥 PRIVATE EVENT RECEIVED:", e);
-
-                    showToast(e.notification);
-                    document.getElementById('notif-sound').play().catch(()=>{});
-                    loadNotifications();
-                });
-
-        } else {
-            console.log("Echo NOT loaded ❌");
-        }
-    }, 1500);
+    // AUTO REFRESH EVERY 5 SECONDS
+setInterval(loadNotifications, 5000);
 
 });
 </script>

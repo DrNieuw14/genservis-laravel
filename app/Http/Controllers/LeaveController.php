@@ -21,7 +21,7 @@ class LeaveController extends Controller
 
         // ✅ SAVE LEAVE
         $leave = LeaveRequest::create([
-            'user_id' => Auth::id(),
+            'user_id' => auth()->user()->id,
             'type' => $request->type,
             'reason' => $request->reason,
             'date_from' => $request->date_from,
@@ -46,15 +46,15 @@ class LeaveController extends Controller
 
         // 🔔 NOTIFY USER
         Notification::create([
-            'user_id' => Auth::id(),
+            'user_id' => auth()->user()->id,
             'type' => 'leave',
             'title' => 'Leave Submitted',
             'message' => 'Your leave request has been submitted.',
             'is_read' => 0
         ]);
 
-        return redirect('/leave/history')
-            ->with('success', 'Leave submitted successfully!');
+        return redirect('/leave')
+    ->with('success', 'Leave submitted successfully!');
     }
 
     public function history()

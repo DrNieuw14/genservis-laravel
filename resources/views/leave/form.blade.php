@@ -1,4 +1,10 @@
+
 <x-app-layout>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+
 <div class="max-w-2xl mx-auto mt-10">
 
     <!-- CARD -->
@@ -15,6 +21,16 @@
                 {{ session('success') }}
             </div>
         @endif
+
+        @if ($errors->any())
+        <div class="bg-red-500 text-white p-3 mb-4 rounded">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
         <!-- FORM -->
         <form method="POST" action="/leave" id="leaveForm">
@@ -37,17 +53,21 @@
             </div>
 
             <!-- DATES -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Date From</label>
-                    <input type="date" name="date_from" class="w-full border rounded-lg p-2">
-                </div>
+            <div class="mb-4">
+                <label class="block text-sm font-semibold mb-1">Select Date Range</label>
 
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Date To</label>
-                    <input type="date" name="date_to" class="w-full border rounded-lg p-2">
-                </div>
+                <input type="text" id="date_range"
+                    class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+                    placeholder="Select date range">
+
+                <p id="total_days" class="text-sm text-gray-600 mt-2"></p>
+
+                <!-- Hidden fields (VERY IMPORTANT) -->
+                <input type="hidden" name="date_from" id="date_from">
+                <input type="hidden" name="date_to" id="date_to">
             </div>
+
+            
 
             <!-- BUTTON -->
             <button id="submitBtn"
@@ -60,24 +80,49 @@
 </div>
 
 <!-- JS ENHANCEMENTS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <script>
-    const form = document.getElementById('leaveForm');
-    const btn = document.getElementById('submitBtn');
+flatpickr("#date_range", {
+    mode: "range",
+    dateFormat: "Y-m-d",
+    minDate: "today",
 
-    form.addEventListener('submit', function() {
-        btn.innerText = 'Submitting... ⏳';
-        btn.disabled = true;
-        btn.classList.add('opacity-50');
-    });
+    onChange: function(selectedDates) {
 
-    // auto-hide success
-    setTimeout(() => {
-        const alert = document.getElementById('successAlert');
-        if (alert) {
-            alert.style.opacity = '0';
-            setTimeout(() => alert.remove(), 500);
+        let totalDaysText = document.getElementById('total_days');
+
+        if (selectedDates.length === 0) {
+            totalDaysText.innerText = "";
         }
-    }, 3000);
+
+        if (selectedDates.length === 1) {
+            let date = selectedDates[0].toISOString().split('T')[0];
+
+            document.getElementById('date_from').value = date;
+            document.getElementById('date_to').value = date;
+
+            totalDaysText.innerText = "Total Days: 1 day";
+        }
+
+        if (selectedDates.length === 2) {
+            let start = selectedDates[0];
+            let end = selectedDates[1];
+
+            document.getElementById('date_from').value =
+                start.toISOString().split('T')[0];
+
+            document.getElementById('date_to').value =
+                end.toISOString().split('T')[0];
+
+            // 🔥 CALCULATE DAYS
+            let diffTime = end - start;
+            let days = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+            totalDaysText.innerText = "Total Days: " + days + " day(s)";
+        }
+    }
+});
 </script>
 
 </x-app-layout>

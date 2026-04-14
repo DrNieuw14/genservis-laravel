@@ -100,19 +100,27 @@
                     <!-- Action -->
                     <td class="p-2 border">
                         @if($leave->status == 'Pending')
-                            <form method="POST" action="/leave/approve/{{ $leave->id }}" style="display:inline;">
+
+                            <!-- ✅ APPROVE -->
+                            <form id="approve-form-{{ $leave->id }}" method="POST" action="/leave/approve/{{ $leave->id }}" class="inline-block mr-1">
                                 @csrf
-                                <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded font-bold shadow">
+                                <button type="button"
+                                    onclick="confirmApprove({{ $leave->id }})"
+                                    class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded font-bold shadow">
                                     Approve
                                 </button>
                             </form>
 
-                            <form method="POST" action="/leave/reject/{{ $leave->id }}" style="display:inline;">
+                            <!-- ❌ REJECT -->
+                            <form id="reject-form-{{ $leave->id }}" method="POST" action="/leave/reject/{{ $leave->id }}" class="inline-block">
                                 @csrf
-                                <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-bold shadow">
+                                <button type="button"
+                                    onclick="confirmReject({{ $leave->id }})"
+                                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-bold shadow">
                                     Reject
                                 </button>
                             </form>
+
                         @endif
                     </td>
 
@@ -122,4 +130,41 @@
         </table>
 
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmApprove(id) {
+            Swal.fire({
+                title: 'Approve Leave?',
+                text: "This action cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, approve it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('approve-form-' + id).submit();
+                }
+            });
+        }
+
+        function confirmReject(id) {
+            Swal.fire({
+                title: 'Reject Leave?',
+                text: "This action cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, reject it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('reject-form-' + id).submit();
+                }
+            });
+        }
+        </script>
+    
 </x-app-layout>

@@ -27,7 +27,7 @@ class NewNotificationEvent implements ShouldBroadcastNow
 
     public function broadcastAs()
     {
-        return 'NewNotificationEvent';
+        return 'new.notification';
     }
 
     // 🔥 ADD THIS (VERY IMPORTANT)
