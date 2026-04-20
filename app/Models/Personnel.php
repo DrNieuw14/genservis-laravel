@@ -1,27 +1,33 @@
 <?php
 
 namespace App\Models;
-use App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
-
 
 class Personnel extends Model
 {
     protected $table = 'personnel';
+
+    // Only created_at, no updated_at in your table
     public $timestamps = false;
+    const CREATED_AT = 'created_at';
 
     protected $fillable = [
         'employee_id',
         'fullname',
         'position',
         'department',
-        'user_id'
+        'assigned_area',
+        'status',
+        'user_id',
+    ];
+
+    protected $attributes = [
+        'status' => 'Active',
     ];
 
     public function user()
     {
-    return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
-

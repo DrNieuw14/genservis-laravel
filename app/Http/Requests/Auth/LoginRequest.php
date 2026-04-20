@@ -60,7 +60,7 @@ class LoginRequest extends FormRequest
         }
 
         // 🚫 BLOCK IF NOT APPROVED
-        if ($user->status !== 'active') {
+        if ($user->status !== 'approved') {
             throw ValidationException::withMessages([
                 'username' => 'Your account is pending approval.',
             ]);

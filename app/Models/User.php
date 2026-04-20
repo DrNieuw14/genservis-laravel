@@ -2,33 +2,49 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    protected $table = 'users';
-
-    public $timestamps = false;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
-        'username',
         'email',
+        'username',
         'password',
-        'role'
+        'birthdate',
+        'birth_month',
+        'age',
+        'role',
+        'status',
     ];
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
-    public function notifications()
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password'          => 'hashed',
+        'age'               => 'integer',
+    ];
+
+    public function isSupervisor(): bool
     {
-        return $this->hasMany(Notification::class);
+        return $this->role === 'supervisor';
     }
 
-    public function getAuthIdentifierName()
+    public function isApproved(): bool
     {
-        return 'username';
+        return $this->status === 'approved';
+    }
+
+    public function personnel()
+    {
+        return $this->hasOne(Personnel::class, 'user_id');
     }
 }

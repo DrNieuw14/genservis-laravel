@@ -2,38 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Notification;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
     public function index()
     {
-        $notifications = Notification::where('user_id', Auth::user()->id)
-            ->latest()
-            ->take(10)
-            ->get();
+        $notifications = Auth::user()
+            ->notifications()
+            ->orderByDesc('created_at')
+            ->paginate(20);
 
-        $unreadCount = Notification::where('user_id', Auth::user()->id)
-            ->where('is_read', 0)
-            ->count();
+        return view('notifications.index', compact('notifications'));
+    }
+
+    public function fetch()
+    {
+        $user = Auth::user();
+
+        $notifications = $user->notifications()
+            ->orderByDesc('created_at')
+            ->take(10)
+            ->get()
+            ->map(fn($n) => [
+                'id'      => $n->id,
+                'message' => $n->data['message'] ?? 'New notification',
+                'url'     => $n->data['url'] ?? '#',
+                'read'    => ! is_null($n->read_at),
+                'time'    => $n->created_at->diffForHumans(),
+            ]);
 
         return response()->json([
             'notifications' => $notifications,
-            'unread' => $unreadCount
+            'unread_count'  => $user->unreadNotifications()->count(),
         ]);
     }
 
-    public function markAsRead($id)
+    public function markAsRead(string $id): RedirectResponse
     {
-        $notif = Notification::where('id', $id)
-            ->where('user_id', Auth::user()->id)
-            ->first();
+        $notification = Auth::user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+        $url = $notification->data['url'] ?? route('dashboard');
+        return redirect($url);
+    }
 
-        if ($notif) {
-            $notif->update(['is_read' => 1]);
-        }
-
+    public function markAllRead()
+    {
+        Auth::user()->unreadNotifications->markAsRead();
         return response()->json(['success' => true]);
     }
 }

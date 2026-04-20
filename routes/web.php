@@ -1,101 +1,79 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\UserApprovalController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
-use App\Models\Notification;
-use App\Events\NewNotificationEvent;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Broadcast;
-
 use App\Http\Controllers\PersonnelController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/personnel/create', [PersonnelController::class, 'create'])->middleware('auth');
-Route::post('/personnel/store', [PersonnelController::class, 'store'])->middleware('auth');
+// ── Landing page ──────────────────────────────────────────
+Route::get('/', fn() => view('welcome'))->name('home');
 
-Route::get('/leave/history', [LeaveController::class, 'history'])->middleware('auth');
-Route::get('/leave-test', [LeaveController::class, 'submit'])->middleware('auth');
-Route::get('/leave/admin', [LeaveController::class, 'adminIndex'])->middleware('auth');
-Route::post('/leave/approve/{id}', [LeaveController::class, 'approve'])->middleware('auth');
-Route::post('/leave/reject/{id}', [LeaveController::class, 'reject'])->middleware('auth');
-
-Broadcast::routes(['middleware' => ['auth']]);
-
-Route::get('/', function () {
-    return view('welcome');
+// ── Guest routes ──────────────────────────────────────────
+Route::middleware('guest')->group(function () {
+    Route::get('register',  [RegisteredUserController::class, 'create'])->name('register');
+    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::get('login',     [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('login',    [AuthenticatedSessionController::class, 'store']);
 });
 
-Route::get('/dashboard', function () {
-
-    $user = auth()->user();
-
-    // 👨‍💼 SUPERVISOR
-    if ($user->role === 'supervisor') {
-
-        $pending = \App\Models\LeaveRequest::where('status', 'Pending')->count();
-        $approved = \App\Models\LeaveRequest::where('status', 'Approved')->count();
-        $rejected = \App\Models\LeaveRequest::where('status', 'Rejected')->count();
-
-        $recent = \App\Models\LeaveRequest::with('user')
-            ->latest()
-            ->take(5)
-            ->get();
-
-        return view('dashboard', compact('pending', 'approved', 'rejected', 'recent'));
-    }
-
-    // 👤 PERSONNEL
-    return redirect('/personnel/dashboard');
-
-})->middleware('auth')->name('dashboard');
-
-Route::get('/personnel/dashboard', function () {
-    return view('personnel.dashboard');
-})->middleware('auth');
-
-Route::get('/profile', function () {
-    return "Profile Page";
-})->name('profile.edit')->middleware('auth');
-
-require __DIR__.'/auth.php';
-
-Route::get('/leave', function () {
-    return view('leave.form');
-})->middleware('auth');
-
-Route::post('/leave', [LeaveController::class, 'store'])->middleware('auth');
-Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth');
-Route::post('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->middleware('auth');
-
-Route::get('/leave-requests', [LeaveController::class, 'adminIndex'])
+// ── Logout ────────────────────────────────────────────────
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
-    ->name('leave.requests');
+    ->name('logout');
 
-Route::get('/test-notif', function () {
-    $notif = Notification::create([
-        'user_id' => auth()->user()->id,
-        'type' => 'info',
-        'title' => 'REALTIME 🚀',
-        'message' => 'Instant notification working!',
-        'is_read' => 0
-    ]);
-
-    event(new NewNotificationEvent($notif));
-
-    \Log::info('EVENT FIRED', ['notif_id' => $notif->id]);
-
-    return "Sent!";
-})->middleware('auth');
-
-use App\Http\Controllers\Admin\UserApprovalController;
-
+// ── Authenticated routes ──────────────────────────────────
 Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/users/pending', [UserApprovalController::class, 'index'])
-        ->name('admin.users.pending');
 
-    Route::post('/admin/users/{id}/approve', [UserApprovalController::class, 'approve'])
-        ->name('admin.users.approve');
+    // Shared dashboard redirect
+    Route::get('/dashboard', function () {
+        return auth()->user()->isSupervisor()
+            ? redirect()->route('supervisor.dashboard')
+            : redirect()->route('personnel.dashboard');
+    })->name('dashboard');
 
-        
+    // ── Notifications ──
+    Route::get('/notifications',          [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/fetch',    [NotificationController::class, 'fetch'])->name('notifications.fetch');
+    Route::post('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all',  [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
+
+    // ── Supervisor / Admin routes ──
+    Route::middleware('role:supervisor')->group(function () {
+        Route::get('/supervisor/dashboard', function () {
+            return view('supervisor.dashboard', [
+                'pendingCount'  => \App\Models\User::where('status', 'pending')->count(),
+                'approvedCount' => \App\Models\User::where('status', 'approved')->count(),
+                'rejectedCount' => \App\Models\User::where('status', 'rejected')->count(),
+                'pendingUsers'  => \App\Models\User::where('status', 'pending')
+                                        ->where('role', 'personnel')->latest()->get(),
+            ]);
+        })->name('supervisor.dashboard');
+
+        // User approval (your existing routes)
+        Route::get('admin/users/pending',      [UserApprovalController::class, 'index'])->name('admin.users.pending');
+        Route::post('admin/users/{id}/approve',[UserApprovalController::class, 'approve'])->name('admin.users.approve');
+        Route::post('admin/users/{id}/reject', [UserApprovalController::class, 'reject'])->name('admin.users.reject');
+
+        // Leave admin
+        Route::get('leave-requests',       [LeaveController::class, 'adminIndex'])->name('leave.requests');
+        Route::get('leave/admin',          [LeaveController::class, 'adminIndex']);
+        Route::post('leave/approve/{id}',  [LeaveController::class, 'approve']);
+        Route::post('leave/reject/{id}',   [LeaveController::class, 'reject']);
+    });
+
+    // ── Personnel routes ──
+    Route::middleware('role:personnel')->group(function () {
+        Route::get('/personnel/dashboard', [PersonnelController::class, 'dashboard'])->name('personnel.dashboard');
+        Route::get('/personnel/create',    [PersonnelController::class, 'create']);
+        Route::post('/personnel/store',    [PersonnelController::class, 'store']);
+
+        // Leave
+        Route::get('leave',          [LeaveController::class, 'index'])->name('leave.index');
+        Route::post('leave',         [LeaveController::class, 'store']);
+        Route::get('leave/history',  [LeaveController::class, 'history'])->name('leave.history');
+    });
+
 });
-
