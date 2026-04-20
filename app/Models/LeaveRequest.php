@@ -6,22 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class LeaveRequest extends Model
 {
-    public $timestamps = false;
+    protected $table = 'leave_requests';
 
     protected $fillable = [
-        'user_id',
-        'type',
+        'personnel_id',
         'reason',
-        'date_from',
-        'date_to',
-        'status'
+        'start_date',
+        'end_date',
+        'status',
+        'approved_by',
+        'approved_at'
     ];
 
+    // ✅ Link to user through personnel_id
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(\App\Models\User::class, 'personnel_id', 'personnel_id');
     }
 
+    // ✅ Supervisor who approved
     public function approver()
     {
         return $this->belongsTo(\App\Models\User::class, 'approved_by');

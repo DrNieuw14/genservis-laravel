@@ -43,8 +43,8 @@ class User extends Authenticatable
         return $this->status === 'approved';
     }
 
-    public function personnel()
+        public function personnel()
     {
-        return $this->hasOne(Personnel::class, 'user_id');
+        return $this->belongsTo(Personnel::class, 'personnel_id');
     }
 }

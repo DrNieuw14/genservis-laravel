@@ -8,7 +8,6 @@ class Personnel extends Model
 {
     protected $table = 'personnel';
 
-    // Only created_at, no updated_at in your table
     public $timestamps = false;
     const CREATED_AT = 'created_at';
 
@@ -19,15 +18,15 @@ class Personnel extends Model
         'department',
         'assigned_area',
         'status',
-        'user_id',
     ];
 
     protected $attributes = [
         'status' => 'Active',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
+    // ✅ Correct relationship
+      public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 }

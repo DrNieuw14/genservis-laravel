@@ -19,34 +19,40 @@ class RegisteredUserController extends Controller
         return view('auth.register');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:users,username'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'first_name' => 'required|string|max:255',
+            'middle_initial' => 'nullable|string|max:10',
+            'last_name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users',
+            'password' => 'required|confirmed|min:6',
         ]);
 
-        $user = User::create([
-            'name'     => $request->name,
+        // ✅ Create User FIRST
+        $user = \App\Models\User::create([
+            'first_name' => $request->first_name,
+            'middle_initial' => $request->middle_initial,
+            'last_name' => $request->last_name,
+            'fullname' => $request->first_name . ' ' . $request->last_name,
             'username' => $request->username,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => 'personnel',
-            'status'   => 'pending',
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'role' => 'personnel',
+            'status' => 'pending',
         ]);
 
-        event(new Registered($user));
+        // ✅ Create Personnel
+        $personnel = \App\Models\Personnel::create([
+            'employee_id' => 'EMP' . rand(1000,9999), // simple generator
+            'fullname' => $user->fullname,
+            'position' => 'Staff',
+            'department' => 'Maintenance',
+        ]);
 
-        // Notify all supervisors
-        User::where('role', 'supervisor')->each(function ($supervisor) use ($user) {
-            $supervisor->notify(new NewUserRegistered($user));
-        });
+        // ✅ LINK USER → PERSONNEL
+        $user->personnel_id = $personnel->id;
+        $user->save();
 
-        return redirect()->route('login')->with(
-            'status',
-            'Registration successful! Your account is pending supervisor approval.'
-        );
+        return redirect()->route('login')->with('success', 'Registered successfully. Wait for approval.');
     }
 }

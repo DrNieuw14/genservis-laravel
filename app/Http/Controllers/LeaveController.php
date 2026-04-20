@@ -10,24 +10,45 @@ use App\Events\NewNotificationEvent;
 
 class LeaveController extends Controller
 {
+    public function index()
+    {
+        $personnel = \App\Models\Personnel::where('user_id', Auth::id())->first();
+
+        $leaves = LeaveRequest::where('personnel_id', $personnel->id)
+            ->latest()
+            ->get();
+
+        return view('leave.form', compact('leaves'));
+    }
     public function store(Request $request)
     {
         $request->validate([
-            'type' => 'required',
             'reason' => 'required',
             'date_from' => 'required|date',
             'date_to' => 'required|date|after_or_equal:date_from'
         ]);
 
+        // ✅ ADD THIS HERE
+        if (!Auth::user()->personnel_id) {
+            return back()->with('error', 'User is not linked to personnel.');
+        }
+
         // ✅ SAVE LEAVE
+        $personnel = \App\Models\Personnel::where('user_id', Auth::id())->first();
+
+        if (!$personnel) {
+            return back()->with('error', 'User has no personnel record.');
+        }
+
         $leave = LeaveRequest::create([
-            'user_id' => auth()->user()->id,
-            'type' => $request->type,
+            'personnel_id' => $personnel->id,
             'reason' => $request->reason,
-            'date_from' => $request->date_from,
-            'date_to' => $request->date_to,
+            'start_date' => $request->date_from,
+            'end_date' => $request->date_to,
             'status' => 'Pending'
         ]);
+
+               
 
         // 🔔 NOTIFY SUPERVISORS
         $supervisors = \App\Models\User::where('role', 'supervisor')->get();
@@ -37,7 +58,7 @@ class LeaveController extends Controller
                 'user_id' => $admin->id,
                 'type' => 'leave',
                 'title' => 'New Leave Request',
-                'message' => Auth::user()->name . ' submitted a leave request.',
+                'message' => Auth::user()->fullname . ' submitted a leave request.',
                 'is_read' => 0
             ]);
 
@@ -59,7 +80,9 @@ class LeaveController extends Controller
 
     public function history()
     {
-        $leaves = LeaveRequest::where('user_id', auth()->user()->id)
+        $personnel = \App\Models\Personnel::where('user_id', Auth::id())->first();
+
+        $leaves = LeaveRequest::where('personnel_id', $personnel->id)
             ->latest()
             ->get();
 
@@ -85,7 +108,7 @@ class LeaveController extends Controller
         // ✅ Search by user name
         if ($search) {
             $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'LIKE', '%' . $search . '%');
+                $q->where('fullname', 'LIKE', '%' . $search . '%');
             });
         }
 
@@ -106,7 +129,7 @@ class LeaveController extends Controller
 
         // 🔔 Notify employee
         $notif = Notification::create([
-            'user_id' => $leave->user_id,
+            'user_id' => \App\Models\User::where('personnel_id', $leave->personnel_id)->value('id'),
             'type' => 'leave',
             'title' => 'Leave Approved',
             'message' => 'Your leave request has been approved.',
@@ -130,7 +153,7 @@ class LeaveController extends Controller
 
         // 🔔 Notify employee
         $notif = Notification::create([
-            'user_id' => $leave->user_id,
+            'user_id' => \App\Models\User::where('personnel_id', $leave->personnel_id)->value('id'),
             'type' => 'leave',
             'title' => 'Leave Rejected',
             'message' => 'Your leave request has been rejected.',
