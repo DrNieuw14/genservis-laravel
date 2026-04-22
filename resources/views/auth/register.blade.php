@@ -31,6 +31,47 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Birthdate -->
+        <div class="mt-4 grid grid-cols-3 gap-2">
+
+            <!-- Month -->
+            <div>
+                <x-input-label for="birth_month" :value="__('Month')" />
+                <select name="birth_month" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+                    <option value="">Select</option>
+                    @for ($m = 1; $m <= 12; $m++)
+                        <option value="{{ $m }}">{{ date('F', mktime(0,0,0,$m,1)) }}</option>
+                    @endfor
+                </select>
+                <x-input-error :messages="$errors->get('birth_month')" class="mt-2" />
+            </div>
+
+            <!-- Day -->
+            <div>
+                <x-input-label for="birth_day" :value="__('Day')" />
+                <select name="birth_day" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+                    <option value="">Select</option>
+                    @for ($d = 1; $d <= 31; $d++)
+                        <option value="{{ $d }}">{{ $d }}</option>
+                    @endfor
+                </select>
+                <x-input-error :messages="$errors->get('birth_day')" class="mt-2" />
+            </div>
+
+            <!-- Year -->
+            <div>
+                <x-input-label for="birth_year" :value="__('Year')" />
+                <select name="birth_year" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+                    <option value="">Select</option>
+                    @for ($y = date('Y'); $y >= 1950; $y--)
+                        <option value="{{ $y }}">{{ $y }}</option>
+                    @endfor
+                </select>
+                <x-input-error :messages="$errors->get('birth_year')" class="mt-2" />
+            </div>
+
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />

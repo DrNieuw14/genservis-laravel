@@ -75,6 +75,76 @@
                     </tr>
                     @endforelse
                 </tbody>
+
+                
+                {{-- Pending Leave Requests --}}
+                    <div class="bg-white rounded-xl shadow border border-gray-100 mt-8">
+                        <div class="px-6 py-4 border-b flex items-center justify-between">
+                            <h3 class="font-semibold text-gray-700">Pending Leave Requests</h3>
+                        </div>
+
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+                                <tr>
+                                    <th class="px-6 py-3 text-left">Name</th>
+                                    <th class="px-6 py-3 text-left">Reason</th>
+                                    <th class="px-6 py-3 text-left">Date</th>
+                                    <th class="px-6 py-3 text-left">Status</th>
+                                    <th class="px-6 py-3 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @php
+                                    $leaves = \App\Models\LeaveRequest::where('status','Pending')
+                                        ->with('user')
+                                        ->latest()
+                                        ->get();
+                                @endphp
+
+                                @forelse($leaves as $leave)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-800">
+                                        {{ $leave->user->name ?? 'N/A' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">
+                                        {{ $leave->reason }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">
+                                        {{ $leave->start_date }} - {{ $leave->end_date }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700">
+                                            {{ $leave->status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex gap-2">
+                                        <form method="POST" action="{{ url('/leave/approve/'.$leave->id) }}">
+                                            @csrf
+                                            <button class="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700 transition">
+                                                Approve
+                                            </button>
+                                        </form>
+
+                                        <form method="POST" action="{{ url('/leave/reject/'.$leave->id) }}">
+                                            @csrf
+                                            <button class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs hover:bg-red-600 transition">
+                                                Reject
+                                            </button>
+                                        </form>
+                                    </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-10 text-center text-gray-400">
+                                        No pending leave requests.
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
             </table>
         </div>
     </div>

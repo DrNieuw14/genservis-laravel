@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+ use Carbon\Carbon; // ADD THIS AT TOP
 
 class RegisteredUserController extends Controller
 {
@@ -19,40 +20,52 @@ class RegisteredUserController extends Controller
         return view('auth.register');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'middle_initial' => 'nullable|string|max:10',
-            'last_name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'password' => 'required|confirmed|min:6',
-        ]);
+   
 
-        // ✅ Create User FIRST
-        $user = \App\Models\User::create([
-            'first_name' => $request->first_name,
-            'middle_initial' => $request->middle_initial,
-            'last_name' => $request->last_name,
-            'fullname' => $request->first_name . ' ' . $request->last_name,
-            'username' => $request->username,
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-            'role' => 'personnel',
-            'status' => 'pending',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users',
+        'username' => 'required|string|max:255|unique:users',
+        'password' => 'required|confirmed|min:6',
 
-        // ✅ Create Personnel
-        $personnel = \App\Models\Personnel::create([
-            'employee_id' => 'EMP' . rand(1000,9999), // simple generator
-            'fullname' => $user->fullname,
-            'position' => 'Staff',
-            'department' => 'Maintenance',
-        ]);
+        'birth_month' => 'required',
+        'birth_day' => 'required',
+        'birth_year' => 'required',
+    ]);
 
-        // ✅ LINK USER → PERSONNEL
-        $user->personnel_id = $personnel->id;
-        $user->save();
+    // ✅ Build birthdate
+    $birthdate = Carbon::create(
+        $request->birth_year,
+        $request->birth_month,
+        $request->birth_day
+    );
 
-        return redirect()->route('login')->with('success', 'Registered successfully. Wait for approval.');
-    }
+    // ✅ Create User
+    $user = \App\Models\User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'username' => $request->username,
+        'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+
+        'birthdate' => $birthdate,
+        'birth_month' => $birthdate->format('F'),
+        'age' => $birthdate->age,
+
+        'role' => 'personnel',
+        'status' => 'pending',
+    ]);
+
+    // ✅ Create Personnel (linked)
+    \App\Models\Personnel::create([
+        'employee_id' => 'EMP' . rand(1000,9999),
+        'fullname' => $user->name,
+        'position' => 'Staff',
+        'department' => 'Maintenance',
+        'user_id' => $user->id
+    ]);
+
+    return redirect()->route('login')->with('success', 'Registered successfully. Wait for approval.');
+}
 }

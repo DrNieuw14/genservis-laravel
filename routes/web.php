@@ -77,3 +77,19 @@ Route::middleware(['auth'])->group(function () {
     });
 
 });
+
+// 🔧 TEMP FIX ROUTE (REMOVE AFTER USE)
+Route::get('/fix-personnel-link', function () {
+    $personnels = \App\Models\Personnel::all();
+
+    foreach ($personnels as $p) {
+        $user = \App\Models\User::where('name', $p->fullname)->first();
+
+        if ($user) {
+            $p->user_id = $user->id;
+            $p->save();
+        }
+    }
+
+    return "Done fixing!";
+});

@@ -9,7 +9,7 @@ class LeaveRequest extends Model
     protected $table = 'leave_requests';
 
     protected $fillable = [
-        'personnel_id',
+        'user_id', // ✅ NEW
         'reason',
         'start_date',
         'end_date',
@@ -18,10 +18,10 @@ class LeaveRequest extends Model
         'approved_at'
     ];
 
-    // ✅ Link to user through personnel_id
+    // ✅ Direct link to user
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class, 'personnel_id', 'personnel_id');
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
     }
 
     // ✅ Supervisor who approved
