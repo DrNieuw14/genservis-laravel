@@ -87,7 +87,7 @@
 
 
             {{-- Pending Leave Requests --}}
-            <div class="bg-white rounded-xl shadow border border-gray-100">
+            <div id="leave-section" class="bg-white rounded-xl shadow border border-gray-100">
                 <div class="px-6 py-4 border-b">
                     <h3 class="font-semibold text-gray-700">Pending Leave Requests</h3>
                 </div>

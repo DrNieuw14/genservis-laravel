@@ -99,10 +99,42 @@
 
                     <!-- NOTIFICATION -->
                     <div class="relative">
-                        🔔
+                        <button onclick="toggleNotif()" class="text-xl focus:outline-none">
+                            🔔
+                        </button>
+
                         <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 rounded-full">
-                            0
+                            {{ $totalNotifCount }}
                         </span>
+
+                        <!-- DROPDOWN -->
+                        <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border text-sm z-40">
+                            <div class="p-3 border-b font-semibold">Notifications</div>
+
+                            <div class="max-h-60 overflow-y-auto">
+
+                            @if($userNotifCount > 0)
+                                <a href="/supervisor/approve-users"
+                                class="block p-3 border-b text-sm hover:bg-gray-100 transition">
+                                    👤 {{ $userNotifCount }} new user(s) awaiting approval
+                                </a>
+                            @endif
+
+                            @if($leaveNotifCount > 0)
+                                <a href="/supervisor/dashboard#leave-section"
+                                class="block p-3 border-b text-sm hover:bg-gray-100 transition">
+                                    📄 {{ $leaveNotifCount }} leave request(s) pending
+                                </a>
+                            @endif
+
+                            @if($totalNotifCount == 0)
+                                <div class="p-3 text-gray-500">
+                                    No new notifications
+                                </div>
+                            @endif
+
+                        </div>
+                        </div>
                     </div>
 
                     <!-- USER -->
@@ -163,26 +195,7 @@
     </div>
 </div>
 
-<script>
-    let selectedForm = null;
 
-    function openModal(form, message = "Are you sure?") {
-        selectedForm = form;
-        document.getElementById('confirmMessage').innerText = message;
-        document.getElementById('confirmModal').classList.remove('hidden');
-        document.getElementById('confirmModal').classList.add('flex');
-    }
-
-    function closeModal() {
-        document.getElementById('confirmModal').classList.add('hidden');
-        document.getElementById('confirmModal').classList.remove('flex');
-        selectedForm = null;
-    }
-
-    document.getElementById('confirmBtn').addEventListener('click', function () {
-        if (selectedForm) selectedForm.submit();
-    });
-</script>
 
 <script>
     let selectedForm = null;
@@ -196,7 +209,6 @@
 
         messageEl.innerText = message;
 
-        // ✅ CHANGE BUTTON COLOR BASED ON ACTION
         if (message.toLowerCase().includes('approve')) {
             confirmBtn.className = "px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700";
         } else {
@@ -214,10 +226,24 @@
         selectedForm = null;
     }
 
+    function toggleNotif() {
+        const dropdown = document.getElementById('notifDropdown');
+        dropdown.classList.toggle('hidden');
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('confirmBtn').addEventListener('click', function () {
             if (selectedForm) selectedForm.submit();
         });
+    });
+
+    document.addEventListener('click', function (e) {
+    const dropdown = document.getElementById('notifDropdown');
+    const button = e.target.closest('button');
+
+    if (!e.target.closest('#notifDropdown') && !button) {
+            dropdown.classList.add('hidden');
+        }
     });
 </script>
 </body>
