@@ -1,23 +1,29 @@
 <x-guest-layout>
 
+    <!-- SUCCESS MESSAGE -->
     @if(session('success'))
         <div class="bg-green-100 text-green-700 p-2 rounded mb-4">
             {{ session('success') }}
         </div>
     @endif
-    <!-- Session Status -->
+
+    <!-- TITLE -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome Back</h2>
+    <p class="text-sm text-gray-500 mb-6">Login to your account</p>
+
+    <!-- STATUS -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- Email Address -->
-        <div>
+        <!-- USERNAME -->
+        <div class="mb-4">
             <x-input-label for="username" :value="__('Username or Email')" />
 
             <x-text-input 
                 id="username" 
-                class="block mt-1 w-full"
+                class="block mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500"
                 type="text"
                 name="username"
                 placeholder="Enter username or email"
@@ -28,36 +34,50 @@
             <x-input-error :messages="$errors->get('username')" class="mt-2" />
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
+        <!-- PASSWORD -->
+        <div class="mb-4">
             <x-input-label for="password" :value="__('Password')" />
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <x-text-input 
+                id="password"
+                class="block mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500"
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                required 
+            />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
+        <!-- REMEMBER -->
+        <div class="flex items-center justify-between mb-6">
+            <label class="flex items-center text-sm">
+                <input type="checkbox" name="remember" class="mr-2">
+                Remember me
             </label>
-        </div>
 
-        <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
+                <a href="{{ route('password.request') }}" class="text-sm text-green-600 hover:underline">
+                    Forgot password?
                 </a>
             @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
         </div>
+
+        <!-- BUTTON -->
+        <button type="submit"
+            class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition shadow">
+            Log In
+        </button>
+
+        <!-- REGISTER -->
+        <p class="text-sm text-center mt-6">
+            Don’t have an account?
+            <a href="{{ route('register') }}" class="text-blue-600 hover:underline">
+                Register here
+            </a>
+        </p>
+
     </form>
+
 </x-guest-layout>

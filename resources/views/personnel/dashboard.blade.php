@@ -1,41 +1,39 @@
-@extends('layouts.main')
+<x-app-layout>
 
-@section('content')
+<x-slot name="header">
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        Personnel Dashboard
+    </h2>
+</x-slot>
 
-<h3>Personnel Dashboard</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
 
-<div class="mt-4">
+    <!-- Attendance -->
+    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition border-l-4 border-blue-500 cursor-pointer">
+        <h3 class="font-bold text-blue-600">Attendance</h3>
+        <p class="text-sm text-gray-500">Manage attendance records</p>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    
-        <!-- Attendance -->
-        <div class="bg-blue-600 text-white p-6 rounded-xl shadow-lg">
-            <h3 class="text-lg font-bold">Attendance</h3>
-            <p class="text-sm">Manage attendance records</p>
+    <!-- Scheduling -->
+    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition border-l-4 border-green-500 cursor-pointer">
+        <h3 class="font-bold text-green-600">Scheduling</h3>
+        <p class="text-sm text-gray-500">Manage schedules</p>
+    </div>
+
+    <!-- Leave -->
+    <a href="{{ url('/leave') }}">
+        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition border-l-4 border-yellow-500 cursor-pointer">
+            <h3 class="font-bold text-yellow-600">Leave</h3>
+            <p class="text-sm text-gray-500">Apply leave requests</p>
         </div>
+    </a>
 
-        <!-- Scheduling -->
-        <div class="bg-green-600 text-white p-6 rounded-xl shadow-lg">
-            <h3 class="text-lg font-bold">Scheduling</h3>
-            <p class="text-sm">Manage schedules</p>
-        </div>
-
-        <!-- Leave -->
-        <a href="{{ url('/leave') }}">
-            <div class="bg-yellow-500 hover:bg-yellow-600 text-white p-6 rounded-xl shadow-lg transition cursor-pointer">
-                <h3 class="text-lg font-bold">Leave</h3>
-                <p class="text-sm">Apply leave requests</p>
-            </div>
-        </a>
-
-        <!-- CTO -->
-        <div class="bg-red-500 text-white p-6 rounded-xl shadow-lg">
-            <h3 class="text-lg font-bold">CTO</h3>
-            <p class="text-sm">Manage CTO balances</p>
-        </div>
-
+    <!-- CTO -->
+    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition border-l-4 border-red-500 cursor-pointer">
+        <h3 class="font-bold text-red-600">CTO</h3>
+        <p class="text-sm text-gray-500">Manage CTO balances</p>
     </div>
 
 </div>
 
-@endsection
+</x-app-layout>

@@ -1,30 +1,52 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenServis</title>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            background: url('/images/bg.jpg') no-repeat center center;
+            background-size: cover;
+        }
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+        .overlay {
+            background: rgba(15, 118, 110, 0.75);
+        }
+    </style>
+</head>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
+<body class="min-h-screen flex items-center justify-center relative">
+
+    <!-- OVERLAY -->
+    <div class="overlay absolute inset-0"></div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="relative z-10 w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+
+        <!-- LEFT SIDE -->
+        <div class="bg-green-700 text-white p-10 flex flex-col justify-center items-center text-center">
+
+            <img src="/images/logo.png" class="h-24 w-auto object-contain mb-6">
+
+            <h2 class="text-xl font-bold">Cavite State University</h2>
+            <p class="text-sm mt-2">GenServis System</p>
+
+            <p class="text-xs mt-4 text-green-100">
+                Efficient service, scheduling, and leave management system.
+            </p>
+
         </div>
-    </body>
+
+        <!-- RIGHT SIDE (FORM SLOT) -->
+        <div class="p-10">
+            {{ $slot }}
+        </div>
+
+    </div>
+
+</body>
 </html>
