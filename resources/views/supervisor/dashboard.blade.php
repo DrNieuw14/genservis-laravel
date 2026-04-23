@@ -132,7 +132,7 @@
                                     <form method="POST" action="{{ url('/leave/approve/'.$leave->id) }}">
                                         @csrf
                                         <button type="button"
-                                            onclick="openModal(this.closest('form'), 'Approve this user?')"
+                                            onclick="openModal(this.closest('form'), 'Approve this leave request?')"
                                             class="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700">
                                             Approve
                                         </button>
@@ -141,7 +141,7 @@
                                     <form method="POST" action="{{ url('/leave/reject/'.$leave->id) }}">
                                         @csrf
                                         <button type="button"
-                                            onclick="openModal(this.closest('form'), 'Reject this user?')"
+                                            onclick="openModal(this.closest('form'), 'Reject this leave request?')"
                                             class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs hover:bg-red-600">
                                             Reject
                                         </button>
@@ -159,7 +159,5 @@
                     </tbody>
                 </table>
             </div>
-            </table>
-        </div>
-    </div>
+            
 </x-app-layout>

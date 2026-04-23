@@ -27,8 +27,11 @@ class LeaveController extends Controller
         'date_to' => 'required|date|after_or_equal:date_from'
     ]);
 
+    $personnel = \App\Models\Personnel::where('user_id', Auth::id())->first();
+
     $leave = LeaveRequest::create([
-        'user_id' => Auth::id(), // ✅ direct link
+        'user_id' => Auth::id(),
+        'personnel_id' => $personnel->id ?? null,
         'reason' => $request->reason,
         'start_date' => $request->date_from,
         'end_date' => $request->date_to,
@@ -139,6 +142,11 @@ class LeaveController extends Controller
         ]);
 
         return redirect()->back();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
     }
     
 }

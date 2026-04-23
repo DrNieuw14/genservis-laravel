@@ -9,17 +9,19 @@ use Illuminate\Http\Request;
 class UserApprovalController extends Controller
 {
     public function index()
-    {
-        return view('admin.users.pending', [
-            'pendingUsers'  => User::where('status', 'pending')
-                                   ->where('role', 'personnel')
-                                   ->latest()
-                                   ->get(),
-            'approvedCount' => User::where('status', 'approved')->count(),
-            'rejectedCount' => User::where('status', 'rejected')->count(),
-            'pendingCount'  => User::where('status', 'pending')->count(),
-        ]);
-    }
+{
+    $users = User::where('status', 'pending')
+        ->where('role', 'personnel')
+        ->latest()
+        ->get();
+
+    return view('admin.users.pending', [
+        'users' => $users,
+        'approvedCount' => User::where('status', 'approved')->count(),
+        'rejectedCount' => User::where('status', 'rejected')->count(),
+        'pendingCount'  => User::where('status', 'pending')->count(),
+    ]);
+}
 
     public function approve($id)
     {

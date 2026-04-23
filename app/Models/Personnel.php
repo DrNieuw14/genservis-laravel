@@ -18,6 +18,7 @@ class Personnel extends Model
         'department',
         'assigned_area',
         'status',
+         'user_id',
     ];
 
     protected $attributes = [

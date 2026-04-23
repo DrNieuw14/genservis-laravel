@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Notification;
 
 class NotificationController extends Controller
 {
@@ -40,12 +41,28 @@ class NotificationController extends Controller
         ]);
     }
 
-    public function markAsRead(string $id): RedirectResponse
+
+
+    public function markAsRead($id)
     {
-        $notification = Auth::user()->notifications()->findOrFail($id);
-        $notification->markAsRead();
-        $url = $notification->data['url'] ?? route('dashboard');
-        return redirect($url);
+        $notif = Notification::findOrFail($id);
+
+        // security check
+        if ($notif->user_id != auth()->id()) {
+            abort(403);
+        }
+
+        // mark as read
+        $notif->update([
+            'is_read' => 1
+        ]);
+
+        // 🔥 REDIRECT PROPERLY (IMPORTANT)
+        if ($notif->type === 'leave') {
+            return redirect()->route('leave.requests');
+        }
+
+        return redirect()->route('admin.users.pending');
     }
 
     public function markAllRead()

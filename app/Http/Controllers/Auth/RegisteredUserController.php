@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
- use Carbon\Carbon; // ADD THIS AT TOP
+use Carbon\Carbon; // ADD THIS AT TOP
+use App\Models\Notification;
 
 class RegisteredUserController extends Controller
 {
@@ -58,14 +59,28 @@ public function store(Request $request)
     ]);
 
     // ✅ Create Personnel (linked)
+
+
     \App\Models\Personnel::create([
-        'employee_id' => 'EMP' . rand(1000,9999),
-        'fullname' => $user->name,
-        'position' => 'Staff',
-        'department' => 'Maintenance',
-        'user_id' => $user->id
+    'employee_id' => 'EMP' . rand(1000,9999),
+    'fullname' => $user->name,
+    'position' => 'Staff',
+    'department' => 'Maintenance',
+    'user_id' => $user->id, // ✅ THIS IS THE FIX
+    'status' => 'Active'
     ]);
 
-    return redirect()->route('login')->with('success', 'Registered successfully. Wait for approval.');
+    $supervisor = User::where('role', 'supervisor')->first();
+
+    if ($supervisor) {
+        Notification::create([
+            'user_id' => $supervisor->id,
+            'type' => 'user',
+            'title' => 'New User Registration',
+            'message' => $user->name . ' registered and needs approval',
+        ]);
+    }
+
+    return redirect()->route('login')->with('success', 'Registration successful! Waiting for admin approval.');
 }
 }

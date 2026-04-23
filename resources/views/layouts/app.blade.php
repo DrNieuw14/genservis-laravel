@@ -45,11 +45,7 @@
                         Dashboard
                     </a>
 
-                    <a href="/supervisor/approve-users"
-                    class="block px-3 py-2 rounded 
-                    {{ request()->is('supervisor/approve-users') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
-                        Approve Users
-                    </a>
+                    
 
                 @endif
 
@@ -103,40 +99,50 @@
                             🔔
                         </button>
 
+                        @if($totalNotifCount > 0)
                         <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 rounded-full">
                             {{ $totalNotifCount }}
                         </span>
+                        @endif
 
                         <!-- DROPDOWN -->
                         <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border text-sm z-40">
                             <div class="p-3 border-b font-semibold">Notifications</div>
 
-                            <div class="max-h-60 overflow-y-auto">
+                            <div class="max-h-64 overflow-y-auto">
 
-                            @if($userNotifCount > 0)
-                                <a href="/supervisor/approve-users"
-                                class="block p-3 border-b text-sm hover:bg-gray-100 transition">
-                                    👤 {{ $userNotifCount }} new user(s) awaiting approval
-                                </a>
-                            @endif
+                                @forelse($notifications as $notif)
 
-                            @if($leaveNotifCount > 0)
-                                <a href="/supervisor/dashboard#leave-section"
-                                class="block p-3 border-b text-sm hover:bg-gray-100 transition">
-                                    📄 {{ $leaveNotifCount }} leave request(s) pending
-                                </a>
-                            @endif
+                                <form method="POST" action="{{ route('notifications.read', $notif->id) }}">
+                                    @csrf
 
-                            @if($totalNotifCount == 0)
-                                <div class="p-3 text-gray-500">
-                                    No new notifications
-                                </div>
-                            @endif
+                                    <button type="submit"
+                                        class="w-full text-left px-4 py-3 border-b hover:bg-gray-100">
 
-                        </div>
+                                        <div class="text-sm font-semibold">
+                                            {{ $notif->title }}
+                                        </div>
+
+                                        <div class="text-xs text-gray-500">
+                                            {{ $notif->message }}
+                                        </div>
+
+                                        <div class="text-[10px] text-gray-400">
+                                            {{ $notif->created_at->diffForHumans() }}
+                                        </div>
+
+                                    </button>
+                                </form>
+
+                            @empty
+                                    <div class="p-3 text-gray-500 text-sm">
+                                        No new notifications
+                                    </div>
+                                @endforelse
+
+                            </div>
                         </div>
                     </div>
-
                     <!-- USER -->
                     <span class="text-sm font-medium">
                         {{ Auth::user()->fullname ?? Auth::user()->username }}

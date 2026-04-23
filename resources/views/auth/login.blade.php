@@ -2,9 +2,11 @@
 
     <!-- SUCCESS MESSAGE -->
     @if(session('success'))
-        <div class="bg-green-100 text-green-700 p-2 rounded mb-4">
+    <div class="mb-6 text-center">
+        <div class="inline-block px-4 py-2 bg-green-500 text-white rounded-lg shadow">
             {{ session('success') }}
         </div>
+    </div>
     @endif
 
     <!-- TITLE -->

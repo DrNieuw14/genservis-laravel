@@ -4,9 +4,11 @@ namespace App\Providers;
 
 use App\Models\LeaveRequest;
 use App\Models\User;
+use App\Models\Notification;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
-
 use Illuminate\Support\ServiceProvider;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,20 +27,24 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
 
-        
+            $notifications = collect();
+            $totalNotifications = 0;
 
-            // Pending Leave Requests
-            $leaveCount = LeaveRequest::where('status', 'Pending')->count();
+            if (Auth::check()) {
 
-            // Pending Users (registration approval)
-            $userCount = User::where('status', 'pending')->count();
+                $notifications = Notification::where('user_id', Auth::id())
+                    ->where('is_read', 0)
+                    ->latest()
+                    ->take(5)
+                    ->get();
 
-            // Total Notifications
-            $totalNotifications = $leaveCount + $userCount;
+                $totalNotifications = Notification::where('user_id', Auth::id())
+                    ->where('is_read', 0)
+                    ->count();
+            }
 
             $view->with([
-                'leaveNotifCount' => $leaveCount,
-                'userNotifCount' => $userCount,
+                'notifications' => $notifications,
                 'totalNotifCount' => $totalNotifications
             ]);
         });
