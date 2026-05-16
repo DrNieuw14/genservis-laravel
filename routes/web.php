@@ -7,6 +7,19 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonnelController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Supervisor\MaterialController;
+use App\Http\Controllers\MaterialRequestController;
+
+Route::get('/supervisor/material-requests', [MaterialRequestController::class, 'index']);
+Route::post('/supervisor/material-requests/{id}/approve', [MaterialRequestController::class, 'approve']);
+Route::post('/supervisor/material-requests/{id}/reject', [MaterialRequestController::class, 'reject']);
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/material-request', [MaterialRequestController::class, 'create']);
+    Route::post('/material-request', [MaterialRequestController::class, 'store']);
+
+});
 
 // ── Landing page ──────────────────────────────────────────
 Route::get('/', fn() => view('welcome'))->name('home');
@@ -41,29 +54,35 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/read-all',  [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
 
     // ── Supervisor / Admin routes ──
-    Route::middleware('role:supervisor')->group(function () {
-        Route::get('/supervisor/dashboard', function () {
-            return view('supervisor.dashboard', [
-                'pendingCount'  => \App\Models\User::where('status', 'pending')->count(),
-                'approvedCount' => \App\Models\User::where('status', 'approved')->count(),
-                'rejectedCount' => \App\Models\User::where('status', 'rejected')->count(),
-                'pendingUsers'  => \App\Models\User::where('status', 'pending')
-                                        ->where('role', 'personnel')->latest()->get(),
-            ]);
-        })->name('supervisor.dashboard');
+Route::middleware('role:supervisor')->group(function () {
 
-        // User approval (your existing routes)
-        Route::get('admin/users/pending',      [UserApprovalController::class, 'index'])->name('admin.users.pending');
-        Route::post('admin/users/{id}/approve',[UserApprovalController::class, 'approve'])->name('admin.users.approve');
-        Route::post('admin/users/{id}/reject', [UserApprovalController::class, 'reject'])->name('admin.users.reject');
+    Route::get('/supervisor/dashboard', function () {
+        return view('supervisor.dashboard', [
+            'pendingCount'  => \App\Models\User::where('status', 'pending')->count(),
+            'approvedCount' => \App\Models\User::where('status', 'approved')->count(),
+            'rejectedCount' => \App\Models\User::where('status', 'rejected')->count(),
+            'pendingUsers'  => \App\Models\User::where('status', 'pending')
+                                    ->where('role', 'personnel')->latest()->get(),
+        ]);
+    })->name('supervisor.dashboard');
 
-        // Leave admin
-        Route::get('leave-requests',       [LeaveController::class, 'adminIndex'])->name('leave.requests');
-        Route::get('leave/admin',          [LeaveController::class, 'adminIndex']);
-        Route::post('leave/approve/{id}',  [LeaveController::class, 'approve']);
-        Route::post('leave/reject/{id}',   [LeaveController::class, 'reject']);
-    });
+    // ✅ Inventory (Materials)
+    Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
+    Route::get('/materials/create', [MaterialController::class, 'create'])->name('materials.create');
+    Route::post('/materials/store', [MaterialController::class, 'store'])->name('materials.store');
 
+    // User approval
+    Route::get('admin/users/pending',      [UserApprovalController::class, 'index'])->name('admin.users.pending');
+    Route::post('admin/users/{id}/approve',[UserApprovalController::class, 'approve'])->name('admin.users.approve');
+    Route::post('admin/users/{id}/reject', [UserApprovalController::class, 'reject'])->name('admin.users.reject');
+
+    // Leave admin
+    Route::get('leave-requests',       [LeaveController::class, 'adminIndex'])->name('leave.requests');
+    Route::get('leave/admin',          [LeaveController::class, 'adminIndex']);
+    Route::post('leave/approve/{id}',  [LeaveController::class, 'approve']);
+    Route::post('leave/reject/{id}',   [LeaveController::class, 'reject']);
+});
+          
     // ── Personnel routes ──
     Route::middleware('role:personnel')->group(function () {
         Route::get('/personnel/dashboard', [PersonnelController::class, 'dashboard'])->name('personnel.dashboard');

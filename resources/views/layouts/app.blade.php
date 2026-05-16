@@ -36,18 +36,59 @@
             <!-- MENU -->
             <nav class="flex-1 p-4 space-y-2 text-sm">
 
-                <!-- SUPERVISOR -->
                 @if(Auth::user()->role === 'supervisor')
 
-                    <a href="/supervisor/dashboard"
-                    class="block px-3 py-2 rounded 
-                    {{ request()->is('supervisor/dashboard') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
-                        Dashboard
-                    </a>
+            <!-- Dashboard -->
+            <a href="/supervisor/dashboard"
+            class="block px-3 py-2 rounded 
+            {{ request()->is('supervisor/dashboard') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                🏠 Dashboard
+            </a>
 
-                    
+            <!-- User Approval -->
+            <a href="{{ route('admin.users.pending') }}"
+            class="block px-3 py-2 rounded 
+            {{ request()->is('admin/users/pending') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                👥 User Approval
+            </a>
 
-                @endif
+            <!-- Leave Requests -->
+            <a href="{{ route('leave.requests') }}"
+            class="block px-3 py-2 rounded 
+            {{ request()->is('leave-requests') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                📄 Leave Requests
+            </a>
+
+            <!-- Divider -->
+            <div class="border-t my-2"></div>
+
+            <!-- Inventory Label -->
+            <div class="text-xs text-gray-500 px-3 mt-2">
+                INVENTORY
+            </div>
+
+            <!-- Materials List -->
+            <a href="{{ route('materials.index') }}"
+            class="block px-3 py-2 rounded 
+            {{ request()->is('materials') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                📦 Materials Inventory
+            </a>
+
+            <a href="/supervisor/material-requests"
+            class="block px-3 py-2 rounded hover:bg-green-100">
+                📦 Material Requests
+            </a>
+
+            
+
+            <!-- Add Material -->
+            <a href="{{ route('materials.create') }}"
+            class="block px-3 py-2 rounded 
+            {{ request()->is('materials/create') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                ➕ Add Material
+            </a>
+
+        @endif
 
 
                 <!-- PERSONNEL -->
@@ -72,6 +113,10 @@
                     <a href="/leave"
                     class="block px-3 py-2 rounded hover:bg-green-100">
                         Leave
+                    </a>
+
+                    <a href="/material-request" class="block px-4 py-2 hover:bg-green-200">
+                        📦 Material Request
                     </a>
 
                 @endif
@@ -171,7 +216,7 @@
 
             <!-- CONTENT -->
             <main class="p-6">
-                {{ $slot }}
+                @yield('content')
             </main>
 
         </div>

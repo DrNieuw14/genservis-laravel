@@ -7,12 +7,20 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\LeaveRequest;
 use App\Models\Notification;
 use App\Events\NewNotificationEvent;
+use App\Models\Personnel;
 
 class LeaveController extends Controller
 {
     public function index()
     {
-        $leaves = LeaveRequest::where('user_id', Auth::id())
+        $personnel = Personnel::where('user_id', Auth::id())->first();
+
+        // ✅ SAFETY CHECK (ADD THIS)
+        if (!$personnel) {
+            return redirect()->back()->with('error', 'Personnel record not found.');
+        }
+
+        $leaves = LeaveRequest::where('personnel_id', $personnel->id)
             ->latest()
             ->get();
 
@@ -23,19 +31,23 @@ class LeaveController extends Controller
 {
     $request->validate([
         'reason' => 'required',
-        'date_from' => 'required|date',
-        'date_to' => 'required|date|after_or_equal:date_from'
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after_or_equal:start_date'
     ]);
 
-    $personnel = \App\Models\Personnel::where('user_id', Auth::id())->first();
+    $personnel = Personnel::where('user_id', Auth::id())->first();
+
+    // ✅ ADD THIS
+    if (!$personnel) {
+        return redirect()->back()->with('error', 'Personnel record not found.');
+    }
 
     $leave = LeaveRequest::create([
-        'user_id' => Auth::id(),
-        'personnel_id' => $personnel->id ?? null,
+        'personnel_id' => $personnel->id,
         'reason' => $request->reason,
-        'start_date' => $request->date_from,
-        'end_date' => $request->date_to,
-        'status' => 'Pending'
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        'status' => 'pending'
     ]);
 
     // 🔔 NOTIFY SUPERVISORS
@@ -46,7 +58,7 @@ class LeaveController extends Controller
             'user_id' => $admin->id,
             'type' => 'leave',
             'title' => 'New Leave Request',
-            'message' => Auth::user()->name . ' submitted a leave request.',
+            'message' => Auth::user()->fullname . ' submitted a leave request.',
             'is_read' => 0
         ]);
 
@@ -69,7 +81,14 @@ class LeaveController extends Controller
 
     public function history()
     {
-        $leaves = LeaveRequest::where('user_id', Auth::id())
+        $personnel = Personnel::where('user_id', Auth::id())->first();
+
+        // ✅ SAFETY CHECK
+        if (!$personnel) {
+            return redirect()->back()->with('error', 'Personnel record not found.');
+        }
+
+        $leaves = LeaveRequest::where('personnel_id', $personnel->id)
             ->latest()
             ->get();
 
@@ -85,15 +104,15 @@ class LeaveController extends Controller
         $status = $request->status;
         $search = $request->search;
 
-        $query = LeaveRequest::with('user');
+        $query = LeaveRequest::with('personnel.user');
 
         if ($status) {
             $query->where('status', $status);
         }
 
         if ($search) {
-            $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'LIKE', '%' . $search . '%');
+            $query->whereHas('personnel.user', function ($q) use ($search) {
+                $q->where('fullname', 'LIKE', '%' . $search . '%');
             });
         }
 
@@ -112,8 +131,10 @@ class LeaveController extends Controller
             'approved_at' => now()
         ]);
 
+        $userId = $leave->personnel->user_id;
+
         Notification::create([
-            'user_id' => $leave->user_id, // ✅ FIXED
+            'user_id' => $userId,
             'type' => 'leave',
             'title' => 'Leave Approved',
             'message' => 'Your leave request has been approved.',
@@ -133,8 +154,10 @@ class LeaveController extends Controller
             'approved_at' => now()
         ]);
 
+        $userId = $leave->personnel->user_id;
+
         Notification::create([
-            'user_id' => $leave->user_id, // ✅ FIXED
+            'user_id' => $userId,
             'type' => 'leave',
             'title' => 'Leave Rejected',
             'message' => 'Your leave request has been rejected.',
@@ -144,9 +167,6 @@ class LeaveController extends Controller
         return redirect()->back();
     }
 
-    public function user()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'user_id');
-    }
+    
     
 }
