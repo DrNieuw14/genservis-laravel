@@ -2,100 +2,218 @@
 
 @section('content')
 
-<div class="max-w-6xl mx-auto">
+<div class="max-w-7xl mx-auto mt-8">
 
-    <h2 class="text-2xl font-bold mb-6 text-white">
-        📦 Material Requests (Supervisor)
-    </h2>
+    <!-- HEADER -->
+    <div class="mb-6">
 
+        <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+            📦 Material Requests
+        </h2>
+
+        <p class="text-white/80 mt-2">
+            Manage and monitor personnel material requests.
+        </p>
+
+    </div>
+
+    <!-- SUCCESS -->
     @if(session('success'))
-        <div class="bg-green-500 text-white p-3 mb-4 rounded">
+
+        <div class="bg-green-500 text-white p-4 rounded-xl mb-4 shadow">
             {{ session('success') }}
         </div>
+
     @endif
 
+    <!-- ERROR -->
     @if(session('error'))
-        <div class="bg-red-500 text-white p-3 mb-4 rounded">
+
+        <div class="bg-red-500 text-white p-4 rounded-xl mb-4 shadow">
             {{ session('error') }}
         </div>
+
     @endif
 
-    <div class="bg-white rounded-xl shadow p-6">
+    <!-- TABLE CARD -->
+    <div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
 
-        <table class="w-full text-sm border">
-            <thead class="bg-gray-100">
+        <table class="w-full">
+
+            <!-- HEADER -->
+            <thead class="bg-gradient-to-r from-green-500 to-blue-600 text-white">
+
                 <tr>
-                    <th class="p-3 border">User</th>
-                    <th class="p-3 border">Materials</th>
-                    <th class="p-3 border">Status</th>
-                    <th class="p-3 border">Action</th>
+
+                    <th class="p-4 text-left">Requester</th>
+
+                    <th class="p-4 text-left">Material</th>
+
+                    <th class="p-4 text-left">Qty</th>
+
+                    <th class="p-4 text-left">Purpose</th>
+
+                    <th class="p-4 text-left">Requested At</th>
+
+                    <th class="p-4 text-left">Status</th>
+
+                    <th class="p-4 text-left">Actions</th>
+
                 </tr>
+
             </thead>
 
+            <!-- BODY -->
             <tbody>
 
-                @forelse($requests as $req)
-                <tr class="hover:bg-gray-50">
+                @forelse($requests as $request)
 
-                    <!-- USER -->
-                    <td class="p-3 border">
-                        {{ $req->user->fullname ?? $req->user->username }}
-                    </td>
+                    <tr class="border-b hover:bg-gray-50 transition">
 
-                    <!-- MATERIALS -->
-                    <td class="p-3 border">
-                        @foreach($req->items as $item)
-                            <div>
-                                {{ $item->material->name }} 
-                                (Qty: {{ $item->quantity }})
-                            </div>
-                        @endforeach
-                    </td>
+                        <!-- USER -->
+                        <td class="p-4 font-medium">
 
-                    <!-- STATUS -->
-                    <td class="p-3 border">
-                        @if($req->status == 'pending')
-                            <span class="bg-yellow-200 px-2 py-1 rounded">Pending</span>
-                        @elseif($req->status == 'approved')
-                            <span class="bg-green-200 px-2 py-1 rounded">Approved</span>
-                        @else
-                            <span class="bg-red-200 px-2 py-1 rounded">Rejected</span>
-                        @endif
-                    </td>
+                            {{ $request->user->fullname ?? $request->user->username }}
 
-                    <!-- ACTION -->
-                    <td class="p-3 border">
+                        </td>
 
-                        @if($req->status == 'pending')
+                        <!-- MATERIAL -->
+                        <td class="p-4">
 
-                        <form method="POST" action="/supervisor/material-requests/{{ $req->id }}/approve" class="inline">
-                            @csrf
-                            <button class="bg-green-500 text-white px-3 py-1 rounded">
-                                Approve
-                            </button>
-                        </form>
+                            @foreach($request->items as $item)
 
-                        <form method="POST" action="/supervisor/material-requests/{{ $req->id }}/reject" class="inline">
-                            @csrf
-                            <button class="bg-red-500 text-white px-3 py-1 rounded">
-                                Reject
-                            </button>
-                        </form>
+                                <div>
+                                    {{ $item->material->name ?? '-' }}
+                                </div>
 
-                        @else
-                            <span class="text-gray-400">No Action</span>
-                        @endif
+                            @endforeach
 
-                    </td>
+                        </td>
 
-                </tr>
+                        <!-- QUANTITY -->
+                        <td class="p-4">
+
+                            @foreach($request->items as $item)
+
+                                <div>
+                                    {{ $item->quantity }}
+                                </div>
+
+                            @endforeach
+
+                        </td>
+
+                        <!-- PURPOSE -->
+                        <td class="p-4 text-gray-700">
+
+                            {{ $request->purpose }}
+
+                        </td>
+
+                        <!-- DATE -->
+                        <td class="p-4 text-sm text-gray-600">
+
+                            {{ $request->created_at->format('M d, Y') }}
+
+                            <br>
+
+                            <span class="text-xs text-gray-400">
+                                {{ $request->created_at->format('h:i A') }}
+                            </span>
+
+                        </td>
+
+                        <!-- STATUS -->
+                        <td class="p-4">
+
+                            @if($request->status == 'pending')
+
+                                <span class="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm">
+                                    ⏳ Pending
+                                </span>
+
+                            @elseif($request->status == 'approved')
+
+                                <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+                                    ✅ Approved
+                                </span>
+
+                            @elseif($request->status == 'rejected')
+
+                                <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm">
+                                    ❌ Rejected
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                        <!-- ACTIONS -->
+                        <td class="p-4">
+
+                            @if($request->status == 'pending')
+
+                                <div class="flex gap-2">
+
+                                    <!-- APPROVE -->
+                                    <form
+                                        action="/supervisor/material-requests/{{ $request->id }}/approve"
+                                        method="POST">
+
+                                        @csrf
+
+                                        <button
+                                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
+
+                                            ✅ Approve
+
+                                        </button>
+
+                                    </form>
+
+                                    <!-- REJECT -->
+                                    <form
+                                        action="/supervisor/material-requests/{{ $request->id }}/reject"
+                                        method="POST">
+
+                                        @csrf
+
+                                        <button
+                                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+
+                                            ❌ Reject
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            @else
+
+                                <span class="text-gray-400 text-sm">
+                                    No actions available
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
 
                 @empty
-                <tr>
-                    <td colspan="4" class="text-center p-4 text-gray-500">
-                        No requests found
-                    </td>
-                </tr>
+
+                    <tr>
+
+                        <td colspan="7"
+                            class="text-center text-gray-500 py-8">
+
+                            No material requests found.
+
+                        </td>
+
+                    </tr>
+
                 @endforelse
 
             </tbody>

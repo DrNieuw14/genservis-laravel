@@ -4,9 +4,9 @@
 
 <div class="max-w-2xl mx-auto mt-10">
 
-    <div class="bg-white shadow-xl rounded-xl p-6">
+    <div class="bg-white shadow-2xl rounded-2xl p-8">
 
-        <h2 class="text-2xl font-bold mb-6 text-gray-700">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-2">
             📦 Material Request
         </h2>
 
@@ -47,6 +47,22 @@
                 <label class="block text-sm font-semibold mb-1">Quantity</label>
                 <input type="number" name="quantity" min="1"
                     class="w-full border rounded-lg p-2" required>
+            </div>
+
+            <!-- PURPOSE -->
+            <div class="mb-4">
+
+                <label class="block text-sm font-semibold mb-1">
+                    Purpose of Request
+                </label>
+
+                <textarea
+                    name="purpose"
+                    rows="4"
+                    placeholder="Example: Cleaning of ICT Laboratory"
+                    class="w-full border rounded-lg p-2"
+                    required></textarea>
+
             </div>
 
             <button class="w-full bg-green-600 text-white py-2 rounded-lg">

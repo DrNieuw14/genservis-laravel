@@ -29,6 +29,7 @@ class MaterialRequestController extends Controller
         $request->validate([
             'material_id' => 'required',
             'quantity' => 'required|integer|min:1',
+            'purpose' => 'required|string|max:500',
         ]);
 
         $personnel = Personnel::where('user_id', Auth::id())->first();
@@ -41,6 +42,7 @@ class MaterialRequestController extends Controller
         $materialRequest = MaterialRequest::create([
             'user_id' => Auth::id(),
             'status' => 'pending',
+            'purpose' => $request->purpose,
         ]);
 
         // ✅ Create item

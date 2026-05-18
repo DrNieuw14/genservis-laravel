@@ -139,12 +139,55 @@ class MaterialController extends Controller
     }
 
     // 📜 Material Logs
-    public function logs()
+    public function logs(Request $request)
     {
-        $logs = \App\Models\MaterialLog::with([
+        $query = \App\Models\MaterialLog::with([
             'material',
             'user'
-        ])->latest()->get();
+        ]);
+
+        // 🔍 SEARCH
+        if ($request->search) {
+
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+
+                $q->whereHas('material', function ($material) use ($search) {
+                    $material->where('name', 'LIKE', "%{$search}%");
+                })
+
+                ->orWhereHas('user', function ($user) use ($search) {
+                    $user->where('username', 'LIKE', "%{$search}%");
+                })
+
+                ->orWhere('action', 'LIKE', "%{$search}%");
+
+            });
+        }
+
+        // 📅 DATE FILTER
+        if ($request->date_filter) {
+
+            if ($request->date_filter == 'today') {
+
+                $query->whereDate('created_at', today());
+
+            } elseif ($request->date_filter == 'week') {
+
+                $query->whereBetween('created_at', [
+                    now()->startOfWeek(),
+                    now()->endOfWeek()
+                ]);
+
+            } elseif ($request->date_filter == 'month') {
+
+                $query->whereMonth('created_at', now()->month)
+                    ->whereYear('created_at', now()->year);
+            }
+        }
+
+        $logs = $query->latest()->get();
 
         return view('supervisor.materials.logs', compact('logs'));
     }
