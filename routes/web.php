@@ -71,6 +71,15 @@ Route::middleware('role:supervisor')->group(function () {
     Route::get('/materials/create', [MaterialController::class, 'create'])->name('materials.create');
     Route::post('/materials/store', [MaterialController::class, 'store'])->name('materials.store');
 
+    Route::get('/materials/{id}/edit', [MaterialController::class, 'edit'])
+        ->name('materials.edit');
+
+    Route::put('/materials/{id}', [MaterialController::class, 'update'])
+        ->name('materials.update');
+
+    Route::delete('/materials/{id}', [MaterialController::class, 'destroy'])
+        ->name('materials.destroy');
+
     // User approval
     Route::get('admin/users/pending',      [UserApprovalController::class, 'index'])->name('admin.users.pending');
     Route::post('admin/users/{id}/approve',[UserApprovalController::class, 'approve'])->name('admin.users.approve');
