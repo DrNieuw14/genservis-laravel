@@ -88,6 +88,12 @@
                 ➕ Add Material
             </a>
 
+            <a href="{{ route('materials.logs') }}"
+            class="flex items-center gap-2 px-4 py-3 hover:bg-green-100 rounded-lg">
+
+                📜 Material Logs
+            </a>
+
         @endif
 
 

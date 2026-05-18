@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Material;
 use App\Models\Category;
 use App\Models\Unit;
+use App\Models\MaterialLog;
 use Illuminate\Support\Facades\Auth;
 
 class MaterialController extends Controller
@@ -14,7 +15,11 @@ class MaterialController extends Controller
     // 📋 List Materials
     public function index(Request $request)
     {
-        $query = Material::with(['category', 'unit']);
+        $query = Material::with([
+            'category',
+            'unit',
+            'creator'
+        ]);
 
         // 🔍 Search
         if ($request->search) {
@@ -59,12 +64,21 @@ class MaterialController extends Controller
             'quantity' => 'required|integer|min:0',
         ]);
 
-        Material::create([
+        $material = Material::create([
             'name' => $request->name,
             'category_id' => $request->category_id,
             'unit_id' => $request->unit_id,
             'quantity' => $request->quantity,
             'created_by' => Auth::id(),
+        ]);
+
+        // 📜 Create Inventory Log
+        MaterialLog::create([
+            'material_id' => $material->id,
+            'user_id' => Auth::id(),
+            'action' => 'stock_in',
+            'quantity' => $request->quantity,
+            'remarks' => 'Initial stock added',
         ]);
 
         return redirect()->route('materials.index')
@@ -123,5 +137,18 @@ class MaterialController extends Controller
             ->route('materials.index')
             ->with('success', 'Material deleted successfully!');
     }
+
+    // 📜 Material Logs
+    public function logs()
+    {
+        $logs = \App\Models\MaterialLog::with([
+            'material',
+            'user'
+        ])->latest()->get();
+
+        return view('supervisor.materials.logs', compact('logs'));
+    }
+
+    
 
 }

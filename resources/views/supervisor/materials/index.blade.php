@@ -100,6 +100,7 @@
                     <th class="p-4 text-left">Category</th>
                     <th class="p-4 text-left">Unit</th>
                     <th class="p-4 text-left">Stock</th>
+                    <th class="p-4 text-left">Created By</th>
                     <th class="p-4 text-left">Actions</th>
                 </tr>
 
@@ -147,6 +148,10 @@
 
                         </td>
 
+                        <td class="p-4">
+                            {{ $material->creator->username ?? 'Unknown' }}
+                        </td>
+                        
                         <td class="p-4 flex gap-2">
 
                             <!-- EDIT -->

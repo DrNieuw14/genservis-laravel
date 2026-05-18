@@ -26,6 +26,12 @@ class Material extends Model
         return $this->belongsTo(Unit::class);
     }
 
+    // 📜 Material Logs
+    public function logs()
+    {
+        return $this->hasMany(MaterialLog::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

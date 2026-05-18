@@ -56,6 +56,9 @@ Route::middleware(['auth'])->group(function () {
     // ── Supervisor / Admin routes ──
 Route::middleware('role:supervisor')->group(function () {
 
+    Route::get('/materials/logs', [MaterialController::class, 'logs'])
+    ->name('materials.logs');
+
     Route::get('/supervisor/dashboard', function () {
         return view('supervisor.dashboard', [
             'pendingCount'  => \App\Models\User::where('status', 'pending')->count(),
