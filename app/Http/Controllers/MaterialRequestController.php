@@ -37,6 +37,16 @@ class MaterialRequestController extends Controller
         if (!$personnel) {
             return back()->with('error', 'Personnel not found');
         }
+        // 📦 Check stock availability
+        $material = Material::findOrFail($request->material_id);
+
+        if ($request->quantity > $material->quantity) {
+
+            return back()->with(
+                'error',
+                'Requested quantity exceeds available stock.'
+            );
+        }
 
         // ✅ Create request header
         $materialRequest = MaterialRequest::create([

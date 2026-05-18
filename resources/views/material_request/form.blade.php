@@ -16,6 +16,12 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="bg-red-500 text-white p-3 mb-4 rounded">
+                {{ session('error') }}
+            </div>
+        @endif
+
         @if ($errors->any())
             <div class="bg-red-500 text-white p-3 mb-4 rounded">
                 <ul>
@@ -32,14 +38,36 @@
             <!-- MATERIAL -->
             <div class="mb-4">
                 <label class="block text-sm font-semibold mb-1">Material</label>
-                <select name="material_id" class="w-full border rounded-lg p-2" required>
+                <select id="material-select"
+                    name="material_id"
+                    class="w-full border rounded-lg p-2"
+                    required>
                     <option value="">-- Select Material --</option>
+                    
                     @foreach($materials as $material)
-                        <option value="{{ $material->id }}">
-                            {{ $material->name }} (Stock: {{ $material->quantity }})
+
+                        <option
+                            value="{{ $material->id }}"
+                            data-stock="{{ $material->quantity }}"
+                            data-threshold="{{ $material->threshold }}"
+                            {{ $material->quantity <= 0 ? 'disabled' : '' }}
+                        >
+                            {{ $material->name }}
+                            — Stock: {{ $material->quantity }}
+
+                            @if($material->quantity <= 0)
+                                (Out of Stock)
+                            @endif
                         </option>
+
                     @endforeach
+
                 </select>
+
+            <div id="stock-preview"
+                class="mt-2 text-sm font-semibold text-gray-600 hidden">
+            </div>
+
             </div>
 
             <!-- QUANTITY -->
@@ -73,5 +101,71 @@
 
     </div>
 </div>
+
+<!-- Tom Select CSS -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+
+<!-- Tom Select JS -->
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+<script>
+
+    const select = new TomSelect("#material-select",{
+        create: false,
+        sortField: {
+            field: "text",
+            direction: "asc"
+        },
+
+        onChange: function(value) {
+
+            const option = this.getOption(value);
+
+            const originalOption =
+                document.querySelector(`option[value="${value}"]`);
+
+            const stock = originalOption.dataset.stock;
+            const threshold = originalOption.dataset.threshold;
+
+            const preview =
+                document.getElementById('stock-preview');
+
+            preview.classList.remove('hidden');
+
+            // LOW STOCK
+            if (parseInt(stock) <= parseInt(threshold)) {
+
+                preview.innerHTML =
+                    `⚠ Low Stock`;
+
+                preview.className =
+                    'mt-2 text-sm font-semibold text-yellow-600';
+
+            }
+
+            // OUT OF STOCK
+            else if (parseInt(stock) <= 0) {
+
+                preview.innerHTML =
+                    `❌ Out of Stock`;
+
+                preview.className =
+                    'mt-2 text-sm font-semibold text-red-600';
+
+            }
+
+            // NORMAL STOCK
+            else {
+
+                preview.innerHTML =
+                `✅ Available`;
+
+                preview.className =
+                    'mt-2 text-sm font-semibold text-green-600';
+            }
+        }
+    });
+
+</script>
 
 @endsection
