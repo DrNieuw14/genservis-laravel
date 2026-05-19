@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Supervisor\MaterialController;
 use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\Supervisor\CategoryController;
+use App\Http\Controllers\Supervisor\UnitController;
 
 Route::get('/supervisor/material-requests', [MaterialRequestController::class, 'index']);
 Route::post('/supervisor/material-requests/{id}/approve', [MaterialRequestController::class, 'approve']);
@@ -18,6 +19,8 @@ Route::post('/supervisor/material-requests/{id}/reject', [MaterialRequestControl
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/material-request', [MaterialRequestController::class, 'create']);
+    Route::get('/material-request/history', [MaterialRequestController::class, 'history'])
+    ->name('material-request.history');
     Route::post('/material-request', [MaterialRequestController::class, 'store']);
 
 });
@@ -56,6 +59,25 @@ Route::middleware(['auth'])->group(function () {
 
     // ── Supervisor / Admin routes ──
 Route::middleware('role:supervisor')->group(function () {
+
+    // ✅ Units
+    Route::get('/units', [UnitController::class, 'index'])
+        ->name('units.index');
+
+    Route::get('/units/create', [UnitController::class, 'create'])
+        ->name('units.create');
+
+    Route::post('/units/store', [UnitController::class, 'store'])
+        ->name('units.store');
+
+    Route::get('/units/{id}/edit', [UnitController::class, 'edit'])
+        ->name('units.edit');
+
+    Route::put('/units/{id}', [UnitController::class, 'update'])
+        ->name('units.update');
+
+    Route::delete('/units/{id}', [UnitController::class, 'destroy'])
+        ->name('units.destroy');
 
     // ✅ Categories
     Route::get('/categories', [CategoryController::class, 'index'])

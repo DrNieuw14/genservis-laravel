@@ -23,12 +23,30 @@ class MaterialRequestController extends Controller
         return view('material_request.form', compact('materials'));
     }
 
+    // 📜 Personnel Request History
+    public function history()
+    {
+        $requests = MaterialRequest::with([
+            'items.material'
+        ])
+        ->where('user_id', auth()->id())
+        ->latest()
+        ->get();
+
+        return view('material_request.history', compact('requests'));
+    }
+
     // 💾 Store request
+    
     public function store(Request $request)
     {
         $request->validate([
-            'material_id' => 'required',
-            'quantity' => 'required|integer|min:1',
+            'material_id' => 'required|array',
+            'material_id.*' => 'required|exists:materials,id',
+
+            'quantity' => 'required|array',
+            'quantity.*' => 'required|integer|min:1',
+
             'purpose' => 'required|string|max:500',
         ]);
 
@@ -37,15 +55,27 @@ class MaterialRequestController extends Controller
         if (!$personnel) {
             return back()->with('error', 'Personnel not found');
         }
-        // 📦 Check stock availability
-        $material = Material::findOrFail($request->material_id);
 
-        if ($request->quantity > $material->quantity) {
+        // ✅ Validate stock first
+        foreach ($request->material_id as $index => $materialId) {
 
-            return back()->with(
-                'error',
-                'Requested quantity exceeds available stock.'
-            );
+            $material = Material::find($materialId);
+
+            $qty = $request->quantity[$index];
+
+            if (!$material) {
+                return back()->with('error', 'Invalid material selected.');
+            }
+
+            // ❌ Prevent exceed stock
+            if ($qty > $material->quantity) {
+
+                return back()->with(
+                    'error',
+                    'Requested quantity exceeds available stock for '
+                    . $material->name
+                );
+            }
         }
 
         // ✅ Create request header
@@ -55,27 +85,36 @@ class MaterialRequestController extends Controller
             'purpose' => $request->purpose,
         ]);
 
-        // ✅ Create item
-        MaterialRequestItem::create([
-            'request_id' => $materialRequest->id,
-            'material_id' => $request->material_id,
-            'quantity' => $request->quantity,
-        ]);
+        // ✅ Save multiple items
+        foreach ($request->material_id as $index => $materialId) {
+
+            MaterialRequestItem::create([
+                'request_id' => $materialRequest->id,
+                'material_id' => $materialId,
+                'quantity' => $request->quantity[$index],
+            ]);
+        }
 
         // 🔔 Notify supervisors
         $supervisors = User::where('role', 'supervisor')->get();
 
         foreach ($supervisors as $admin) {
+
             Notification::create([
                 'user_id' => $admin->id,
                 'type' => 'material',
                 'title' => 'New Material Request',
-                'message' => (Auth::user()->fullname ?? Auth::user()->username) . ' requested materials.',
+                'message' =>
+                    (Auth::user()->fullname ?? Auth::user()->username)
+                    . ' submitted a material request.',
                 'is_read' => 0
             ]);
         }
 
-        return back()->with('success', 'Material request submitted!');
+        return back()->with(
+            'success',
+            'Material request submitted successfully!'
+        );
     }
 
     // 📊 Supervisor view (NEW FUNCTION)

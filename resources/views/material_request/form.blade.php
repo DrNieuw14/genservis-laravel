@@ -35,47 +35,80 @@
         <form method="POST" action="/material-request">
             @csrf
 
-            <!-- MATERIAL -->
-            <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Material</label>
-                <select id="material-select"
-                    name="material_id"
-                    class="w-full border rounded-lg p-2"
-                    required>
-                    <option value="">-- Select Material --</option>
-                    
-                    @foreach($materials as $material)
+            <!-- ITEMS CONTAINER -->
+            <div id="items-container">
 
-                        <option
-                            value="{{ $material->id }}"
-                            data-stock="{{ $material->quantity }}"
-                            data-threshold="{{ $material->threshold }}"
-                            {{ $material->quantity <= 0 ? 'disabled' : '' }}
-                        >
-                            {{ $material->name }}
-                            — Stock: {{ $material->quantity }}
+                <!-- ITEM ROW -->
+                <div class="item-row border rounded-xl p-4 mb-4 bg-gray-50">
 
-                            @if($material->quantity <= 0)
-                                (Out of Stock)
-                            @endif
-                        </option>
+                    <!-- MATERIAL -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-1">
+                            Material
+                        </label>
 
-                    @endforeach
+                        <select name="material_id[]"
+                            class="material-select w-full border rounded-lg p-2"
+                            required>
 
-                </select>
+                            <option value="">-- Select Material --</option>
 
-            <div id="stock-preview"
-                class="mt-2 text-sm font-semibold text-gray-600 hidden">
+                            @foreach($materials as $material)
+
+                                <option
+                                    value="{{ $material->id }}"
+                                    data-stock="{{ $material->quantity }}"
+                                    {{ $material->quantity <= 0 ? 'disabled' : '' }}
+                                >
+                                    {{ $material->name }}
+                                    — Stock: {{ $material->quantity }}
+
+                                    @if($material->quantity <= 0)
+                                        (Out of Stock)
+                                    @endif
+
+                                </option>
+
+                            @endforeach
+
+                        </select>
+                    </div>
+
+                    <!-- QUANTITY -->
+                    <div class="mb-2">
+                        <label class="block text-sm font-semibold mb-1">
+                            Quantity
+                        </label>
+
+                        <input type="number"
+                            name="quantity[]"
+                            min="1"
+                            class="quantity-input w-full border rounded-lg p-2"
+                            required>
+
+                        <p class="stock-warning text-red-500 text-sm mt-1 hidden">
+                            Quantity exceeds available stock.
+                        </p>
+                    </div>
+
+                    <!-- REMOVE BUTTON -->
+                    <button type="button"
+                        class="remove-item bg-red-500 text-white px-3 py-1 rounded-lg text-sm mt-2 hidden">
+                        Remove
+                    </button>
+
+                </div>
+
             </div>
 
-            </div>
+            <!-- ADD ITEM -->
+            <button type="button"
+                id="add-item"
+                class="mb-6 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
 
-            <!-- QUANTITY -->
-            <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Quantity</label>
-                <input type="number" name="quantity" min="1"
-                    class="w-full border rounded-lg p-2" required>
-            </div>
+                ➕ Add Another Material
+
+            </button>
 
             <!-- PURPOSE -->
             <div class="mb-4">
@@ -93,8 +126,11 @@
 
             </div>
 
-            <button class="w-full bg-green-600 text-white py-2 rounded-lg">
+            <!-- SUBMIT -->
+            <button class="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
+
                 Submit Request
+
             </button>
 
         </form>
@@ -110,60 +146,192 @@
 
 <script>
 
-    const select = new TomSelect("#material-select",{
-        create: false,
-        sortField: {
-            field: "text",
-            direction: "asc"
-        },
+    // ✅ INIT TOMSELECT
+        function initTomSelect(element) {
 
-        onChange: function(value) {
+        const tom = new TomSelect(element, {
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            }
+        });
 
-            const option = this.getOption(value);
+        // ✅ STOCK CHECK
+        element.addEventListener('change', function () {
 
-            const originalOption =
-                document.querySelector(`option[value="${value}"]`);
+            const selectedOption =
+                element.options[element.selectedIndex];
 
-            const stock = originalOption.dataset.stock;
-            const threshold = originalOption.dataset.threshold;
+            const stock =
+                selectedOption.dataset.stock || 0;
 
-            const preview =
-                document.getElementById('stock-preview');
+            const row =
+                element.closest('.item-row');
 
-            preview.classList.remove('hidden');
+            const quantityInput =
+                row.querySelector('.quantity-input');
 
-            // LOW STOCK
-            if (parseInt(stock) <= parseInt(threshold)) {
+            quantityInput.max = stock;
 
-                preview.innerHTML =
-                    `⚠ Low Stock`;
+        });
 
-                preview.className =
-                    'mt-2 text-sm font-semibold text-yellow-600';
+    }
+
+    // ✅ INITIALIZE FIRST SELECT
+    document.querySelectorAll('.material-select').forEach(select => {
+        initTomSelect(select);
+    });
+
+    // ✅ MATERIAL OPTIONS TEMPLATE
+    const materialOptions = `
+        <option value="">-- Select Material --</option>
+
+        @foreach($materials as $material)
+
+            <option
+                value="{{ $material->id }}"
+                data-stock="{{ $material->quantity }}"
+                {{ $material->quantity <= 0 ? 'disabled' : '' }}
+            >
+                {{ $material->name }}
+                — Stock: {{ $material->quantity }}
+
+                @if($material->quantity <= 0)
+                    (Out of Stock)
+                @endif
+
+            </option>
+
+        @endforeach
+    `;
+
+    // ✅ ADD ITEM
+    document.getElementById('add-item').addEventListener('click', function () {
+
+        const container = document.getElementById('items-container');
+
+        // CREATE CLEAN ROW
+        const newRow = document.createElement('div');
+
+        newRow.className =
+            'item-row border rounded-xl p-4 mb-4 bg-gray-50';
+
+        newRow.innerHTML = `
+
+            <div class="mb-4">
+
+                <label class="block text-sm font-semibold mb-1">
+                    Material
+                </label>
+
+                <select
+                    name="material_id[]"
+                    class="material-select w-full border rounded-lg p-2"
+                    required>
+
+                    ${materialOptions}
+
+                </select>
+
+            </div>
+
+            <div class="mb-2">
+
+                <label class="block text-sm font-semibold mb-1">
+                    Quantity
+                </label>
+
+                <input type="number"
+                    name="quantity[]"
+                    min="1"
+                    class="quantity-input w-full border rounded-lg p-2"
+                    required>
+
+                <p class="stock-warning text-red-500 text-sm mt-1 hidden">
+                    Quantity exceeds available stock.
+                </p>
+
+            </div>
+
+            <button type="button"
+                class="remove-item bg-red-500 text-white px-3 py-1 rounded-lg text-sm mt-2">
+
+                Remove
+
+            </button>
+        `;
+
+        container.appendChild(newRow);
+
+        // INIT TOMSELECT
+        initTomSelect(
+            newRow.querySelector('.material-select')
+        );
+
+    });
+
+    // ✅ REMOVE ITEM
+    document.addEventListener('click', function(e){
+
+        if(e.target.classList.contains('remove-item')){
+
+            e.target.closest('.item-row').remove();
+
+        }
+
+    });
+
+</script>
+
+<script>
+
+    // ✅ LIVE QUANTITY VALIDATION
+    document.addEventListener('input', function(e){
+
+        if(e.target.classList.contains('quantity-input')){
+
+            const input = e.target;
+
+            const row = input.closest('.item-row');
+
+            const warning =
+                row.querySelector('.stock-warning');
+
+            const max =
+                parseInt(input.max || 0);
+
+            const value =
+                parseInt(input.value || 0);
+
+            // ❌ EXCEEDS STOCK
+            if(value > max){
+
+                warning.classList.remove('hidden');
+
+                input.classList.add(
+                    'border-red-500',
+                    'ring-2',
+                    'ring-red-300'
+                );
 
             }
 
-            // OUT OF STOCK
-            else if (parseInt(stock) <= 0) {
-
-                preview.innerHTML =
-                    `❌ Out of Stock`;
-
-                preview.className =
-                    'mt-2 text-sm font-semibold text-red-600';
-
-            }
-
-            // NORMAL STOCK
+            // ✅ VALID
             else {
 
-                preview.innerHTML =
-                `✅ Available`;
+                warning.classList.add('hidden');
 
-                preview.className =
-                    'mt-2 text-sm font-semibold text-green-600';
+                input.classList.remove(
+                    'border-red-500',
+                    'ring-2',
+                    'ring-red-300'
+                );
+
             }
+
         }
+
     });
 
 </script>

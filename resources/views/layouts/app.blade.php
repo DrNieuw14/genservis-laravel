@@ -102,6 +102,14 @@
 
             </a>
 
+            <a href="{{ route('units.index') }}"
+            class="block px-3 py-2 rounded 
+            {{ request()->is('units*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                📏 Units
+
+            </a>
+
         @endif
 
 
@@ -131,6 +139,11 @@
 
                     <a href="/material-request" class="block px-4 py-2 hover:bg-green-200">
                         📦 Material Request
+                    </a>
+
+                    <a href="{{ route('material-request.history') }}"
+                    class="block px-4 py-2 hover:bg-green-200">
+                        📜 Request History
                     </a>
 
                 @endif
