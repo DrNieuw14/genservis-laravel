@@ -8,6 +8,7 @@ class MaterialRequest extends Model
 {
     protected $fillable = [
     'user_id',
+    'request_number',
     'status',
     'purpose',
     'remarks'

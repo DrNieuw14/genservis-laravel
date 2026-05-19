@@ -12,6 +12,7 @@ use App\Models\Personnel;
 use App\Models\User;
 use App\Models\Notification;
 use App\Events\NewNotificationEvent;
+use App\Models\MaterialLog;
 
 class MaterialRequestController extends Controller
 {
@@ -79,10 +80,24 @@ class MaterialRequestController extends Controller
         }
 
         // ✅ Create request header
+        $latestId = MaterialRequest::max('id') + 1;
+
+        $requestNumber =
+            'MR-'
+            . date('Y')
+            . '-'
+            . str_pad($latestId, 4, '0', STR_PAD_LEFT);
+
         $materialRequest = MaterialRequest::create([
+
             'user_id' => Auth::id(),
+
+            'request_number' => $requestNumber,
+
             'status' => 'pending',
+
             'purpose' => $request->purpose,
+
         ]);
 
         // ✅ Save multiple items
@@ -151,6 +166,31 @@ class MaterialRequestController extends Controller
             // 🔻 Deduct stock
             $material->quantity -= $item->quantity;
             $material->save();
+
+            // 📝 AUTO MATERIAL LOG
+            MaterialLog::create([
+
+                'material_id' => $material->id,
+
+                'user_id' => auth()->id(),
+
+                'action' => 'deducted',
+
+                'quantity' => $item->quantity,
+
+                'remarks' =>
+                    'Request #: '
+                    . ($materialRequest->request_number ?? 'N/A')
+
+                    . ' | Requested by: '
+                    . ($materialRequest->user->fullname
+                        ?? $materialRequest->user->username)
+
+                    . ' | Approved by: '
+                    . (auth()->user()->fullname
+                        ?? auth()->user()->username)
+
+            ]);
 
             // 🔔 LOW STOCK ALERT (THIS IS YOUR NEW FEATURE)
             if ($material->quantity <= $material->threshold) {
