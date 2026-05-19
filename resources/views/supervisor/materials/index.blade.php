@@ -151,7 +151,7 @@
                         <td class="p-4">
                             {{ $material->creator->username ?? 'Unknown' }}
                         </td>
-                        
+
                         <td class="p-4 flex gap-2">
 
                             <!-- EDIT -->
@@ -159,6 +159,13 @@
                             class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm">
 
                                 ✏️ Edit
+                            </a>
+
+                            <!-- RESTOCK -->
+                            <a href="{{ route('materials.restock.form', $material->id) }}"
+                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm">
+
+                                📦 Restock
                             </a>
 
                             <!-- DELETE -->

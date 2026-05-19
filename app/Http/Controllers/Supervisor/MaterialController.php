@@ -10,6 +10,7 @@ use App\Models\Unit;
 use App\Models\MaterialLog;
 use Illuminate\Support\Facades\Auth;
 
+
 class MaterialController extends Controller
 {
     // 📋 List Materials
@@ -190,6 +191,52 @@ class MaterialController extends Controller
         $logs = $query->latest()->get();
 
         return view('supervisor.materials.logs', compact('logs'));
+    }
+
+        // ✅ Restock Form
+    public function restockForm($id)
+    {
+        $material = Material::findOrFail($id);
+
+        return view('supervisor.materials.restock', compact('material'));
+    }
+
+    // ✅ Process Restock
+    public function restock(Request $request, $id)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'supplier' => 'nullable|string|max:255',
+            'remarks' => 'nullable|string',
+        ]);
+
+        $material = Material::findOrFail($id);
+
+        // ✅ ADD STOCK
+        $material->quantity += $request->quantity;
+
+        $material->save();
+
+        // ✅ SAVE LOG
+        MaterialLog::create([
+
+            'material_id' => $material->id,
+
+            'user_id' => Auth::id(),
+
+            'action' => 'restock',
+
+            'quantity' => $request->quantity,
+
+            'supplier' => $request->supplier,
+
+            'remarks' => $request->remarks ?? 'Material restocked',
+
+        ]);
+
+        return redirect()
+            ->route('materials.index')
+            ->with('success', 'Material restocked successfully!');
     }
 
     

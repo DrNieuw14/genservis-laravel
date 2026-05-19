@@ -158,6 +158,141 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- 📊 MOST REQUESTED MATERIALS --}}
+
+            {{-- 📈 MONTHLY MATERIAL USAGE --}}
+            <div class="bg-white rounded-xl shadow border border-green-100 mb-8">
+
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+
+                    <h3 class="font-semibold text-green-600 flex items-center gap-2">
+                        📈 Monthly Material Usage
+                    </h3>
+
+                    <span class="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full font-semibold">
+
+                        Last 6 Months
+
+                    </span>
+
+                </div>
+
+                @if($monthlyUsage->count() > 0)
+
+                    <div class="divide-y divide-green-100">
+
+                        @foreach($monthlyUsage as $usage)
+
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-green-50 transition">
+
+                                <div class="font-semibold text-gray-800">
+
+                                    {{ $usage->month }}
+
+                                </div>
+
+                                <div class="text-right">
+
+                                    <div class="text-green-600 text-2xl font-bold">
+
+                                        {{ $usage->total_used }}
+
+                                    </div>
+
+                                    <div class="text-xs text-gray-500">
+
+                                        Materials Used
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        @endforeach
+
+                    </div>
+
+                @else
+
+                    <div class="px-6 py-8 text-center text-gray-400">
+
+                        No monthly analytics yet.
+
+                    </div>
+
+                @endif
+
+            </div>
+
+            <div class="bg-white rounded-xl shadow border border-blue-100 mb-8">
+
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+
+                    <h3 class="font-semibold text-blue-600 flex items-center gap-2">
+                        📊 Most Requested Materials
+                    </h3>
+
+                    <span class="bg-blue-100 text-blue-600 text-xs px-3 py-1 rounded-full font-semibold">
+
+                        Top 5
+
+                    </span>
+
+                </div>
+
+                @if($mostRequestedMaterials->count() > 0)
+
+                    <div class="divide-y divide-blue-100">
+
+                        @foreach($mostRequestedMaterials as $item)
+
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-blue-50 transition">
+
+                                <div>
+
+                                    <div class="font-semibold text-gray-800">
+
+                                        {{ $item->material->name ?? 'Unknown Material' }}
+
+                                    </div>
+
+                                </div>
+
+                                <div class="text-right">
+
+                                    <div class="text-blue-600 text-2xl font-bold">
+
+                                        {{ $item->total_requested }}
+
+                                    </div>
+
+                                    <div class="text-xs text-gray-500">
+
+                                        Total Requested
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        @endforeach
+
+                    </div>
+
+                @else
+
+                    <div class="px-6 py-8 text-center text-gray-400">
+
+                        No request analytics yet.
+
+                    </div>
+
+                @endif
+
+            </div>
             
 
             {{-- ⚠ LOW STOCK ALERTS --}}

@@ -7,11 +7,12 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonnelController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Supervisor\MaterialController;
 use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\Supervisor\CategoryController;
 use App\Http\Controllers\Supervisor\UnitController;
-use App\Models\Material;
+
 
 
 Route::middleware(['auth'])->group(function () {
@@ -65,6 +66,15 @@ Route::middleware(['auth'])->group(function () {
 
     // ── Supervisor / Admin routes ──
 Route::middleware('role:supervisor')->group(function () {
+
+    // ✅ RESTOCK MATERIAL
+    Route::get('/materials/{id}/restock',
+        [MaterialController::class, 'restockForm'])
+        ->name('materials.restock.form');
+
+    Route::post('/materials/{id}/restock',
+        [MaterialController::class, 'restock'])
+        ->name('materials.restock');
 
     // 📦 Material Requests
     Route::get('/supervisor/material-requests', [MaterialRequestController::class, 'index']);
@@ -131,6 +141,32 @@ Route::middleware('role:supervisor')->group(function () {
                     '<=',
                     'threshold'
                 )->get(),
+
+                // 📊 MOST REQUESTED MATERIALS
+            'mostRequestedMaterials' =>
+
+                \App\Models\MaterialRequestItem::select(
+                    'material_id',
+                    \DB::raw('SUM(quantity) as total_requested')
+                )
+                ->with('material')
+                ->groupBy('material_id')
+                ->orderByDesc('total_requested')
+                ->take(5)
+                ->get(),
+
+                // 📈 MONTHLY MATERIAL USAGE
+            'monthlyUsage' =>
+
+                \App\Models\MaterialRequestItem::select(
+                    DB::raw("DATE_FORMAT(created_at, '%M %Y') as month"),
+                    DB::raw('SUM(quantity) as total_used')
+                )
+                ->groupBy('month')
+                ->orderByRaw('MIN(created_at) DESC')
+                ->take(6)
+                ->get(),
+                
        ]);
     })->name('supervisor.dashboard');
 
@@ -147,6 +183,14 @@ Route::middleware('role:supervisor')->group(function () {
 
     Route::delete('/materials/{id}', [MaterialController::class, 'destroy'])
         ->name('materials.destroy');
+
+    // ✅ Restock Materials
+    Route::get('/materials/{id}/restock', [MaterialController::class, 'restockForm'])
+        ->name('materials.restock.form');
+
+    Route::post('/materials/{id}/restock', [MaterialController::class, 'restock'])
+        ->name('materials.restock');
+
 
     // User approval
     Route::get('admin/users/pending',      [UserApprovalController::class, 'index'])->name('admin.users.pending');
