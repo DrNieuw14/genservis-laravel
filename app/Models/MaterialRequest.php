@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class MaterialRequest extends Model
 {
     protected $fillable = [
-        'user_id',
-        'status',
-        'remarks'
+    'user_id',
+    'status',
+    'purpose',
+    'remarks'
     ];
 
     // 🔗 Relationships

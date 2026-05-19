@@ -121,7 +121,7 @@ class MaterialRequestController extends Controller
     public function index()
     {
         // ❌ block non-supervisor
-        if (auth()->user()->role !== 'supervisor') {
+        if (!auth()->check() || auth()->user()->role !== 'supervisor') {
             abort(403);
         }
 

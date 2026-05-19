@@ -110,6 +110,40 @@
 
             </button>
 
+            <!-- REQUEST SUMMARY -->
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+
+                <h3 class="font-bold text-blue-800 mb-3">
+                    📋 Request Summary
+                </h3>
+
+                <!-- ITEM LIST -->
+                <div id="summary-items"
+                    class="text-sm text-gray-700 space-y-1 mb-3">
+
+                    <p class="text-gray-400">
+                        No materials selected yet.
+                    </p>
+
+                </div>
+
+                <!-- TOTALS -->
+                <div class="border-t pt-3 text-sm">
+
+                    <div class="flex justify-between">
+                        <span>Total Items:</span>
+                        <span id="summary-total-items">0</span>
+                    </div>
+
+                    <div class="flex justify-between font-semibold">
+                        <span>Total Quantity:</span>
+                        <span id="summary-total-qty">0</span>
+                    </div>
+
+                </div>
+
+            </div>
+
             <!-- PURPOSE -->
             <div class="mb-4">
 
@@ -333,6 +367,118 @@
         }
 
     });
+
+</script>
+
+<script>
+
+    // ✅ PREVENT DUPLICATE MATERIALS
+    document.addEventListener('change', function(e){
+
+        if(e.target.classList.contains('material-select')){
+
+            const selectedValues = [];
+
+            document.querySelectorAll('.material-select').forEach(select => {
+
+                const value = select.value;
+
+                // SKIP EMPTY
+                if(value === '') return;
+
+                // DUPLICATE DETECTED
+                if(selectedValues.includes(value)){
+
+                    alert('This material is already selected.');
+
+                    select.tomselect.clear();
+
+                } else {
+
+                    selectedValues.push(value);
+
+                }
+
+            });
+
+        }
+
+    });
+
+</script>
+
+<script>
+
+    // ✅ UPDATE SUMMARY PANEL
+    function updateSummary() {
+
+        const summaryItems =
+            document.getElementById('summary-items');
+
+        const totalItems =
+            document.getElementById('summary-total-items');
+
+        const totalQty =
+            document.getElementById('summary-total-qty');
+
+        let html = '';
+
+        let itemCount = 0;
+
+        let qtyCount = 0;
+
+        document.querySelectorAll('.item-row').forEach(row => {
+
+            const select =
+                row.querySelector('.material-select');
+
+            const quantity =
+                row.querySelector('.quantity-input');
+
+            const materialName =
+                select.options[select.selectedIndex]?.text || '';
+
+            const qty =
+                parseInt(quantity.value || 0);
+
+            // SKIP EMPTY
+            if(select.value && qty > 0){
+
+                itemCount++;
+
+                qtyCount += qty;
+
+                html += `
+                    <div class="flex justify-between">
+                        <span>${materialName}</span>
+                        <span>x${qty}</span>
+                    </div>
+                `;
+            }
+
+        });
+
+        // EMPTY
+        if(itemCount === 0){
+
+            html = `
+                <p class="text-gray-400">
+                    No materials selected yet.
+                </p>
+            `;
+        }
+
+        summaryItems.innerHTML = html;
+
+        totalItems.innerText = itemCount;
+
+        totalQty.innerText = qtyCount;
+    }
+
+    // ✅ AUTO UPDATE
+    document.addEventListener('change', updateSummary);
+
+    document.addEventListener('input', updateSummary);
 
 </script>
 

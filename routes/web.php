@@ -12,9 +12,7 @@ use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\Supervisor\CategoryController;
 use App\Http\Controllers\Supervisor\UnitController;
 
-Route::get('/supervisor/material-requests', [MaterialRequestController::class, 'index']);
-Route::post('/supervisor/material-requests/{id}/approve', [MaterialRequestController::class, 'approve']);
-Route::post('/supervisor/material-requests/{id}/reject', [MaterialRequestController::class, 'reject']);
+
 
 Route::middleware(['auth'])->group(function () {
 
@@ -59,6 +57,15 @@ Route::middleware(['auth'])->group(function () {
 
     // ── Supervisor / Admin routes ──
 Route::middleware('role:supervisor')->group(function () {
+
+    // 📦 Material Requests
+    Route::get('/supervisor/material-requests', [MaterialRequestController::class, 'index']);
+
+    Route::post('/supervisor/material-requests/{id}/approve', [MaterialRequestController::class, 'approve']);
+
+    Route::post('/supervisor/material-requests/{id}/reject', [MaterialRequestController::class, 'reject']);
+    
+
 
     // ✅ Units
     Route::get('/units', [UnitController::class, 'index'])
