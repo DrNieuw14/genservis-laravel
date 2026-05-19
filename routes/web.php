@@ -9,6 +9,7 @@ use App\Http\Controllers\PersonnelController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Supervisor\MaterialController;
 use App\Http\Controllers\MaterialRequestController;
+use App\Http\Controllers\Supervisor\CategoryController;
 
 Route::get('/supervisor/material-requests', [MaterialRequestController::class, 'index']);
 Route::post('/supervisor/material-requests/{id}/approve', [MaterialRequestController::class, 'approve']);
@@ -55,6 +56,25 @@ Route::middleware(['auth'])->group(function () {
 
     // ── Supervisor / Admin routes ──
 Route::middleware('role:supervisor')->group(function () {
+
+    // ✅ Categories
+    Route::get('/categories', [CategoryController::class, 'index'])
+        ->name('categories.index');
+
+    Route::get('/categories/create', [CategoryController::class, 'create'])
+        ->name('categories.create');
+
+    Route::post('/categories/store', [CategoryController::class, 'store'])
+        ->name('categories.store');
+
+    Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])
+        ->name('categories.edit');
+
+    Route::put('/categories/{id}', [CategoryController::class, 'update'])
+        ->name('categories.update');
+
+    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])
+        ->name('categories.destroy');
 
     Route::get('/materials/logs', [MaterialController::class, 'logs'])
     ->name('materials.logs');

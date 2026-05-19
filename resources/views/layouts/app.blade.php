@@ -94,6 +94,14 @@
                 📜 Material Logs
             </a>
 
+            <a href="{{ route('categories.index') }}"
+            class="block px-3 py-2 rounded 
+            {{ request()->is('categories*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                🗂️ Categories
+
+            </a>
+
         @endif
 
 
