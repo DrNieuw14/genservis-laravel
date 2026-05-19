@@ -1,7 +1,6 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800">Supervisor Dashboard</h2>
-    </x-slot>
+@extends('layouts.app')
+
+@section('content')
     <div class="py-8 px-4 max-w-7xl mx-auto">
 
         @if(session('success'))
@@ -160,4 +159,76 @@
                 </table>
             </div>
             
-</x-app-layout>
+
+            {{-- ⚠ LOW STOCK ALERTS --}}
+            <div class="bg-white rounded-xl shadow border border-red-100 mt-8">
+
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+
+                    <h3 class="font-semibold text-red-600 flex items-center gap-2">
+                        ⚠ Low Stock Alerts
+                    </h3>
+
+                    <span class="bg-red-100 text-red-600 text-xs px-3 py-1 rounded-full font-semibold">
+
+                        {{ $lowStockMaterials->count() }} Item(s)
+
+                    </span>
+
+                </div>
+
+                @if($lowStockMaterials->count() > 0)
+
+                    <div class="divide-y divide-red-100">
+
+                        @foreach($lowStockMaterials as $material)
+
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-red-50 transition">
+
+                                <div>
+
+                                    <div class="font-semibold text-gray-800">
+                                        {{ $material->name }}
+                                    </div>
+
+                                    <div class="text-sm text-gray-500">
+
+                                        Category:
+                                        {{ $material->category->name ?? 'N/A' }}
+
+                                    </div>
+
+                                </div>
+
+                                <div class="text-right">
+
+                                    <div class="text-red-600 text-2xl font-bold">
+                                        {{ $material->quantity }}
+                                    </div>
+
+                                    <div class="text-xs text-gray-500">
+                                        Remaining Stock
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        @endforeach
+
+                    </div>
+
+                @else
+
+                    <div class="px-6 py-8 text-center text-gray-400">
+
+                        ✅ No low stock materials.
+
+                    </div>
+
+                @endif
+
+             </div>
+
+    </div>
+@endsection

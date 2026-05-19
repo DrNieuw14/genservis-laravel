@@ -37,6 +37,20 @@ class MaterialRequestController extends Controller
         return view('material_request.history', compact('requests'));
     }
 
+    // 🖨 Request Slip
+    public function slip($id)
+    {
+        $request = MaterialRequest::with([
+            'user',
+            'items.material'
+        ])->findOrFail($id);
+
+        return view(
+            'material_request.slip',
+            compact('request')
+        );
+    }
+
     // 💾 Store request
     
     public function store(Request $request)

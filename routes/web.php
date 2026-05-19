@@ -11,14 +11,22 @@ use App\Http\Controllers\Supervisor\MaterialController;
 use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\Supervisor\CategoryController;
 use App\Http\Controllers\Supervisor\UnitController;
-
+use App\Models\Material;
 
 
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/material-request', [MaterialRequestController::class, 'create']);
+
     Route::get('/material-request/history', [MaterialRequestController::class, 'history'])
     ->name('material-request.history');
+
+    // 🖨 PRINT SLIP
+    Route::get(
+        '/material-request/{id}/slip',
+        [MaterialRequestController::class, 'slip']
+    )->name('material-request.slip');
+
     Route::post('/material-request', [MaterialRequestController::class, 'store']);
 
 });
@@ -115,7 +123,15 @@ Route::middleware('role:supervisor')->group(function () {
             'rejectedCount' => \App\Models\User::where('status', 'rejected')->count(),
             'pendingUsers'  => \App\Models\User::where('status', 'pending')
                                     ->where('role', 'personnel')->latest()->get(),
-        ]);
+        
+            // ⚠ LOW STOCK
+            'lowStockMaterials' =>
+                \App\Models\Material::whereColumn(
+                    'quantity',
+                    '<=',
+                    'threshold'
+                )->get(),
+       ]);
     })->name('supervisor.dashboard');
 
     // ✅ Inventory (Materials)

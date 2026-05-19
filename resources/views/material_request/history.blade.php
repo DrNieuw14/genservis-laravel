@@ -29,6 +29,7 @@
                     <th class="p-4 text-left">Purpose</th>
                     <th class="p-4 text-left">Date Requested</th>
                     <th class="p-4 text-left">Status</th>
+                    <th class="p-4 text-left">Actions</th>
                 </tr>
 
             </thead>
@@ -94,6 +95,19 @@
                                 </span>
 
                             @endif
+
+                        </td>
+
+                        <!-- ACTIONS -->
+                        <td class="p-4">
+
+                            <a href="{{ route('material-request.slip', $req->id) }}"
+                            target="_blank"
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm">
+
+                                🖨 Print Slip
+
+                            </a>
 
                         </td>
 
