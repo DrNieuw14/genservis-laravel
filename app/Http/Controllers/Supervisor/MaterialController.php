@@ -8,12 +8,18 @@ use App\Models\Material;
 use App\Models\Category;
 use App\Models\Unit;
 use App\Models\MaterialLog;
+use App\Models\MaterialRestockLog;
 use App\Models\Department;
 use Illuminate\Support\Facades\Auth;
 
 
 class MaterialController extends Controller
 {
+
+    
+
+
+
     // 📋 List Materials
     public function index(Request $request)
     {
@@ -212,51 +218,108 @@ class MaterialController extends Controller
         return view('supervisor.materials.logs', compact('logs'));
     }
 
-        // ✅ Restock Form
-    public function restockForm($id)
-    {
-        $material = Material::findOrFail($id);
+        /*
+|--------------------------------------------------------------------------
+| RESTOCK FORM
+|--------------------------------------------------------------------------
+*/
 
-        return view('supervisor.materials.restock', compact('material'));
-    }
+public function restockForm($id)
+{
+    $material = Material::findOrFail($id);
 
-    // ✅ Process Restock
-    public function restock(Request $request, $id)
-    {
-        $request->validate([
-            'quantity' => 'required|integer|min:1',
-            'supplier' => 'nullable|string|max:255',
-            'remarks' => 'nullable|string',
-        ]);
+    return view(
+        'supervisor.materials.restock',
+        compact('material')
+    );
+}
 
-        $material = Material::findOrFail($id);
+/*
+|--------------------------------------------------------------------------
+| RESTOCK MATERIAL
+|--------------------------------------------------------------------------
+*/
 
-        // ✅ ADD STOCK
-        $material->quantity += $request->quantity;
+public function restock(Request $request, $id)
+{
+    $request->validate([
 
-        $material->save();
+        'added_stock' => 'required|integer|min:1',
 
-        // ✅ SAVE LOG
-        MaterialLog::create([
+        'supplier' => 'nullable|string|max:255',
 
-            'material_id' => $material->id,
+        'remarks' => 'nullable|string',
 
-            'user_id' => Auth::id(),
+    ]);
 
-            'action' => 'restock',
+    $material = Material::findOrFail($id);
 
-            'quantity' => $request->quantity,
+    /*
+    |--------------------------------------------------------------------------
+    | OLD STOCK
+    |--------------------------------------------------------------------------
+    */
 
-            'supplier' => $request->supplier,
+    $oldStock = $material->quantity;
 
-            'remarks' => $request->remarks ?? 'Material restocked',
+    /*
+    |--------------------------------------------------------------------------
+    | ADD STOCK
+    |--------------------------------------------------------------------------
+    */
 
-        ]);
+    $material->quantity += $request->added_stock;
 
-        return redirect()
-            ->route('materials.index')
-            ->with('success', 'Material restocked successfully!');
-    }
+    $material->save();
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAVE RESTOCK LOG
+    |--------------------------------------------------------------------------
+    */
+
+    MaterialRestockLog::create([
+
+        'material_id'    => $material->id,
+
+        'previous_stock' => $oldStock,
+
+        'added_stock'    => $request->added_stock,
+
+        'new_stock'      => $material->quantity,
+
+        'supplier'       => $request->supplier,
+
+        'remarks'        => $request->remarks,
+
+        'restocked_by'   => auth()->id(),
+
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | OPTIONAL GENERAL MATERIAL LOG
+    |--------------------------------------------------------------------------
+    */
+
+    MaterialLog::create([
+
+        'material_id' => $material->id,
+
+        'user_id' => Auth::id(),
+
+        'action' => 'restock',
+
+        'quantity' => $request->added_stock,
+
+        'remarks' => 'Material restocked',
+
+    ]);
+
+    return redirect()
+        ->route('materials.index')
+        ->with('success', 'Material restocked successfully!');
+}
 
     
 

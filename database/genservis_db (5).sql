@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: May 19, 2026 at 07:46 AM
+-- Generation Time: May 25, 2026 at 10:01 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -66,8 +66,33 @@ INSERT INTO `categories` (`id`, `name`, `created_at`, `updated_at`) VALUES
 (1, 'Cleaning Materials', NULL, NULL),
 (2, 'Soap', NULL, NULL),
 (3, 'Detergent', NULL, NULL),
-(4, 'Equipment', NULL, NULL),
-(6, 'Office Supplies', '2026-05-18 16:43:39', '2026-05-18 16:46:31');
+(4, 'Office Equipment', NULL, '2026-05-18 22:40:54'),
+(6, 'Office Supplies', '2026-05-18 16:43:39', '2026-05-18 16:46:31'),
+(7, 'ICT Equipment', '2026-05-18 22:40:38', '2026-05-18 22:40:38');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `departments`
+--
+
+CREATE TABLE `departments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `department_name` varchar(255) NOT NULL,
+  `department_code` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `departments`
+--
+
+INSERT INTO `departments` (`id`, `department_name`, `department_code`, `description`, `created_at`, `updated_at`) VALUES
+(1, 'Department of Industrial and Information Technology', 'DIIT', 'Information and Computer Department', '2026-05-24 17:32:52', '2026-05-24 17:32:52'),
+(2, 'Department of Management', 'DM', 'Business and Management', '2026-05-24 17:33:17', '2026-05-24 17:33:17'),
+(3, 'Stock Room', 'SR-Main', 'Stock Room in the main building', '2026-05-24 23:22:47', '2026-05-24 23:22:47');
 
 -- --------------------------------------------------------
 
@@ -148,6 +173,7 @@ CREATE TABLE `materials` (
   `name` varchar(255) NOT NULL,
   `quantity` int(11) NOT NULL DEFAULT 0,
   `category_id` bigint(20) UNSIGNED NOT NULL,
+  `department_id` bigint(20) UNSIGNED DEFAULT NULL,
   `unit_id` bigint(20) UNSIGNED NOT NULL,
   `created_by` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -159,11 +185,10 @@ CREATE TABLE `materials` (
 -- Dumping data for table `materials`
 --
 
-INSERT INTO `materials` (`id`, `name`, `quantity`, `category_id`, `unit_id`, `created_by`, `created_at`, `updated_at`, `threshold`) VALUES
-(1, 'brush', 5, 1, 1, 3, '2026-04-27 22:53:53', '2026-05-18 21:33:45', 5),
-(2, 'soup', 7, 1, 1, 3, '2026-05-17 21:53:28', '2026-05-18 18:56:51', 5),
-(3, 'Liquid Detergent', 5, 3, 1, 3, '2026-05-17 22:08:07', '2026-05-17 22:08:07', 5),
-(4, 'A4 Bond paper', 4, 6, 3, 3, '2026-05-18 17:11:22', '2026-05-18 20:55:43', 5);
+INSERT INTO `materials` (`id`, `name`, `quantity`, `category_id`, `department_id`, `unit_id`, `created_by`, `created_at`, `updated_at`, `threshold`) VALUES
+(1, 'A4', 3, 6, NULL, 3, 3, '2026-05-18 22:35:00', '2026-05-24 19:36:08', 5),
+(2, 'Photo Paper', 9, 6, NULL, 1, 3, '2026-05-18 22:42:01', '2026-05-24 23:20:15', 5),
+(3, 'Short Bond Paper v2', 10, 6, 1, 3, 3, '2026-05-24 23:23:21', '2026-05-24 23:53:21', 5);
 
 -- --------------------------------------------------------
 
@@ -187,12 +212,13 @@ CREATE TABLE `material_logs` (
 --
 
 INSERT INTO `material_logs` (`id`, `material_id`, `user_id`, `action`, `quantity`, `remarks`, `created_at`, `updated_at`) VALUES
-(1, 2, 3, 'stock_in', 10, 'Initial stock added', '2026-05-17 21:53:28', '2026-05-17 21:53:28'),
-(2, 3, 3, 'stock_in', 5, 'Initial stock added', '2026-05-17 22:08:07', '2026-05-17 22:08:07'),
-(3, 4, 3, 'stock_in', 10, 'Initial stock added', '2026-05-18 17:11:22', '2026-05-18 17:11:22'),
-(4, 4, 3, 'deducted', 1, 'Request #: N/A | Requested by: aldrin | Approved by: supervisor', '2026-05-18 20:49:39', '2026-05-18 20:49:39'),
-(5, 1, 3, 'deducted', 1, 'Request #: N/A | Requested by: aldrin | Approved by: supervisor', '2026-05-18 20:49:40', '2026-05-18 20:49:40'),
-(6, 4, 3, 'deducted', 1, 'Request #: MR-2026-0009 | Requested by: aldrin | Approved by: supervisor', '2026-05-18 20:55:43', '2026-05-18 20:55:43');
+(1, 1, 3, 'stock_in', 5, 'Initial stock added', '2026-05-18 22:35:00', '2026-05-18 22:35:00'),
+(2, 2, 3, 'stock_in', 5, 'Initial stock added', '2026-05-18 22:42:01', '2026-05-18 22:42:01'),
+(3, 1, 3, 'deducted', 1, 'Request #: MR-2026-0001 | Requested by: aldrin | Approved by: supervisor', '2026-05-18 22:50:51', '2026-05-18 22:50:51'),
+(4, 2, 3, 'restock', 5, 'for 1 week', '2026-05-18 23:19:04', '2026-05-18 23:19:04'),
+(5, 1, 3, 'deducted', 1, 'Request #: MR-2026-0005 | Requested by: aldrin | Approved by: supervisor', '2026-05-24 19:36:08', '2026-05-24 19:36:08'),
+(6, 2, 3, 'deducted', 1, 'Request #: MR-2026-0015 | Requested by: aldrin | Approved by: supervisor', '2026-05-24 23:20:15', '2026-05-24 23:20:15'),
+(7, 3, 3, 'stock_in', 5, 'Initial stock added', '2026-05-24 23:23:21', '2026-05-24 23:23:21');
 
 -- --------------------------------------------------------
 
@@ -204,6 +230,7 @@ CREATE TABLE `material_requests` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `request_number` varchar(255) DEFAULT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
+  `department_id` bigint(20) UNSIGNED DEFAULT NULL,
   `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
   `purpose` text DEFAULT NULL,
   `remarks` text DEFAULT NULL,
@@ -215,16 +242,26 @@ CREATE TABLE `material_requests` (
 -- Dumping data for table `material_requests`
 --
 
-INSERT INTO `material_requests` (`id`, `request_number`, `user_id`, `status`, `purpose`, `remarks`, `created_at`, `updated_at`) VALUES
-(1, NULL, 4, 'rejected', NULL, NULL, '2026-04-28 21:20:41', '2026-05-17 23:26:03'),
-(2, NULL, 4, 'approved', NULL, NULL, '2026-05-17 23:11:04', '2026-05-17 23:26:01'),
-(3, NULL, 4, 'rejected', NULL, NULL, '2026-05-17 23:40:12', '2026-05-17 23:41:03'),
-(4, NULL, 4, 'approved', NULL, NULL, '2026-05-18 17:11:46', '2026-05-18 17:12:10'),
-(5, NULL, 5, 'pending', NULL, NULL, '2026-05-18 17:36:58', '2026-05-18 17:36:58'),
-(6, NULL, 4, 'pending', NULL, NULL, '2026-05-18 18:08:21', '2026-05-18 18:08:21'),
-(7, NULL, 4, 'approved', NULL, NULL, '2026-05-18 18:56:10', '2026-05-18 18:56:51'),
-(8, NULL, 4, 'approved', 'para sa Dean office', NULL, '2026-05-18 19:17:43', '2026-05-18 20:49:41'),
-(9, 'MR-2026-0009', 4, 'approved', 'for DTR', NULL, '2026-05-18 20:55:25', '2026-05-18 20:55:43');
+INSERT INTO `material_requests` (`id`, `request_number`, `user_id`, `department_id`, `status`, `purpose`, `remarks`, `created_at`, `updated_at`) VALUES
+(1, 'MR-2026-0001', 4, NULL, 'approved', 'Dean', NULL, '2026-05-18 22:50:30', '2026-05-18 22:50:52'),
+(2, 'MR-2026-0002', 4, NULL, 'rejected', 'Printing ID', NULL, '2026-05-24 19:02:17', '2026-05-24 19:21:02'),
+(3, 'MR-2026-0003', 4, NULL, 'rejected', 'For exam', NULL, '2026-05-24 19:21:29', '2026-05-24 19:36:14'),
+(4, 'MR-2026-0004', 4, NULL, 'rejected', 'DM', NULL, '2026-05-24 19:22:49', '2026-05-24 19:36:12'),
+(5, 'MR-2026-0005', 4, 1, 'approved', 'Exam 2', NULL, '2026-05-24 19:29:50', '2026-05-24 19:36:10'),
+(6, 'MR-2026-0006', 4, 2, 'rejected', 'wee', NULL, '2026-05-24 19:45:36', '2026-05-24 19:55:09'),
+(7, 'MR-2026-0007', 4, 1, 'rejected', 'wee', NULL, '2026-05-24 19:56:28', '2026-05-24 22:16:39'),
+(8, 'MR-2026-0008', 4, 1, 'rejected', 'wee', NULL, '2026-05-24 19:59:23', '2026-05-24 22:16:38'),
+(9, 'MR-2026-0009', 4, 2, 'rejected', 'weee', NULL, '2026-05-24 21:48:52', '2026-05-24 22:16:38'),
+(10, 'MR-2026-0010', 4, 2, 'rejected', 'wee', NULL, '2026-05-24 21:52:17', '2026-05-24 22:16:36'),
+(11, 'MR-2026-0011', 7, 1, 'rejected', '1', NULL, '2026-05-24 21:57:32', '2026-05-24 22:16:35'),
+(12, 'MR-2026-0012', 7, 2, 'rejected', 'weee', NULL, '2026-05-24 22:01:21', '2026-05-24 22:16:34'),
+(13, 'MR-2026-0013', 4, 1, 'rejected', 'weee', NULL, '2026-05-24 22:03:29', '2026-05-24 22:16:33'),
+(14, 'MR-2026-0014', 4, 1, 'rejected', 'weee', NULL, '2026-05-24 22:16:11', '2026-05-24 22:16:32'),
+(15, 'MR-2026-0015', 4, 1, 'approved', 'wee', NULL, '2026-05-24 22:41:03', '2026-05-24 23:20:15'),
+(16, 'MR-2026-0016', 4, 2, 'rejected', 'wee DM', NULL, '2026-05-24 22:43:26', '2026-05-24 23:20:11'),
+(17, 'MR-2026-0017', 4, 1, 'rejected', 'weee na', NULL, '2026-05-24 22:53:09', '2026-05-24 23:20:10'),
+(18, 'MR-2026-0018', 4, 1, 'rejected', 'weee', NULL, '2026-05-24 23:09:31', '2026-05-24 23:20:09'),
+(19, 'MR-2026-0019', 4, 1, 'rejected', 'wqeee', NULL, '2026-05-24 23:19:38', '2026-05-24 23:20:06');
 
 -- --------------------------------------------------------
 
@@ -247,19 +284,28 @@ CREATE TABLE `material_request_items` (
 --
 
 INSERT INTO `material_request_items` (`id`, `request_id`, `material_id`, `quantity`, `purpose`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 1, NULL, '2026-04-28 21:20:41', '2026-04-28 21:20:41'),
-(2, 2, 2, 2, NULL, '2026-05-17 23:11:04', '2026-05-17 23:11:04'),
-(3, 3, 1, 2, NULL, '2026-05-17 23:40:12', '2026-05-17 23:40:12'),
-(4, 4, 4, 1, NULL, '2026-05-18 17:11:46', '2026-05-18 17:11:46'),
-(5, 5, 4, 1, NULL, '2026-05-18 17:36:58', '2026-05-18 17:36:58'),
-(6, 6, 1, 1, NULL, '2026-05-18 18:08:21', '2026-05-18 18:08:21'),
-(7, 6, 2, 4, NULL, '2026-05-18 18:08:21', '2026-05-18 18:08:21'),
-(8, 6, 4, 1, NULL, '2026-05-18 18:08:21', '2026-05-18 18:08:21'),
-(9, 7, 4, 3, NULL, '2026-05-18 18:56:10', '2026-05-18 18:56:10'),
-(10, 7, 2, 1, NULL, '2026-05-18 18:56:10', '2026-05-18 18:56:10'),
-(11, 8, 4, 1, NULL, '2026-05-18 19:17:43', '2026-05-18 19:17:43'),
-(12, 8, 1, 1, NULL, '2026-05-18 19:17:43', '2026-05-18 19:17:43'),
-(13, 9, 4, 1, NULL, '2026-05-18 20:55:25', '2026-05-18 20:55:25');
+(1, 1, 1, 1, NULL, '2026-05-18 22:50:30', '2026-05-18 22:50:30'),
+(2, 2, 2, 1, NULL, '2026-05-24 19:02:17', '2026-05-24 19:02:17'),
+(3, 2, 1, 1, NULL, '2026-05-24 19:02:17', '2026-05-24 19:02:17'),
+(4, 3, 1, 1, NULL, '2026-05-24 19:21:29', '2026-05-24 19:21:29'),
+(5, 4, 2, 1, NULL, '2026-05-24 19:22:49', '2026-05-24 19:22:49'),
+(6, 5, 1, 1, NULL, '2026-05-24 19:29:50', '2026-05-24 19:29:50'),
+(7, 6, 2, 1, NULL, '2026-05-24 19:45:36', '2026-05-24 19:45:36'),
+(8, 7, 2, 1, NULL, '2026-05-24 19:56:28', '2026-05-24 19:56:28'),
+(9, 8, 2, 1, NULL, '2026-05-24 19:59:23', '2026-05-24 19:59:23'),
+(10, 9, 2, 1, NULL, '2026-05-24 21:48:52', '2026-05-24 21:48:52'),
+(11, 10, 2, 1, NULL, '2026-05-24 21:52:17', '2026-05-24 21:52:17'),
+(12, 11, 2, 1, NULL, '2026-05-24 21:57:32', '2026-05-24 21:57:32'),
+(13, 12, 2, 1, NULL, '2026-05-24 22:01:21', '2026-05-24 22:01:21'),
+(14, 13, 2, 1, NULL, '2026-05-24 22:03:29', '2026-05-24 22:03:29'),
+(15, 14, 2, 1, NULL, '2026-05-24 22:16:11', '2026-05-24 22:16:11'),
+(16, 15, 2, 1, NULL, '2026-05-24 22:41:03', '2026-05-24 22:41:03'),
+(17, 16, 2, 2, NULL, '2026-05-24 22:43:26', '2026-05-24 22:43:26'),
+(18, 16, 1, 1, NULL, '2026-05-24 22:43:26', '2026-05-24 22:43:26'),
+(19, 17, 2, 1, NULL, '2026-05-24 22:53:09', '2026-05-24 22:53:09'),
+(20, 18, 2, 1, NULL, '2026-05-24 23:09:31', '2026-05-24 23:09:31'),
+(21, 18, 1, 1, NULL, '2026-05-24 23:09:31', '2026-05-24 23:09:31'),
+(22, 19, 2, 1, NULL, '2026-05-24 23:19:38', '2026-05-24 23:19:38');
 
 -- --------------------------------------------------------
 
@@ -289,10 +335,15 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (9, '2026_04_28_054002_create_materials_table', 1),
 (10, '2026_04_28_054003_create_material_requests_table', 1),
 (11, '2026_04_28_054004_create_material_request_items_table', 1),
-(12, '2026_05_02_121119_add_threshold_to_materials_table', 2),
-(13, '2026_05_18_053811_create_material_logs_table', 3),
-(14, '2026_05_18_071809_add_purpose_to_material_requests_table', 4),
-(15, '2026_05_19_045244_add_request_number_to_material_requests_table', 5);
+(12, '2026_05_02_121119_add_threshold_to_materials_table', 1),
+(13, '2026_05_18_053811_create_material_logs_table', 1),
+(14, '2026_05_18_071809_add_purpose_to_material_requests_table', 1),
+(15, '2026_05_19_045244_add_request_number_to_material_requests_table', 1),
+(16, '2026_05_19_062206_add_supplier_and_remarks_to_material_logs_table', 2),
+(17, '2026_05_25_004929_create_departments_table', 3),
+(18, '2026_05_25_010229_add_department_id_to_materials_table', 4),
+(19, '2026_05_25_021639_add_department_id_to_material_requests_table', 5),
+(20, '2026_05_25_062454_add_url_to_notifications_table', 6);
 
 -- --------------------------------------------------------
 
@@ -308,36 +359,23 @@ CREATE TABLE `notifications` (
   `message` text NOT NULL,
   `is_read` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `notifications`
 --
 
-INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `is_read`, `created_at`, `updated_at`) VALUES
-(2, 3, 'user', 'New User Registration', 'test registered and needs approval', 1, '2026-04-27 22:38:13', '2026-04-28 16:26:20'),
-(3, 3, 'user', 'New User Registration', 'test1 registered and needs approval', 1, '2026-04-27 23:43:36', '2026-04-28 16:26:18'),
-(4, 3, 'user', 'New User Registration', 'test2 Ltest2 registered and needs approval', 1, '2026-04-27 23:59:49', '2026-04-28 16:26:13'),
-(5, 3, 'material', 'New Material Request', ' requested materials.', 0, '2026-04-28 21:20:41', '2026-04-28 21:20:41'),
-(6, 3, 'material', 'New Material Request', 'test requested materials.', 0, '2026-05-17 23:11:04', '2026-05-17 23:11:04'),
-(7, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-05-17 23:26:01', '2026-05-17 23:26:01'),
-(8, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 0, '2026-05-17 23:26:03', '2026-05-17 23:26:03'),
-(9, 3, 'material', 'New Material Request', 'test requested materials.', 1, '2026-05-17 23:40:12', '2026-05-17 23:40:39'),
-(10, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 0, '2026-05-17 23:41:03', '2026-05-17 23:41:03'),
-(11, 3, 'material', 'New Material Request', 'test requested materials.', 0, '2026-05-18 17:11:46', '2026-05-18 17:11:46'),
-(12, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-05-18 17:12:10', '2026-05-18 17:12:10'),
-(13, 3, 'material', 'New Material Request', 'test1 requested materials.', 0, '2026-05-18 17:36:58', '2026-05-18 17:36:58'),
-(14, 3, 'material', 'New Material Request', 'test submitted a material request.', 0, '2026-05-18 18:08:21', '2026-05-18 18:08:21'),
-(15, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 0, '2026-05-18 18:56:10', '2026-05-18 18:56:10'),
-(16, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-05-18 18:56:51', '2026-05-18 18:56:51'),
-(17, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 0, '2026-05-18 19:17:43', '2026-05-18 19:17:43'),
-(18, 3, 'material', 'Low Stock Alert', 'A4 Bond paper is running low on stock!', 0, '2026-05-18 20:49:39', '2026-05-18 20:49:39'),
-(19, 3, 'material', 'Low Stock Alert', 'brush is running low on stock!', 0, '2026-05-18 20:49:40', '2026-05-18 20:49:40'),
-(20, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-05-18 20:49:41', '2026-05-18 20:49:41'),
-(21, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 0, '2026-05-18 20:55:25', '2026-05-18 20:55:25'),
-(22, 3, 'material', 'Low Stock Alert', 'A4 Bond paper is running low on stock!', 1, '2026-05-18 20:55:43', '2026-05-18 21:24:17'),
-(23, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-05-18 20:55:43', '2026-05-18 20:55:43');
+INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `is_read`, `created_at`, `updated_at`, `url`) VALUES
+(1, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-24 22:53:09', '2026-05-24 22:53:20', '/supervisor/material-requests'),
+(2, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-24 23:09:31', '2026-05-24 23:10:23', '/supervisor/material-requests'),
+(3, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-24 23:19:38', '2026-05-24 23:19:49', '/supervisor/material-requests'),
+(4, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 0, '2026-05-24 23:20:06', '2026-05-24 23:20:06', '/material-request/history'),
+(5, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 0, '2026-05-24 23:20:09', '2026-05-24 23:20:09', '/material-request/history'),
+(6, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 0, '2026-05-24 23:20:10', '2026-05-24 23:20:10', '/material-request/history'),
+(7, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-24 23:20:11', '2026-05-24 23:21:35', '/material-request/history'),
+(8, 4, 'material', 'Request Approved', 'Your material request has been approved.', 1, '2026-05-24 23:20:15', '2026-05-24 23:20:26', '/material-request/history');
 
 -- --------------------------------------------------------
 
@@ -362,10 +400,8 @@ CREATE TABLE `personnel` (
 --
 
 INSERT INTO `personnel` (`id`, `employee_id`, `fullname`, `position`, `department`, `user_id`, `status`, `created_at`, `updated_at`) VALUES
-(3, 'EMP3654', 'Mark Anthony R. Abril', 'Staff', 'Maintenance', 3, 'Active', NULL, NULL),
-(4, 'EMP2451', 'test', 'Staff', 'Maintenance', 4, 'Active', NULL, NULL),
-(5, 'EMP5571', 'test1', 'Staff', 'Maintenance', 5, 'Active', NULL, NULL),
-(6, 'EMP2703', 'test2 Ltest2', 'Staff', 'Maintenance', 6, 'Active', NULL, NULL);
+(1, 'EMP-001', 'aldrin', 'Personnel', 'General Services', 4, 'Active', NULL, NULL),
+(3, 'EMP4650', 'Marilou Corrales', 'Staff', 'Maintenance', 7, 'Active', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -418,7 +454,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `username`, `password`, `birthdate`,
 (3, 'Mark Anthony R. Abril', 'mark@mail.com', 'supervisor', '$2y$12$ZbYz9wJOW1UYVUij8n8G2OVvZ0mBpyrXn/5wy.M6F8VV9Zl29Kgji', '2011-02-16', 'February', 15, 'supervisor', 'approved', '2026-04-27 22:35:31', '2026-04-27 22:35:31'),
 (4, 'Aldrin Justimbaste', 'test@mail.com', 'aldrin', '$2y$12$tqU03vlacqclCWYmdJoDI.X9X78gboHV2.VNL6.n7UVqsB/e2voy2', '2009-04-17', 'April', 17, 'personnel', 'approved', '2026-04-27 22:38:13', '2026-04-27 22:38:36'),
 (5, 'Arnold Balingit', 'test1@mail.com', 'arnold', '$2y$12$.gtHwE1krpIvOsyQmzDep.dj/r36KFSBUg.zxOv9r1ePPg.n0/L5W', '2009-01-18', 'January', 17, 'personnel', 'approved', '2026-04-27 23:43:36', '2026-04-27 23:47:05'),
-(6, 'Aileen Estrada', 'test2@mail.com', 'aileen', '$2y$12$1mRP6RuoO6w.N7n0sABULe1BOHURY9iAk/uWct8IGeR/Nio5Gigve', '2008-02-16', 'February', 18, 'personnel', 'pending', '2026-04-27 23:59:49', '2026-04-27 23:59:49');
+(6, 'Aileen Estrada', 'test2@mail.com', 'aileen', '$2y$12$1mRP6RuoO6w.N7n0sABULe1BOHURY9iAk/uWct8IGeR/Nio5Gigve', '2008-02-16', 'February', 18, 'personnel', 'approved', '2026-04-27 23:59:49', '2026-05-24 21:50:03'),
+(7, 'Marilou Corrales', 'marilou@mail.com', 'marilou', '$2y$12$h8Senq0DO82Bnqr9Cl6WduF5LFY0EoFbVtRQhYX6dOX5w9KdFKOwq', '2009-02-18', 'February', 17, 'personnel', 'approved', '2026-05-24 21:56:49', '2026-05-24 21:57:08');
 
 --
 -- Indexes for dumped tables
@@ -444,6 +481,12 @@ ALTER TABLE `cache_locks`
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `categories_name_unique` (`name`);
+
+--
+-- Indexes for table `departments`
+--
+ALTER TABLE `departments`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `failed_jobs`
@@ -478,7 +521,8 @@ ALTER TABLE `materials`
   ADD PRIMARY KEY (`id`),
   ADD KEY `materials_category_id_foreign` (`category_id`),
   ADD KEY `materials_unit_id_foreign` (`unit_id`),
-  ADD KEY `materials_created_by_foreign` (`created_by`);
+  ADD KEY `materials_created_by_foreign` (`created_by`),
+  ADD KEY `materials_department_id_foreign` (`department_id`);
 
 --
 -- Indexes for table `material_logs`
@@ -493,7 +537,8 @@ ALTER TABLE `material_logs`
 --
 ALTER TABLE `material_requests`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `material_requests_user_id_foreign` (`user_id`);
+  ADD KEY `material_requests_user_id_foreign` (`user_id`),
+  ADD KEY `material_requests_department_id_foreign` (`department_id`);
 
 --
 -- Indexes for table `material_request_items`
@@ -546,7 +591,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `departments`
+--
+ALTER TABLE `departments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -570,43 +621,43 @@ ALTER TABLE `leave_requests`
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `material_logs`
 --
 ALTER TABLE `material_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `material_requests`
 --
 ALTER TABLE `material_requests`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `material_request_items`
 --
 ALTER TABLE `material_request_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `personnel`
 --
 ALTER TABLE `personnel`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `units`
@@ -618,7 +669,7 @@ ALTER TABLE `units`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
@@ -630,6 +681,7 @@ ALTER TABLE `users`
 ALTER TABLE `materials`
   ADD CONSTRAINT `materials_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `materials_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `materials_department_id_foreign` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `materials_unit_id_foreign` FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`) ON DELETE CASCADE;
 
 --
@@ -643,6 +695,7 @@ ALTER TABLE `material_logs`
 -- Constraints for table `material_requests`
 --
 ALTER TABLE `material_requests`
+  ADD CONSTRAINT `material_requests_department_id_foreign` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `material_requests_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --

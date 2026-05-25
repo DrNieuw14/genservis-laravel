@@ -2,28 +2,27 @@
 
 @section('content')
 
-<div class="min-h-screen bg-gradient-to-r from-cyan-700 to-blue-900 p-10">
+<div class="max-w-6xl mx-auto">
 
     <!-- HEADER -->
+    <div class="flex items-center justify-between mb-6">
 
-    <div class="mb-8">
+        <div>
 
-        <h1 class="text-4xl font-bold text-white flex items-center gap-3">
-            🏢 Departments
-        </h1>
+            <h2 class="text-4xl font-bold text-white flex items-center gap-3">
+                🏢 Departments
+            </h2>
 
-        <p class="text-gray-200 mt-2">
-            Manage institutional departments for GenServis.
-        </p>
+            <p class="text-white/80 mt-2">
+                Manage institutional departments for GenServis.
+            </p>
 
-    </div>
-
-    <!-- ACTION BUTTON -->
-
-    <div class="mb-6">
+        </div>
 
         <a href="{{ route('supervisor.departments.create') }}"
-           class="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-xl shadow-lg transition duration-300">
+           class="bg-gradient-to-r from-green-500 to-blue-500
+                  hover:scale-105 transition
+                  text-white px-5 py-3 rounded-xl shadow-lg font-semibold">
 
             ➕ Add Department
 
@@ -31,92 +30,129 @@
 
     </div>
 
-    <!-- TABLE CARD -->
+    <!-- CARD -->
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
 
-    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <table class="w-full">
 
-        <div class="p-6">
+            <!-- HEADER -->
+            <thead class="bg-gradient-to-r from-green-500 to-blue-500 text-white">
 
-            <div class="overflow-x-auto">
+                <tr>
 
-                <table class="w-full">
+                    <th class="p-4 text-left">#</th>
 
-                    <thead>
+                    <th class="p-4 text-left">
+                        Department
+                    </th>
 
-                        <tr class="border-b text-gray-700">
+                    <th class="p-4 text-left">
+                        Code
+                    </th>
 
-                            <th class="text-left py-4 px-4 font-semibold">
-                                ID
-                            </th>
+                    <th class="p-4 text-left">
+                        Description
+                    </th>
 
-                            <th class="text-left py-4 px-4 font-semibold">
-                                Department
-                            </th>
+                    <th class="p-4 text-center">
+                        Actions
+                    </th>
 
-                            <th class="text-left py-4 px-4 font-semibold">
-                                Code
-                            </th>
+                </tr>
 
-                            <th class="text-left py-4 px-4 font-semibold">
-                                Description
-                            </th>
+            </thead>
 
-                        </tr>
+            <!-- BODY -->
+            <tbody>
 
-                    </thead>
+                @forelse($departments as $department)
 
-                    <tbody>
+                <tr class="border-b hover:bg-gray-50 transition">
 
-                        @forelse($departments as $department)
+                    <!-- ID -->
+                    <td class="p-4 font-semibold text-gray-700">
+                        {{ $department->id }}
+                    </td>
 
-                        <tr class="border-b hover:bg-gray-50 transition">
+                    <!-- NAME -->
+                    <td class="p-4 font-semibold text-gray-800">
+                        {{ $department->department_name }}
+                    </td>
 
-                            <td class="py-4 px-4">
-                                {{ $department->id }}
-                            </td>
+                    <!-- CODE -->
+                    <td class="p-4">
 
-                            <td class="py-4 px-4 font-semibold text-gray-800">
-                                {{ $department->department_name }}
-                            </td>
+                        <span class="bg-blue-100 text-blue-700
+                                     px-3 py-1 rounded-full
+                                     text-sm font-semibold
+                                     whitespace-nowrap">
 
-                            <td class="py-4 px-4">
+                            {{ $department->department_code }}
 
-                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+                        </span>
 
-                                    {{ $department->department_code }}
+                    </td>
 
-                                </span>
+                    <!-- DESCRIPTION -->
+                    <td class="p-4 text-gray-700">
+                        {{ $department->description }}
+                    </td>
 
-                            </td>
+                    <!-- ACTIONS -->
+                    <td class="p-4 text-center">
 
-                            <td class="py-4 px-4 text-gray-600">
-                                {{ $department->description }}
-                            </td>
+                        <div class="flex justify-center gap-2">
 
-                        </tr>
+                            <!-- EDIT -->
+                            <a href="{{ route('supervisor.departments.edit', $department->id) }}"
+                               class="bg-blue-500 hover:bg-blue-600
+                                      text-white px-4 py-2 rounded-lg shadow">
 
-                        @empty
+                                ✏️ Edit
 
-                        <tr>
+                            </a>
 
-                            <td colspan="4"
-                                class="text-center py-10 text-gray-400">
+                            <!-- DELETE -->
+                            <form action="{{ route('supervisor.departments.destroy', $department->id) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Delete this department?')">
 
-                                No departments found.
+                                @csrf
+                                @method('DELETE')
 
-                            </td>
+                                <button class="bg-red-500 hover:bg-red-600
+                                               text-white px-4 py-2 rounded-lg shadow">
 
-                        </tr>
+                                    🗑 Delete
 
-                        @endforelse
+                                </button>
 
-                    </tbody>
+                            </form>
 
-                </table>
+                        </div>
 
-            </div>
+                    </td>
 
-        </div>
+                </tr>
+
+                @empty
+
+                <tr>
+
+                    <td colspan="5"
+                        class="text-center p-10 text-gray-500">
+
+                        No departments found.
+
+                    </td>
+
+                </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
 
     </div>
 

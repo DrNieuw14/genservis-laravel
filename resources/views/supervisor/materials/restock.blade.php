@@ -2,113 +2,157 @@
 
 @section('content')
 
-<div class="max-w-3xl mx-auto mt-10">
+<div class="max-w-4xl mx-auto">
 
+    <!-- HEADER -->
+    <div class="mb-6">
+
+        <h2 class="text-4xl font-bold text-white flex items-center gap-3">
+
+            📦 Restock Material
+
+        </h2>
+
+        <p class="text-white/80 mt-2">
+
+            Add stock quantity to inventory materials.
+
+        </p>
+
+    </div>
+
+    <!-- ALERT -->
+    @if ($errors->any())
+
+        <div class="bg-red-500 text-white p-4 rounded-xl mb-6 shadow">
+
+            <ul class="list-disc pl-5">
+
+                @foreach ($errors->all() as $error)
+
+                    <li>{{ $error }}</li>
+
+                @endforeach
+
+            </ul>
+
+        </div>
+
+    @endif
+
+    <!-- CARD -->
     <div class="bg-white rounded-2xl shadow-2xl p-8">
 
-        <!-- TITLE -->
-        <div class="mb-6">
+        <!-- MATERIAL INFO -->
+        <div class="mb-8">
 
-            <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
-                📦 Restock Material
-            </h2>
+            <h3 class="text-2xl font-bold text-gray-800">
+
+                {{ $material->name }}
+
+            </h3>
 
             <p class="text-gray-500 mt-2">
-                Add new stock for this material
+
+                Current Stock:
+
+                <span class="font-bold text-blue-600">
+
+                    {{ $material->quantity }}
+
+                </span>
+
             </p>
 
         </div>
 
-        <!-- MATERIAL INFO -->
-        <div class="bg-gray-50 rounded-xl p-5 mb-6 border">
-
-            <div class="grid grid-cols-2 gap-4">
-
-                <div>
-                    <p class="text-sm text-gray-500">Material Name</p>
-
-                    <p class="font-semibold text-lg">
-                        {{ $material->name }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-sm text-gray-500">Current Stock</p>
-
-                    <p class="font-semibold text-lg text-blue-600">
-                        {{ $material->quantity }}
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-
         <!-- FORM -->
-        <form action="{{ route('materials.restock', $material->id) }}"
-              method="POST">
+        <form method="POST"
+              action="{{ route('materials.restock', $material->id) }}">
 
             @csrf
 
-            <!-- QUANTITY -->
+            <!-- ADD STOCK -->
             <div class="mb-5">
 
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Restock Quantity
+                <label class="block mb-2 font-semibold text-gray-700">
+
+                    Add Stock Quantity
+
                 </label>
 
                 <input type="number"
-                       name="quantity"
+                       name="added_stock"
                        min="1"
                        required
-                       class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-green-400">
+                       class="w-full border border-gray-300
+                              rounded-xl px-4 py-3
+                              focus:ring-2 focus:ring-blue-400
+                              focus:outline-none">
 
             </div>
 
             <!-- SUPPLIER -->
             <div class="mb-5">
 
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Supplier Name
+                <label class="block mb-2 font-semibold text-gray-700">
+
+                    Supplier
+
                 </label>
 
                 <input type="text"
                        name="supplier"
-                       placeholder="Example: ABC Cleaning Supplies"
-                       class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-green-400">
+                       placeholder="Optional supplier name"
+                       class="w-full border border-gray-300
+                              rounded-xl px-4 py-3
+                              focus:ring-2 focus:ring-blue-400
+                              focus:outline-none">
 
             </div>
 
             <!-- REMARKS -->
             <div class="mb-6">
 
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block mb-2 font-semibold text-gray-700">
+
                     Remarks
+
                 </label>
 
-                <textarea
-                    name="remarks"
-                    rows="4"
-                    placeholder="Optional remarks..."
-                    class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-green-400"></textarea>
+                <textarea name="remarks"
+                          rows="4"
+                          placeholder="Optional remarks..."
+                          class="w-full border border-gray-300
+                                 rounded-xl px-4 py-3
+                                 focus:ring-2 focus:ring-blue-400
+                                 focus:outline-none"></textarea>
 
             </div>
 
             <!-- BUTTONS -->
-            <div class="flex justify-end gap-3">
+            <div class="flex items-center gap-3">
 
-                <a href="{{ route('materials.index') }}"
-                   class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-5 py-3 rounded-xl">
+                <!-- SUBMIT -->
+                <button type="submit"
+                        class="bg-gradient-to-r from-green-500 to-blue-500
+                               hover:scale-105 transition
+                               text-white px-6 py-3 rounded-xl
+                               shadow-lg font-semibold">
 
-                    Cancel
-                </a>
+                    ➕ Restock Material
 
-                <button
-                    type="submit"
-                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl shadow-lg">
-
-                    📦 Save Restock
                 </button>
+
+                <!-- BACK -->
+                <a href="{{ route('materials.index') }}"
+                   class="bg-gray-200 hover:bg-gray-300
+                          text-gray-700 px-6 py-3
+                          rounded-xl shadow font-semibold">
+
+                    ← Back
+
+                </a>
 
             </div>
 

@@ -152,7 +152,10 @@
                             {{ $material->creator->username ?? 'Unknown' }}
                         </td>
 
-                        <td class="p-4 flex gap-2">
+                        <td class="p-4">
+
+                            <div class="flex flex-wrap gap-2">
+
 
                             <!-- EDIT -->
                             <a href="{{ route('materials.edit', $material->id) }}"
@@ -183,6 +186,7 @@
                                 </button>
 
                             </form>
+                                </div>
 
                         </td>
                        
