@@ -8,9 +8,15 @@ class MaterialRequest extends Model
 {
     protected $fillable = [
     'user_id',
+
+    'department_id',
+
     'request_number',
+
     'status',
+
     'purpose',
+    
     'remarks'
     ];
 
@@ -24,5 +30,10 @@ class MaterialRequest extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(\App\Models\Department::class);
     }
 }

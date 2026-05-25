@@ -101,6 +101,31 @@
 
             </div>
 
+            <!-- DEPARTMENT -->
+            <div class="mb-5">
+
+                <label class="block text-gray-700 font-semibold mb-2">
+                    Department
+                </label>
+
+                <select name="department_id"
+                        class="w-full border rounded-xl p-3">
+
+                    @foreach($departments as $department)
+
+                        <option value="{{ $department->id }}"
+                            {{ $material->department_id == $department->id ? 'selected' : '' }}>
+
+                            {{ $department->department_name }}
+
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+            </div>
+
             <!-- QUANTITY -->
             <div class="mb-5">
 

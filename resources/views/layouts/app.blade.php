@@ -62,37 +62,60 @@
             <!-- Divider -->
             <div class="border-t my-2"></div>
 
-            <!-- Inventory Label -->
-            <div class="text-xs text-gray-500 px-3 mt-2">
-                INVENTORY
+            <!-- INVENTORY MANAGEMENT -->
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Inventory Management
             </div>
 
-            <!-- Materials List -->
+            <!-- Materials Inventory -->
+
             <a href="{{ route('materials.index') }}"
             class="block px-3 py-2 rounded 
             {{ request()->is('materials') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
                 📦 Materials Inventory
+
             </a>
+
+            <!-- Material Requests -->
 
             <a href="/supervisor/material-requests"
-            class="block px-3 py-2 rounded hover:bg-green-100">
-                📦 Material Requests
+            class="block px-3 py-2 rounded 
+            {{ request()->is('supervisor/material-requests*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                📋 Material Requests
+
             </a>
 
-            
+            <!-- Material Logs -->
+
+            <a href="{{ route('materials.logs') }}"
+            class="block px-3 py-2 rounded 
+            {{ request()->is('materials/logs*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                📜 Material Logs
+
+            </a>
+
+
+            <!-- INVENTORY SETTINGS -->
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-6 mb-2">
+                Inventory Settings
+            </div>
 
             <!-- Add Material -->
+
             <a href="{{ route('materials.create') }}"
             class="block px-3 py-2 rounded 
             {{ request()->is('materials/create') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
                 ➕ Add Material
+
             </a>
 
-            <a href="{{ route('materials.logs') }}"
-            class="flex items-center gap-2 px-4 py-3 hover:bg-green-100 rounded-lg">
-
-                📜 Material Logs
-            </a>
+            <!-- Categories -->
 
             <a href="{{ route('categories.index') }}"
             class="block px-3 py-2 rounded 
@@ -102,11 +125,23 @@
 
             </a>
 
+            <!-- Units -->
+
             <a href="{{ route('units.index') }}"
             class="block px-3 py-2 rounded 
             {{ request()->is('units*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
 
                 📏 Units
+
+            </a>
+
+            <!-- Departments -->
+
+            <a href="{{ route('supervisor.departments.index') }}"
+            class="block px-3 py-2 rounded 
+            {{ request()->is('supervisor/departments*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                🏢 Departments
 
             </a>
 

@@ -35,11 +35,44 @@
         <form method="POST" action="/material-request">
             @csrf
 
+            <!-- DEPARTMENT -->
+
+            <div class="mb-6">
+
+                <label class="block text-sm font-semibold mb-1">
+
+                    Department / Office
+
+                </label>
+
+                <select
+                    name="department_id"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
+                    required>
+
+                    <option value="">
+                        -- Select Department --
+                    </option>
+
+                    @foreach($departments as $department)
+
+                        <option value="{{ $department->id }}">
+
+                            {{ $department->department_name }}
+
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+            </div>
+
             <!-- ITEMS CONTAINER -->
             <div id="items-container">
 
                 <!-- ITEM ROW -->
-                <div class="item-row border rounded-xl p-4 mb-4 bg-gray-50">
+                <div class="item-row bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4">
 
                     <!-- MATERIAL -->
                     <div class="mb-4">
@@ -48,7 +81,7 @@
                         </label>
 
                         <select name="material_id[]"
-                            class="material-select w-full border rounded-lg p-2"
+                            class="material-select w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
                             required>
 
                             <option value="">-- Select Material --</option>
@@ -83,7 +116,7 @@
                         <input type="number"
                             name="quantity[]"
                             min="1"
-                            class="quantity-input w-full border rounded-lg p-2"
+                            class="quantity-input w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
                             required>
 
                         <p class="stock-warning text-red-500 text-sm mt-1 hidden">
@@ -155,7 +188,7 @@
                     name="purpose"
                     rows="4"
                     placeholder="Example: Cleaning of ICT Laboratory"
-                    class="w-full border rounded-lg p-2"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
                     required></textarea>
 
             </div>
@@ -174,6 +207,39 @@
 
 <!-- Tom Select CSS -->
 <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+
+<style>
+
+    .ts-control {
+        border-radius: 0.75rem !important;
+        border: 1px solid #d1d5db !important;
+        padding: 0.75rem 1rem !important;
+        min-height: 52px !important;
+        box-shadow: none !important;
+    }
+
+    .ts-control input {
+        font-size: 14px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .ts-wrapper.single .ts-control {
+        background: white !important;
+    }
+
+    .ts-control:focus-within {
+        border-color: #60a5fa !important;
+        box-shadow: 0 0 0 2px rgba(96,165,250,0.3) !important;
+    }
+
+    .ts-dropdown {
+        border-radius: 0.75rem !important;
+        border: 1px solid #d1d5db !important;
+        overflow: hidden;
+    }
+
+</style>
 
 <!-- Tom Select JS -->
 <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
@@ -249,7 +315,7 @@
         const newRow = document.createElement('div');
 
         newRow.className =
-            'item-row border rounded-xl p-4 mb-4 bg-gray-50';
+        'item-row bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4';
 
         newRow.innerHTML = `
 
@@ -261,7 +327,7 @@
 
                 <select
                     name="material_id[]"
-                    class="material-select w-full border rounded-lg p-2"
+                    class="material-select w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
                     required>
 
                     ${materialOptions}
@@ -279,7 +345,7 @@
                 <input type="number"
                     name="quantity[]"
                     min="1"
-                    class="quantity-input w-full border rounded-lg p-2"
+                    class="quantity-input w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
                     required>
 
                 <p class="stock-warning text-red-500 text-sm mt-1 hidden">

@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Notification;
 use App\Events\NewNotificationEvent;
 use App\Models\MaterialLog;
+use App\Models\Department;
 
 class MaterialRequestController extends Controller
 {
@@ -21,7 +22,15 @@ class MaterialRequestController extends Controller
     {
         $materials = Material::all();
 
-        return view('material_request.form', compact('materials'));
+        $departments = Department::all();
+
+        return view(
+            'material_request.form',
+            compact(
+                'materials',
+                'departments'
+            )
+        );
     }
 
     // 📜 Personnel Request History
@@ -56,10 +65,14 @@ class MaterialRequestController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'department_id' => 'required|exists:departments,id',
+
             'material_id' => 'required|array',
+
             'material_id.*' => 'required|exists:materials,id',
 
             'quantity' => 'required|array',
+
             'quantity.*' => 'required|integer|min:1',
 
             'purpose' => 'required|string|max:500',
@@ -106,6 +119,8 @@ class MaterialRequestController extends Controller
 
             'user_id' => Auth::id(),
 
+            'department_id' => $request->department_id,
+
             'request_number' => $requestNumber,
 
             'status' => 'pending',
@@ -133,6 +148,7 @@ class MaterialRequestController extends Controller
                 'user_id' => $admin->id,
                 'type' => 'material',
                 'title' => 'New Material Request',
+                'url' => '/supervisor/material-requests',
                 'message' =>
                     (Auth::user()->fullname ?? Auth::user()->username)
                     . ' submitted a material request.',
@@ -157,6 +173,7 @@ class MaterialRequestController extends Controller
         // 📦 get all requests with materials + user
         $requests = MaterialRequest::with([
             'user',
+            'department',
             'items.material'
         ])->latest()->get();
 
@@ -213,6 +230,7 @@ class MaterialRequestController extends Controller
                     'user_id' => auth()->id(), // supervisor
                     'type' => 'material',
                     'title' => 'Low Stock Alert',
+                    'url' => '/supervisor/materials',
                     'message' => $material->name . ' is running low on stock!',
                     'is_read' => 0
                 ]);
@@ -230,6 +248,7 @@ class MaterialRequestController extends Controller
             'user_id' => $materialRequest->user_id,
             'type' => 'material',
             'title' => 'Request Approved',
+            'url' => '/material-request/history',
             'message' => 'Your material request has been approved.',
             'is_read' => 0
         ]);
@@ -250,6 +269,7 @@ class MaterialRequestController extends Controller
         'user_id' => $materialRequest->user_id,
             'type' => 'material',
             'title' => 'Request Rejected',
+            'url' => '/material-request/history',
             'message' => 'Your material request has been rejected.',
             'is_read' => 0
         ]);

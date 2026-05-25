@@ -12,7 +12,13 @@ use App\Http\Controllers\Supervisor\MaterialController;
 use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\Supervisor\CategoryController;
 use App\Http\Controllers\Supervisor\UnitController;
+use App\Http\Controllers\Supervisor\DepartmentController;
 
+Route::prefix('supervisor')->name('supervisor.')->group(function () {
+
+    Route::resource('departments', DepartmentController::class);
+
+});
 
 
 Route::middleware(['auth'])->group(function () {

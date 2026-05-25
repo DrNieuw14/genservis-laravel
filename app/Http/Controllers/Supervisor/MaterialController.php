@@ -8,6 +8,7 @@ use App\Models\Material;
 use App\Models\Category;
 use App\Models\Unit;
 use App\Models\MaterialLog;
+use App\Models\Department;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -50,9 +51,19 @@ class MaterialController extends Controller
     public function create()
     {
         $categories = Category::all();
+
         $units = Unit::all();
 
-        return view('supervisor.materials.create', compact('categories', 'units'));
+        $departments = Department::all();
+
+        return view(
+            'supervisor.materials.create',
+            compact(
+                'categories',
+                'units',
+                'departments'
+            )
+        );
     }
 
     // 💾 Store Material
@@ -60,6 +71,7 @@ class MaterialController extends Controller
     {
         $request->validate([
             'name' => 'required',
+            'department_id' => 'required',
             'category_id' => 'required',
             'unit_id' => 'required',
             'quantity' => 'required|integer|min:0',
@@ -67,6 +79,7 @@ class MaterialController extends Controller
 
         $material = Material::create([
             'name' => $request->name,
+            'department_id' => $request->department_id,
             'category_id' => $request->category_id,
             'unit_id' => $request->unit_id,
             'quantity' => $request->quantity,
@@ -92,12 +105,16 @@ class MaterialController extends Controller
         $material = Material::findOrFail($id);
 
         $categories = Category::all();
+
         $units = Unit::all();
+
+        $departments = Department::all();
 
         return view('supervisor.materials.edit', compact(
             'material',
             'categories',
-            'units'
+            'units',
+            'departments'
         ));
     }
 
@@ -106,6 +123,7 @@ class MaterialController extends Controller
     {
         $request->validate([
             'name' => 'required',
+            'department_id' => 'required',
             'category_id' => 'required',
             'unit_id' => 'required',
             'quantity' => 'required|integer|min:0',
@@ -116,6 +134,7 @@ class MaterialController extends Controller
 
         $material->update([
             'name' => $request->name,
+            'department_id' => $request->department_id,
             'category_id' => $request->category_id,
             'unit_id' => $request->unit_id,
             'quantity' => $request->quantity,

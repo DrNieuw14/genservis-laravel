@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Material extends Model
 {
     protected $fillable = [
-        'name',
-        'quantity',
-        'category_id',
-        'unit_id',
-        'created_by'
+    'name',
+    'quantity',
+    'category_id',
+    'department_id',
+    'unit_id',
+    'created_by'
     ];
 
     // 🔗 Relationships
@@ -24,6 +25,11 @@ class Material extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 
     // 📜 Material Logs

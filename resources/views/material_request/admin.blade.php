@@ -47,6 +47,8 @@
 
                     <th class="p-4 text-left">Requester</th>
 
+                    <th class="p-4 text-left">Department</th>
+
                     <th class="p-4 text-left">Material</th>
 
                     <th class="p-4 text-left">Qty</th>
@@ -74,6 +76,16 @@
                         <td class="p-4 font-medium">
 
                             {{ $request->user->fullname ?? $request->user->username }}
+
+                        </td>
+
+                        <td class="px-4 py-4">
+
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
+
+                                🏢 {{ $request->department->department_code ?? 'N/A' }}
+
+                            </span>
 
                         </td>
 
@@ -205,7 +217,7 @@
 
                     <tr>
 
-                        <td colspan="7"
+                        <td colspan="8"
                             class="text-center text-gray-500 py-8">
 
                             No material requests found.
