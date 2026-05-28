@@ -293,6 +293,111 @@
                 @endif
 
             </div>
+
+            {{-- 🚨 CRITICAL & OUT OF STOCK ALERTS --}}
+            <div class="bg-white rounded-xl shadow border border-orange-100 mb-8">
+
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+
+                    <h3 class="font-semibold text-orange-600 flex items-center gap-2">
+                        🚨 Critical Inventory Alerts
+                    </h3>
+
+                    <span class="bg-orange-100 text-orange-600 text-xs px-3 py-1 rounded-full font-semibold">
+
+                        {{ $criticalStocks->count() + $outOfStocks->count() }} Alert(s)
+
+                    </span>
+
+                </div>
+
+                @if($criticalStocks->count() > 0 || $outOfStocks->count() > 0)
+
+                    <div class="divide-y divide-orange-100">
+
+                        {{-- OUT OF STOCK --}}
+                        @foreach($outOfStocks as $material)
+
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-red-50 transition">
+
+                                <div>
+
+                                    <div class="font-semibold text-gray-800">
+                                        {{ $material->name }}
+                                    </div>
+
+                                    <div class="text-sm text-gray-500">
+
+                                        OUT OF STOCK
+
+                                    </div>
+
+                                </div>
+
+                                <div>
+
+                                    <span class="bg-red-100 text-red-700
+                                                px-4 py-2 rounded-full
+                                                text-sm font-bold">
+
+                                        ❌ Empty
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        @endforeach
+
+                        {{-- CRITICAL STOCK --}}
+                        @foreach($criticalStocks as $material)
+
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-orange-50 transition">
+
+                                <div>
+
+                                    <div class="font-semibold text-gray-800">
+                                        {{ $material->name }}
+                                    </div>
+
+                                    <div class="text-sm text-gray-500">
+
+                                        Critically low inventory
+
+                                    </div>
+
+                                </div>
+
+                                <div>
+
+                                    <span class="bg-orange-100 text-orange-700
+                                                px-4 py-2 rounded-full
+                                                text-sm font-bold">
+
+                                        ⚠ {{ $material->quantity }} Remaining
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        @endforeach
+
+                    </div>
+
+                @else
+
+                    <div class="px-6 py-8 text-center text-gray-400">
+
+                        ✅ No critical inventory alerts.
+
+                    </div>
+
+                @endif
+
+            </div>
             
 
             {{-- ⚠ LOW STOCK ALERTS --}}

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: May 25, 2026 at 10:01 AM
+-- Generation Time: May 28, 2026 at 08:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -68,7 +68,8 @@ INSERT INTO `categories` (`id`, `name`, `created_at`, `updated_at`) VALUES
 (3, 'Detergent', NULL, NULL),
 (4, 'Office Equipment', NULL, '2026-05-18 22:40:54'),
 (6, 'Office Supplies', '2026-05-18 16:43:39', '2026-05-18 16:46:31'),
-(7, 'ICT Equipment', '2026-05-18 22:40:38', '2026-05-18 22:40:38');
+(7, 'ICT Equipment', '2026-05-18 22:40:38', '2026-05-18 22:40:38'),
+(8, 'Electrical Supplies', '2026-05-25 00:17:15', '2026-05-25 00:17:15');
 
 -- --------------------------------------------------------
 
@@ -109,6 +110,32 @@ CREATE TABLE `failed_jobs` (
   `exception` longtext NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory_movements`
+--
+
+CREATE TABLE `inventory_movements` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `material_id` bigint(20) UNSIGNED NOT NULL,
+  `movement_type` enum('restock','request','damage','transfer','adjustment') NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `previous_stock` int(11) NOT NULL,
+  `new_stock` int(11) NOT NULL,
+  `remarks` text DEFAULT NULL,
+  `performed_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `inventory_movements`
+--
+
+INSERT INTO `inventory_movements` (`id`, `material_id`, `movement_type`, `quantity`, `previous_stock`, `new_stock`, `remarks`, `performed_by`, `created_at`, `updated_at`) VALUES
+(1, 8, 'restock', 3, 22, 25, 'by LGU', 3, '2026-05-27 17:00:02', '2026-05-27 17:00:02');
 
 -- --------------------------------------------------------
 
@@ -187,8 +214,13 @@ CREATE TABLE `materials` (
 
 INSERT INTO `materials` (`id`, `name`, `quantity`, `category_id`, `department_id`, `unit_id`, `created_by`, `created_at`, `updated_at`, `threshold`) VALUES
 (1, 'A4', 3, 6, NULL, 3, 3, '2026-05-18 22:35:00', '2026-05-24 19:36:08', 5),
-(2, 'Photo Paper', 9, 6, NULL, 1, 3, '2026-05-18 22:42:01', '2026-05-24 23:20:15', 5),
-(3, 'Short Bond Paper v2', 10, 6, 1, 3, 3, '2026-05-24 23:23:21', '2026-05-24 23:53:21', 5);
+(2, 'Photo Paper', 8, 6, NULL, 1, 3, '2026-05-18 22:42:01', '2026-05-27 19:09:58', 5),
+(3, 'Short Bond Paper v2', 10, 6, 1, 3, 3, '2026-05-24 23:23:21', '2026-05-24 23:53:21', 5),
+(4, 'LED Bulbs', 10, 8, 3, 1, 3, '2026-05-25 00:17:54', '2026-05-25 00:17:54', 5),
+(5, 'Safety Breaker', 4, 8, 3, 1, 3, '2026-05-25 00:18:27', '2026-05-25 00:18:27', 5),
+(6, 'Batteries AAA', 11, 8, 3, 1, 3, '2026-05-25 00:19:08', '2026-05-27 19:09:58', 5),
+(7, 'HDMI Cable', 4, 7, 3, 1, 3, '2026-05-25 00:19:51', '2026-05-25 00:19:51', 5),
+(8, 'Markers', 25, 6, 1, 1, 3, '2026-05-25 00:20:24', '2026-05-27 21:16:00', 5);
 
 -- --------------------------------------------------------
 
@@ -218,7 +250,17 @@ INSERT INTO `material_logs` (`id`, `material_id`, `user_id`, `action`, `quantity
 (4, 2, 3, 'restock', 5, 'for 1 week', '2026-05-18 23:19:04', '2026-05-18 23:19:04'),
 (5, 1, 3, 'deducted', 1, 'Request #: MR-2026-0005 | Requested by: aldrin | Approved by: supervisor', '2026-05-24 19:36:08', '2026-05-24 19:36:08'),
 (6, 2, 3, 'deducted', 1, 'Request #: MR-2026-0015 | Requested by: aldrin | Approved by: supervisor', '2026-05-24 23:20:15', '2026-05-24 23:20:15'),
-(7, 3, 3, 'stock_in', 5, 'Initial stock added', '2026-05-24 23:23:21', '2026-05-24 23:23:21');
+(7, 3, 3, 'stock_in', 5, 'Initial stock added', '2026-05-24 23:23:21', '2026-05-24 23:23:21'),
+(8, 4, 3, 'stock_in', 10, 'Initial stock added', '2026-05-25 00:17:54', '2026-05-25 00:17:54'),
+(9, 5, 3, 'stock_in', 4, 'Initial stock added', '2026-05-25 00:18:27', '2026-05-25 00:18:27'),
+(10, 6, 3, 'stock_in', 15, 'Initial stock added', '2026-05-25 00:19:08', '2026-05-25 00:19:08'),
+(11, 7, 3, 'stock_in', 4, 'Initial stock added', '2026-05-25 00:19:51', '2026-05-25 00:19:51'),
+(12, 8, 3, 'stock_in', 20, 'Initial stock added', '2026-05-25 00:20:24', '2026-05-25 00:20:24'),
+(13, 8, 3, 'restock', 2, 'Material restocked', '2026-05-25 01:15:15', '2026-05-25 01:15:15'),
+(14, 8, 3, 'restock', 3, 'Material restocked', '2026-05-27 17:00:02', '2026-05-27 17:00:02'),
+(15, 6, 3, 'deducted', 2, 'Request #: MR-2026-0020 | Requested by: aldrin | Approved by: supervisor', '2026-05-27 17:54:12', '2026-05-27 17:54:12'),
+(16, 6, 3, 'deducted', 2, 'Request #: MR-2026-0021 | Requested by: aldrin | Approved by: supervisor', '2026-05-27 19:09:58', '2026-05-27 19:09:58'),
+(17, 2, 3, 'deducted', 1, 'Request #: MR-2026-0021 | Requested by: aldrin | Approved by: supervisor', '2026-05-27 19:09:58', '2026-05-27 19:09:58');
 
 -- --------------------------------------------------------
 
@@ -261,7 +303,9 @@ INSERT INTO `material_requests` (`id`, `request_number`, `user_id`, `department_
 (16, 'MR-2026-0016', 4, 2, 'rejected', 'wee DM', NULL, '2026-05-24 22:43:26', '2026-05-24 23:20:11'),
 (17, 'MR-2026-0017', 4, 1, 'rejected', 'weee na', NULL, '2026-05-24 22:53:09', '2026-05-24 23:20:10'),
 (18, 'MR-2026-0018', 4, 1, 'rejected', 'weee', NULL, '2026-05-24 23:09:31', '2026-05-24 23:20:09'),
-(19, 'MR-2026-0019', 4, 1, 'rejected', 'wqeee', NULL, '2026-05-24 23:19:38', '2026-05-24 23:20:06');
+(19, 'MR-2026-0019', 4, 1, 'rejected', 'wqeee', NULL, '2026-05-24 23:19:38', '2026-05-24 23:20:06'),
+(20, 'MR-2026-0020', 4, 1, 'approved', 'weee', NULL, '2026-05-27 17:53:52', '2026-05-27 17:54:12'),
+(21, 'MR-2026-0021', 4, 1, 'approved', 'for ID', NULL, '2026-05-27 19:09:33', '2026-05-27 19:09:58');
 
 -- --------------------------------------------------------
 
@@ -305,7 +349,37 @@ INSERT INTO `material_request_items` (`id`, `request_id`, `material_id`, `quanti
 (19, 17, 2, 1, NULL, '2026-05-24 22:53:09', '2026-05-24 22:53:09'),
 (20, 18, 2, 1, NULL, '2026-05-24 23:09:31', '2026-05-24 23:09:31'),
 (21, 18, 1, 1, NULL, '2026-05-24 23:09:31', '2026-05-24 23:09:31'),
-(22, 19, 2, 1, NULL, '2026-05-24 23:19:38', '2026-05-24 23:19:38');
+(22, 19, 2, 1, NULL, '2026-05-24 23:19:38', '2026-05-24 23:19:38'),
+(23, 20, 6, 2, NULL, '2026-05-27 17:53:52', '2026-05-27 17:53:52'),
+(24, 21, 6, 2, NULL, '2026-05-27 19:09:33', '2026-05-27 19:09:33'),
+(25, 21, 2, 1, NULL, '2026-05-27 19:09:33', '2026-05-27 19:09:33');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `material_restock_logs`
+--
+
+CREATE TABLE `material_restock_logs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `material_id` bigint(20) UNSIGNED NOT NULL,
+  `previous_stock` int(11) NOT NULL,
+  `added_stock` int(11) NOT NULL,
+  `new_stock` int(11) NOT NULL,
+  `supplier` varchar(255) DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `restocked_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `material_restock_logs`
+--
+
+INSERT INTO `material_restock_logs` (`id`, `material_id`, `previous_stock`, `added_stock`, `new_stock`, `supplier`, `remarks`, `restocked_by`, `created_at`, `updated_at`) VALUES
+(1, 8, 20, 2, 22, 'National bookstore', 'May 25, 2026', 3, '2026-05-25 01:15:15', '2026-05-25 01:15:15'),
+(2, 8, 22, 3, 25, 'Donation', 'by LGU', 3, '2026-05-27 17:00:02', '2026-05-27 17:00:02');
 
 -- --------------------------------------------------------
 
@@ -343,7 +417,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (17, '2026_05_25_004929_create_departments_table', 3),
 (18, '2026_05_25_010229_add_department_id_to_materials_table', 4),
 (19, '2026_05_25_021639_add_department_id_to_material_requests_table', 5),
-(20, '2026_05_25_062454_add_url_to_notifications_table', 6);
+(20, '2026_05_25_062454_add_url_to_notifications_table', 6),
+(21, '2026_05_25_085315_create_material_restock_logs_table', 7),
+(22, '2026_05_28_005032_create_inventory_movements_table', 8);
 
 -- --------------------------------------------------------
 
@@ -375,7 +451,11 @@ INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `is_re
 (5, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 0, '2026-05-24 23:20:09', '2026-05-24 23:20:09', '/material-request/history'),
 (6, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 0, '2026-05-24 23:20:10', '2026-05-24 23:20:10', '/material-request/history'),
 (7, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-24 23:20:11', '2026-05-24 23:21:35', '/material-request/history'),
-(8, 4, 'material', 'Request Approved', 'Your material request has been approved.', 1, '2026-05-24 23:20:15', '2026-05-24 23:20:26', '/material-request/history');
+(8, 4, 'material', 'Request Approved', 'Your material request has been approved.', 1, '2026-05-24 23:20:15', '2026-05-24 23:20:26', '/material-request/history'),
+(9, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 0, '2026-05-27 17:53:52', '2026-05-27 17:53:52', '/supervisor/material-requests'),
+(10, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-05-27 17:54:12', '2026-05-27 17:54:12', '/material-request/history'),
+(11, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 0, '2026-05-27 19:09:33', '2026-05-27 19:09:33', '/supervisor/material-requests'),
+(12, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-05-27 19:09:58', '2026-05-27 19:09:58', '/material-request/history');
 
 -- --------------------------------------------------------
 
@@ -496,6 +576,14 @@ ALTER TABLE `failed_jobs`
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
 
 --
+-- Indexes for table `inventory_movements`
+--
+ALTER TABLE `inventory_movements`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `inventory_movements_material_id_foreign` (`material_id`),
+  ADD KEY `inventory_movements_performed_by_foreign` (`performed_by`);
+
+--
 -- Indexes for table `jobs`
 --
 ALTER TABLE `jobs`
@@ -549,6 +637,13 @@ ALTER TABLE `material_request_items`
   ADD KEY `material_request_items_material_id_foreign` (`material_id`);
 
 --
+-- Indexes for table `material_restock_logs`
+--
+ALTER TABLE `material_restock_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `material_restock_logs_material_id_foreign` (`material_id`);
+
+--
 -- Indexes for table `migrations`
 --
 ALTER TABLE `migrations`
@@ -591,7 +686,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -604,6 +699,12 @@ ALTER TABLE `departments`
 --
 ALTER TABLE `failed_jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `inventory_movements`
+--
+ALTER TABLE `inventory_movements`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -621,37 +722,43 @@ ALTER TABLE `leave_requests`
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `material_logs`
 --
 ALTER TABLE `material_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `material_requests`
 --
 ALTER TABLE `material_requests`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `material_request_items`
 --
 ALTER TABLE `material_request_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT for table `material_restock_logs`
+--
+ALTER TABLE `material_restock_logs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `personnel`
@@ -674,6 +781,13 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `inventory_movements`
+--
+ALTER TABLE `inventory_movements`
+  ADD CONSTRAINT `inventory_movements_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inventory_movements_performed_by_foreign` FOREIGN KEY (`performed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `materials`
@@ -704,6 +818,12 @@ ALTER TABLE `material_requests`
 ALTER TABLE `material_request_items`
   ADD CONSTRAINT `material_request_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `material_request_items_request_id_foreign` FOREIGN KEY (`request_id`) REFERENCES `material_requests` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `material_restock_logs`
+--
+ALTER TABLE `material_restock_logs`
+  ADD CONSTRAINT `material_restock_logs_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `notifications`

@@ -59,13 +59,17 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
             'pendingUsers'  => \App\Models\User::where('status', 'pending')
                                     ->where('role', 'personnel')->latest()->get(),
         
+            
             // ⚠ LOW STOCK
             'lowStockMaterials' =>
                 \App\Models\Material::whereColumn(
                     'quantity',
                     '<=',
                     'threshold'
-                )->get(),
+                )
+                ->where('quantity', '>', 5)
+                ->get(),
+
 
                 // 📊 MOST REQUESTED MATERIALS
             'mostRequestedMaterials' =>
@@ -91,6 +95,20 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->orderByRaw('MIN(created_at) DESC')
                 ->take(6)
                 ->get(),
+
+                // 🚨 CRITICAL STOCKS
+            'criticalStocks' =>
+
+                \App\Models\Material::where('quantity', '<=', 5)
+                    ->where('quantity', '>', 0)
+                    ->orderBy('quantity', 'asc')
+                    ->get(),
+
+            // ❌ OUT OF STOCK
+            'outOfStocks' =>
+
+                \App\Models\Material::where('quantity', '<=', 0)
+                    ->get(),     
                 
        ]);
     })->middleware(['auth', 'role:supervisor'])
