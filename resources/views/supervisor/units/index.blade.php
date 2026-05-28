@@ -30,15 +30,19 @@
 
     <!-- ALERTS -->
     @if(session('success'))
+
         <div class="bg-green-500 text-white p-4 rounded-xl mb-4 shadow">
             {{ session('success') }}
         </div>
+
     @endif
 
     @if(session('error'))
+
         <div class="bg-red-500 text-white p-4 rounded-xl mb-4 shadow">
             {{ session('error') }}
         </div>
+
     @endif
 
     <!-- CARD -->
@@ -98,7 +102,6 @@
                                       text-white px-4 py-2 rounded-lg shadow">
 
                                 ✏️ Edit
-
                             </a>
 
                             <!-- DELETE -->
@@ -134,7 +137,7 @@
                         No units found.
 
                     </td>
-
+                    
                 </tr>
 
                 @endforelse

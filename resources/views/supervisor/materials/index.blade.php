@@ -80,6 +80,7 @@
                     class="bg-blue-600 text-white px-6 rounded-xl hover:bg-blue-700 transition">
 
                     Search
+
                 </button>
 
             </div>
@@ -203,7 +204,6 @@
 
                         </td>
 
-                        
                     </tr>
 
                 @endforelse
