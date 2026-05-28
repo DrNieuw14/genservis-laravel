@@ -13,12 +13,9 @@ use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\Supervisor\CategoryController;
 use App\Http\Controllers\Supervisor\UnitController;
 use App\Http\Controllers\Supervisor\DepartmentController;
+use App\Http\Controllers\Supervisor\InventoryMovementController;
 
-Route::prefix('supervisor')->name('supervisor.')->group(function () {
 
-    Route::resource('departments', DepartmentController::class);
-
-});
 
 
 Route::middleware(['auth'])->group(function () {
@@ -54,6 +51,51 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
+    Route::get('/supervisor/dashboard', function () {
+        return view('supervisor.dashboard', [
+            'pendingCount'  => \App\Models\User::where('status', 'pending')->count(),
+            'approvedCount' => \App\Models\User::where('status', 'approved')->count(),
+            'rejectedCount' => \App\Models\User::where('status', 'rejected')->count(),
+            'pendingUsers'  => \App\Models\User::where('status', 'pending')
+                                    ->where('role', 'personnel')->latest()->get(),
+        
+            // ⚠ LOW STOCK
+            'lowStockMaterials' =>
+                \App\Models\Material::whereColumn(
+                    'quantity',
+                    '<=',
+                    'threshold'
+                )->get(),
+
+                // 📊 MOST REQUESTED MATERIALS
+            'mostRequestedMaterials' =>
+
+                \App\Models\MaterialRequestItem::select(
+                    'material_id',
+                    \DB::raw('SUM(quantity) as total_requested')
+                )
+                ->with('material')
+                ->groupBy('material_id')
+                ->orderByDesc('total_requested')
+                ->take(5)
+                ->get(),
+
+                // 📈 MONTHLY MATERIAL USAGE
+            'monthlyUsage' =>
+
+                \App\Models\MaterialRequestItem::select(
+                    DB::raw("DATE_FORMAT(created_at, '%M %Y') as month"),
+                    DB::raw('SUM(quantity) as total_used')
+                )
+                ->groupBy('month')
+                ->orderByRaw('MIN(created_at) DESC')
+                ->take(6)
+                ->get(),
+                
+       ]);
+    })->middleware(['auth', 'role:supervisor'])
+    ->name('supervisor.dashboard');
+
 // ── Authenticated routes ──────────────────────────────────
 Route::middleware(['auth'])->group(function () {
 
@@ -73,6 +115,36 @@ Route::middleware(['auth'])->group(function () {
     // ── Supervisor / Admin routes ──
 Route::middleware('role:supervisor')->group(function () {
 
+    /*
+    |--------------------------------------------------------------------------
+    | DEPARTMENTS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('supervisor')
+        ->name('supervisor.')
+        ->group(function () {
+
+            Route::resource('departments', DepartmentController::class);
+
+    });
+    /*
+    |--------------------------------------------------------------------------
+    | INVENTORY MOVEMENTS
+    |--------------------------------------------------------------------------
+    */
+        
+    Route::prefix('supervisor')
+    ->name('supervisor.')
+    ->group(function () {
+
+        Route::get('/inventory-movements',
+            [InventoryMovementController::class, 'index'])
+            ->name('inventory.movements.index');
+
+    });
+    
+   
     // ✅ RESTOCK MATERIAL
     Route::get('/materials/{id}/restock',
         [MaterialController::class, 'restockForm'])
@@ -132,55 +204,17 @@ Route::middleware('role:supervisor')->group(function () {
     Route::get('/materials/logs', [MaterialController::class, 'logs'])
     ->name('materials.logs');
 
-    Route::get('/supervisor/dashboard', function () {
-        return view('supervisor.dashboard', [
-            'pendingCount'  => \App\Models\User::where('status', 'pending')->count(),
-            'approvedCount' => \App\Models\User::where('status', 'approved')->count(),
-            'rejectedCount' => \App\Models\User::where('status', 'rejected')->count(),
-            'pendingUsers'  => \App\Models\User::where('status', 'pending')
-                                    ->where('role', 'personnel')->latest()->get(),
-        
-            // ⚠ LOW STOCK
-            'lowStockMaterials' =>
-                \App\Models\Material::whereColumn(
-                    'quantity',
-                    '<=',
-                    'threshold'
-                )->get(),
-
-                // 📊 MOST REQUESTED MATERIALS
-            'mostRequestedMaterials' =>
-
-                \App\Models\MaterialRequestItem::select(
-                    'material_id',
-                    \DB::raw('SUM(quantity) as total_requested')
-                )
-                ->with('material')
-                ->groupBy('material_id')
-                ->orderByDesc('total_requested')
-                ->take(5)
-                ->get(),
-
-                // 📈 MONTHLY MATERIAL USAGE
-            'monthlyUsage' =>
-
-                \App\Models\MaterialRequestItem::select(
-                    DB::raw("DATE_FORMAT(created_at, '%M %Y') as month"),
-                    DB::raw('SUM(quantity) as total_used')
-                )
-                ->groupBy('month')
-                ->orderByRaw('MIN(created_at) DESC')
-                ->take(6)
-                ->get(),
-                
-       ]);
-    })->name('supervisor.dashboard');
+    
 
     // ✅ Inventory (Materials)
     Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
     Route::get('/materials/create', [MaterialController::class, 'create'])->name('materials.create');
     Route::post('/materials/store', [MaterialController::class, 'store'])->name('materials.store');
 
+    Route::get('/materials/{id}',
+        [MaterialController::class, 'show'])
+        ->name('materials.show');
+        
     Route::get('/materials/{id}/edit', [MaterialController::class, 'edit'])
         ->name('materials.edit');
 

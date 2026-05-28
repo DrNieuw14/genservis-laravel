@@ -14,6 +14,7 @@ use App\Models\Notification;
 use App\Events\NewNotificationEvent;
 use App\Models\MaterialLog;
 use App\Models\Department;
+use App\Models\InventoryMovement;
 
 class MaterialRequestController extends Controller
 {
@@ -194,9 +195,38 @@ class MaterialRequestController extends Controller
                 return back()->with('error', 'Not enough stock for ' . $material->name);
             }
 
+            // 🔻 SAVE PREVIOUS STOCK
+            $previousQuantity = $material->quantity;
+
             // 🔻 Deduct stock
             $material->quantity -= $item->quantity;
+
             $material->save();
+
+            // ✅ SAVE INVENTORY MOVEMENT
+            InventoryMovement::create([
+
+                'material_id' => $material->id,
+
+                'user_id' => auth()->id(),
+
+                'type' => 'Request Deduction',
+
+                'quantity' => $item->quantity,
+
+                'previous_quantity' => $previousQuantity,
+
+                'new_quantity' => $material->quantity,
+
+                'remarks' =>
+                    'Request #: '
+                    . ($materialRequest->request_number ?? 'N/A')
+
+                    . ' | Requested by: '
+                    . ($materialRequest->user->fullname
+                        ?? $materialRequest->user->username)
+
+            ]);
 
             // 📝 AUTO MATERIAL LOG
             MaterialLog::create([

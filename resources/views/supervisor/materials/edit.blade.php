@@ -126,17 +126,22 @@
 
             </div>
 
-            <!-- QUANTITY -->
+            <!-- CURRENT STOCK -->
             <div class="mb-5">
 
                 <label class="block text-gray-700 font-semibold mb-2">
-                    Quantity
+                    Current Stock
                 </label>
 
                 <input type="number"
-                       name="quantity"
-                       value="{{ $material->quantity }}"
-                       class="w-full border rounded-xl p-3">
+                    value="{{ $material->quantity }}"
+                    readonly
+                    class="w-full bg-gray-100 border rounded-xl p-3 cursor-not-allowed">
+
+                <p class="text-sm text-gray-500 mt-2">
+                    Stock quantity can only be updated through restocking,
+                    requests, transfers, or damage adjustments.
+                </p>
 
             </div>
 

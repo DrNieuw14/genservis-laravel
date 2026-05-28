@@ -145,6 +145,16 @@
 
             </a>
 
+            <!-- Inventory Movements -->
+
+            <a href="{{ route('supervisor.inventory.movements.index') }}"
+            class="block px-3 py-2 rounded 
+            {{ request()->is('supervisor/inventory-movements*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                🔄 Inventory Movements
+
+            </a>
+
         @endif
 
 
