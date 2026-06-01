@@ -11,10 +11,12 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        $notifications = Auth::user()
-            ->notifications()
-            ->orderByDesc('created_at')
-            ->paginate(20);
+        $notifications = Notification::where(
+            'user_id',
+            auth()->id()
+        )
+        ->orderByDesc('created_at')
+        ->paginate(20);
 
         return view('notifications.index', compact('notifications'));
     }
@@ -23,21 +25,33 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
 
-        $notifications = $user->notifications()
+        $notifications = Notification::where(
+                'user_id',
+                $user->id
+            )
             ->orderByDesc('created_at')
             ->take(10)
             ->get()
+
             ->map(fn($n) => [
-                'id'      => $n->id,
-                'message' => $n->data['message'] ?? 'New notification',
-                'url'     => $n->data['url'] ?? '#',
-                'read'    => ! is_null($n->read_at),
-                'time'    => $n->created_at->diffForHumans(),
-            ]);
+            'id'         => $n->id,
+            'title'      => $n->title,
+            'message'    => $n->message,
+            'type'       => $n->type,
+            'url'        => $n->url,
+            'is_read'    => $n->is_read,
+            'created_at' => $n->created_at,
+            'time'       => $n->created_at->diffForHumans(),
+        ]);
 
         return response()->json([
             'notifications' => $notifications,
-            'unread_count'  => $user->unreadNotifications()->count(),
+            'unread_count' => Notification::where(
+            'user_id',
+            $user->id
+        )
+        ->where('is_read', 0)
+        ->count(),
         ]);
     }
 
@@ -47,27 +61,29 @@ class NotificationController extends Controller
     {
         $notif = Notification::findOrFail($id);
 
-        // security check
         if ($notif->user_id != auth()->id()) {
             abort(403);
         }
 
-        // mark as read
         $notif->update([
             'is_read' => 1
         ]);
 
-        // 🔥 REDIRECT PROPERLY (IMPORTANT)
-        if ($notif->type === 'leave') {
-            return redirect()->route('leave.requests');
-        }
-
-        return redirect()->route('admin.users.pending');
+        return redirect($notif->url ?? route('dashboard'));
     }
 
+        
     public function markAllRead()
     {
-        Auth::user()->unreadNotifications->markAsRead();
-        return response()->json(['success' => true]);
+        Notification::where(
+            'user_id',
+            auth()->id()
+        )->update([
+            'is_read' => 1
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 }

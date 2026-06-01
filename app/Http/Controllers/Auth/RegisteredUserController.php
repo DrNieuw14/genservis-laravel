@@ -4,14 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Notifications\NewUserRegistered;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-use Carbon\Carbon; // ADD THIS AT TOP
+use Carbon\Carbon;
 use App\Models\Notification;
 
 class RegisteredUserController extends Controller
@@ -44,7 +39,7 @@ public function store(Request $request)
     );
 
     // ✅ Create User
-    $user = \App\Models\User::create([
+    $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
         'username' => $request->username,
@@ -62,25 +57,40 @@ public function store(Request $request)
 
 
     \App\Models\Personnel::create([
-    'employee_id' => 'EMP' . rand(1000,9999),
-    'fullname' => $user->name,
-    'position' => 'Staff',
-    'department' => 'Maintenance',
-    'user_id' => $user->id, // ✅ THIS IS THE FIX
-    'status' => 'Active'
+        'employee_id' => 'EMP' . str_pad(
+            \App\Models\Personnel::count() + 1,
+            5,
+            '0',
+            STR_PAD_LEFT
+        ),
+
+        'fullname' => $user->name,
+        'position' => 'Staff',
+        'department' => 'Maintenance',
+        'user_id' => $user->id,
+        'status' => 'Active'
     ]);
 
     $supervisor = User::where('role', 'supervisor')->first();
 
     if ($supervisor) {
+
         Notification::create([
             'user_id' => $supervisor->id,
-            'type' => 'user',
+            'type' => 'user_registration',
             'title' => 'New User Registration',
             'message' => $user->name . ' registered and needs approval',
+            'url' => route('admin.users.pending', [], false),
+            'is_read' => 0,
         ]);
+
     }
 
-    return redirect()->route('login')->with('success', 'Registration successful! Waiting for admin approval.');
-}
+    return redirect()
+        ->route('login')
+        ->with(
+            'success',
+            'Registration successful! Waiting for admin approval.'
+        );
+    }
 }

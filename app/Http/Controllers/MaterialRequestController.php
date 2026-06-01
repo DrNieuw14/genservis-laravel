@@ -182,10 +182,26 @@ class MaterialRequestController extends Controller
         return view('material_request.admin', compact('requests'));
     }
 
+        
+
     // ✅ Approve request
     public function approve($id)
     {
+        
         $materialRequest = MaterialRequest::findOrFail($id);
+
+        // ❌ Prevent double approval
+        if ($materialRequest->status === 'approved') {
+
+            return back()->with(
+                'error',
+                'Request already approved.'
+            );
+        }
+        
+
+
+        
 
         foreach ($materialRequest->items as $item) {
             $material = $item->material;
@@ -204,19 +220,20 @@ class MaterialRequestController extends Controller
             $material->save();
 
             // ✅ SAVE INVENTORY MOVEMENT
+            
             InventoryMovement::create([
 
                 'material_id' => $material->id,
 
-                'user_id' => auth()->id(),
+                'performed_by' => auth()->id(),
 
-                'type' => 'Request Deduction',
+                'movement_type' => 'request',
 
                 'quantity' => $item->quantity,
 
-                'previous_quantity' => $previousQuantity,
+                'previous_stock' => $previousQuantity,
 
-                'new_quantity' => $material->quantity,
+                'new_stock' => $material->quantity,
 
                 'remarks' =>
                     'Request #: '
@@ -227,6 +244,7 @@ class MaterialRequestController extends Controller
                         ?? $materialRequest->user->username)
 
             ]);
+
 
             // 📝 AUTO MATERIAL LOG
             MaterialLog::create([
@@ -253,20 +271,78 @@ class MaterialRequestController extends Controller
 
             ]);
 
-            // 🔔 LOW STOCK ALERT (THIS IS YOUR NEW FEATURE)
-            if ($material->quantity <= $material->threshold) {
+            
+            // ❌ OUT OF STOCK ALERT
+            if ($material->quantity <= 0) {
 
                 $notif = Notification::create([
-                    'user_id' => auth()->id(), // supervisor
-                    'type' => 'material',
-                    'title' => 'Low Stock Alert',
-                    'url' => '/supervisor/materials',
-                    'message' => $material->name . ' is running low on stock!',
+
+                    'user_id' => auth()->id(),
+
+                    'type' => 'inventory',
+
+                    'title' => 'Out of Stock Alert',
+                    
+                    'url' => route('materials.index'),
+
+                    'message' =>
+                        $material->name .
+                        ' is now OUT OF STOCK.',
+
                     'is_read' => 0
                 ]);
 
                 event(new NewNotificationEvent($notif));
             }
+
+            // 🚨 CRITICAL STOCK ALERT
+            elseif ($material->quantity <= 5) {
+
+                $notif = Notification::create([
+
+                    'user_id' => auth()->id(),
+
+                    'type' => 'inventory',
+
+                    'title' => 'Critical Stock Alert',
+
+                    'url' => route('materials.index'),
+
+                    'message' =>
+                        $material->name .
+                        ' stock is critically low (' .
+                        $material->quantity .
+                        ' remaining).',
+
+                    'is_read' => 0
+                ]);
+
+                event(new NewNotificationEvent($notif));
+            }
+
+            // ⚠ LOW STOCK ALERT
+            elseif ($material->quantity <= $material->threshold) {
+
+                $notif = Notification::create([
+
+                    'user_id' => auth()->id(),
+
+                    'type' => 'inventory',
+
+                    'title' => 'Low Stock Alert',
+
+                    'url' => route('materials.index'),
+
+                    'message' =>
+                        $material->name .
+                        ' inventory is getting low.',
+
+                    'is_read' => 0
+                ]);
+
+                event(new NewNotificationEvent($notif));
+            }
+
         }
 
         $materialRequest->update([
@@ -274,7 +350,8 @@ class MaterialRequestController extends Controller
         ]);
 
         // 🔔 Notify requester
-        Notification::create([
+        
+        $notif = Notification::create([
             'user_id' => $materialRequest->user_id,
             'type' => 'material',
             'title' => 'Request Approved',
@@ -283,20 +360,36 @@ class MaterialRequestController extends Controller
             'is_read' => 0
         ]);
 
-        return back()->with('success', 'Request approved!');
+    
+    
+        event(new NewNotificationEvent($notif));
+
+        return back()->with('success', 'Request approved and stock updated!');
+
     }
 
     // ❌ Reject request
+  
     public function reject($id)
     {
         $materialRequest = MaterialRequest::findOrFail($id);
 
-        $materialRequest->update([
-        'status' => 'rejected'
-    ]);
+        // ❌ Prevent rejecting approved requests
+        if ($materialRequest->status === 'approved') {
 
-    Notification::create([
-        'user_id' => $materialRequest->user_id,
+            return back()->with(
+                'error',
+                'Approved requests cannot be rejected.'
+            );
+        }
+
+        $materialRequest->update([
+            'status' => 'rejected'
+        ]);
+
+        
+        $notif = Notification::create([
+            'user_id' => $materialRequest->user_id,
             'type' => 'material',
             'title' => 'Request Rejected',
             'url' => '/material-request/history',
@@ -304,7 +397,9 @@ class MaterialRequestController extends Controller
             'is_read' => 0
         ]);
 
-        return back()->with('success', 'Request rejected!');
-    }
-
+        event(new NewNotificationEvent($notif));
+    
+        return back()->with('success', 'Request rejected successfully.');
+        }
 }
+

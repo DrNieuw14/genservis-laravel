@@ -58,7 +58,7 @@
                 <div id="notif-list" class="max-h-64 overflow-y-auto"></div>
 
                 <div class="p-2 text-center border-t">
-                    <a href="/leave/admin" class="text-blue-500 text-sm">
+                    <a href="{{ route('notifications.index') }}" class="text-blue-500 text-sm">
                         View all
                     </a>
                 </div>
@@ -144,18 +144,27 @@
                 </div>
         </div>
 
+        
+
     <script>
+
+    console.log('Notification JS Loaded');
+
         async function loadNotifications() {
-        const res = await fetch('/notifications');
+        const res = await fetch('/notifications/fetch');
         const data = await res.json();
 
         const list = document.getElementById('notif-list');
         const count = document.getElementById('notif-count');
 
-        if (data.unread > 0) {
-            count.innerText = data.unread;
+        if (data.unread_count > 0) {
+
+            count.innerText = data.unread_count;
+
             count.style.display = 'inline-block';
+
         } else {
+
             count.style.display = 'none';
         }
 
@@ -176,26 +185,27 @@
         // loop notifications
             data.notifications.slice(0, 5).forEach(notif => {
 
-                list.innerHTML += `
+              list.innerHTML += `
 
-                    <div onclick="handleNotification(
-                        ${notif.id},
-                        '${notif.url}',
-                        this
-                    )"
-                    class="p-3 border-b hover:bg-gray-100 transition cursor-pointer flex gap-3 items-start
-                    ${notif.is_read ? 'bg-white' : 'bg-blue-50'}">
+                <button
+                    type="button"
+                    data-id="${notif.id}"
+                    data-url="${notif.url}"
+                    class="notif-item w-full text-left p-3 border-b hover:bg-gray-100 transition cursor-pointer flex gap-3 items-start ${notif.is_read ? 'bg-white' : 'bg-blue-50'}">
 
                     <!-- ICON -->
                     <div class="text-xl">
-                        ${notif.type === 'leave' ? '📄' : 
-                        notif.type === 'user_registration' ? '👤' : '🔔'}
+                        ${notif.type === 'leave' ? '📄' :
+                            notif.type === 'user_registration' ? '👤' :
+                            notif.type === 'inventory' ? '📦' :
+                            notif.type === 'material' ? '🛠️' :
+                            '🔔'}
                     </div>
 
                     <!-- CONTENT -->
                     <div class="flex-1">
-                    
-                    ${!notif.is_read ? '<span class="text-blue-500 text-xs">●</span>' : ''}
+
+                        ${!notif.is_read ? '<span class="text-blue-500 text-xs">●</span>' : ''}
 
                         <div class="font-semibold text-sm text-gray-800">
                             ${notif.title}
@@ -206,58 +216,77 @@
                         </div>
 
                         <div class="text-[10px] text-gray-400 mt-1">
-                            ${new Date(notif.created_at).toLocaleString()}
+                            ${notif.time}
                         </div>
+
                     </div>
-                </div>
-            `;
+
+                </button>
+
+            `;  
         });
     }
             
 
-        window.handleNotification = async function(
-            id,
-            url,
-            element
-        ) {
+                // Load on start
+            loadNotifications();
 
-            element.closest('[x-data]').__x.$data.openNotif = false;
-
-            await fetch(`/notifications/read/${id}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json'
-                }
+            // Realtime
+            Echo.private('notifications.' + "{{ Auth::user()->id }}")
+            .listen('NewNotificationEvent', (e) => {
+                console.log('REALTIME RECEIVED:', e);
+                loadNotifications();
             });
 
-            console.log('REDIRECT URL:', url);
+            window.markAllRead = async function() {
+                await fetch('/notifications/read-all', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
 
-            window.location.href = url || '/dashboard';
+                loadNotifications();
+            }
 
-            return;
-        }
+            document.addEventListener('click', async function(e) {
 
-        // Load on start
-        loadNotifications();
+                const item = e.target.closest('.notif-item');
 
-        // Realtime
-        Echo.private('notifications.' + "{{ Auth::user()->id }}")
-        .listen('NewNotificationEvent', (e) => {
-            console.log('REALTIME RECEIVED:', e);
-            loadNotifications();
-        });
+                if (!item) return;
 
-        window.markAllRead = async function() {
-            await fetch('/notifications/read-all', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                e.preventDefault();
+
+                const id = item.dataset.id;
+                const url = item.dataset.url;
+
+                console.log('Notification clicked:', id, url);
+
+                try {
+
+                    await fetch(`/notifications/read/${id}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content'),
+
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                } catch(error) {
+
+                    console.error(error);
                 }
-            });
 
-            loadNotifications();
-        }
+                // ✅ force redirect
+                setTimeout(() => {
+                    window.location.href = url || '/dashboard';
+                }, 100);
+
+            });
 
         
     </script>

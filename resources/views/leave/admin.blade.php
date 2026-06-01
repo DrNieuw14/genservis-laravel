@@ -2,74 +2,150 @@
 
 @section('content')
 
-<div class="p-6">
+<div class="max-w-7xl mx-auto mt-8">
 
-    <h2 class="text-xl font-bold mb-4">All Leave Requests (Supervisor)</h2>
+    <div class="flex justify-between items-center mb-6">
+
+        <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+            📄 Leave Management
+        </h2>
+
+    </div>
+
+    <!-- STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <h3 class="text-gray-500 text-sm">
+                Pending
+            </h3>
+
+            <p class="text-3xl font-bold text-yellow-500 mt-2">
+                {{ $leaves->where('status','Pending')->count() }}
+            </p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <h3 class="text-gray-500 text-sm">
+                ✅ Approved
+            </h3>
+
+            <p class="text-3xl font-bold text-green-600 mt-2">
+                {{ $leaves->where('status','Approved')->count() }}
+            </p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <h3 class="text-gray-500 text-sm">
+                Rejected
+            </h3>
+
+            <p class="text-3xl font-bold text-red-600 mt-2">
+                {{ $leaves->where('status','Rejected')->count() }}
+            </p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <h3 class="text-gray-500 text-sm">
+                Total Requests
+            </h3>
+
+            <p class="text-3xl font-bold text-blue-600 mt-2">
+                {{ $leaves->count() }}
+            </p>
+        </div>
+
+    </div>
 
     <!-- FILTER -->
-    <div class="mb-4 space-x-2">
+    <div class="bg-white rounded-2xl shadow-xl p-4 mb-6">
+
+    <div class="flex flex-wrap gap-2 mb-4">
 
         <a href="/leave/admin"
-        class="px-3 py-1 rounded {{ !$status ? 'bg-blue-600 text-white' : 'bg-gray-200' }}">
+        class="px-4 py-2 rounded-xl font-semibold
+        {{ !$status ? 'bg-blue-600 text-white' : 'bg-gray-100' }}">
             All
         </a>
 
         <a href="/leave/admin?status=Pending"
-        class="px-3 py-1 rounded {{ $status == 'Pending' ? 'bg-yellow-500 text-white' : 'bg-gray-200' }}">
+        class="px-4 py-2 rounded-xl font-semibold
+        {{ $status == 'Pending' ? 'bg-yellow-500 text-white' : 'bg-gray-100' }}">
             Pending
         </a>
 
         <a href="/leave/admin?status=Approved"
-        class="px-3 py-1 rounded {{ $status == 'Approved' ? 'bg-green-600 text-white' : 'bg-gray-200' }}">
+        class="px-4 py-2 rounded-xl font-semibold
+        {{ $status == 'Approved' ? 'bg-green-600 text-white' : 'bg-gray-100' }}">
             Approved
         </a>
 
         <a href="/leave/admin?status=Rejected"
-        class="px-3 py-1 rounded {{ $status == 'Rejected' ? 'bg-red-600 text-white' : 'bg-gray-200' }}">
+        class="px-4 py-2 rounded-xl font-semibold
+        {{ $status == 'Rejected' ? 'bg-red-600 text-white' : 'bg-gray-100' }}">
             Rejected
         </a>
 
     </div>
 
-    <!-- SEARCH -->
-    <form method="GET" action="/leave/admin" class="mb-4 flex gap-2">
-        <input type="text" name="search"
-            value="{{ $search ?? '' }}"
-            placeholder="Search employee name..."
-            class="border px-3 py-1 rounded w-64">
+    <form method="GET" action="/leave/admin">
 
-        <input type="hidden" name="status" value="{{ $status }}">
+        <div class="flex gap-3">
 
-        <button class="bg-blue-600 text-white px-3 py-1 rounded">
-            Search
-        </button>
+            <input
+                type="text"
+                name="search"
+                value="{{ $search ?? '' }}"
+                placeholder="Search employee..."
+                class="w-full border rounded-xl p-3">
+
+            <input type="hidden"
+                name="status"
+                value="{{ $status }}">
+
+            <button
+                class="bg-blue-600 text-white px-6 rounded-xl hover:bg-blue-700">
+
+                Search
+
+            </button>
+
+        </div>
+
     </form>
 
-    <!-- TABLE -->
-    <div class="bg-white rounded shadow p-4">
+</div>
 
-    <table class="w-full border border-gray-300">
-        <thead class="bg-gray-200">
+    <!-- TABLE -->
+    <div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
+
+    <table class="min-w-full">
+        <thead class="bg-gradient-to-r from-green-500 to-blue-600 text-white">
             <tr>
-                <th class="p-2 border">Name</th>
-                <th class="p-2 border">Type</th>
-                <th class="p-2 border">Approved At</th>
-                <th class="p-2 border">Date From</th>
-                <th class="p-2 border">Date To</th>
-                <th class="p-2 border">Status</th>
-                <th class="p-2 border">Action</th>
+                <th class="p-4 text-left">Name</th>
+                <th class="p-4 text-left">Type</th>
+                <th class="p-4 text-left">Reason</th>
+                <th class="p-4 text-left">Approved At</th>
+                <th class="p-4 text-left">Date From</th>
+                <th class="p-4 text-left">Date To</th>
+                <th class="p-4 text-left">Status</th>
+                <th class="p-4 text-left">Action</th>
             </tr>
         </thead>
 
         <tbody>
             @forelse($leaves as $leave)
-            <tr>
+            <tr class="border-b hover:bg-gray-50 transition">
 
-                <td class="p-2 border">{{ $leave->user->name ?? 'N/A' }}</td>
+                <td class="p-4">
+                    {{ $leave->personnel->fullname ?? $leave->personnel->user->name ?? 'N/A' }}
+                </td>
 
-                <td class="p-2 border">{{ $leave->type }}</td>
+                <td class="p-4">
+                    {{ $leave->type }}
+                </td>
 
-                <td class="p-2 border">
+                <td class="p-4">
                     @if($leave->approved_at)
                         {{ \Carbon\Carbon::parse($leave->approved_at)->format('M d, Y h:i A') }}
                         <br>
@@ -81,17 +157,32 @@
                     @endif
                 </td>
 
-                <td class="p-2 border">{{ $leave->date_from }}</td>
-                <td class="p-2 border">{{ $leave->date_to }}</td>
+                <td class="p-4">{{ $leave->date_from }}</td>
+                <td class="p-4">{{ $leave->date_to }}</td>
 
-                <td class="p-2 border">
-                    <span class="px-2 py-1 rounded
-                        {{ $leave->status == 'Pending' ? 'bg-yellow-200' : ($leave->status == 'Approved' ? 'bg-green-200' : 'bg-red-200') }}">
-                        {{ $leave->status }}
+                <td class="p-4">
+                    @if($leave->status == 'Pending')
+
+                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">
+                        ⏳ Pending
                     </span>
+
+                    @elseif($leave->status == 'Approved')
+
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                        ✅ Approved
+                    </span>
+
+                    @else
+
+                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
+                        ❌ Rejected
+                    </span>
+
+                    @endif
                 </td>
 
-                <td class="p-2 border">
+                <td class="p-4">
                     @if($leave->status == 'Pending')
 
                         <!-- APPROVE -->
@@ -99,8 +190,8 @@
                             @csrf
                             <button type="button"
                                 onclick="confirmApprove({{ $leave->id }})"
-                                class="bg-green-600 text-white px-3 py-1 rounded">
-                                Approve
+                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow">
+                                ✅ Approve
                             </button>
                         </form>
 
@@ -109,8 +200,8 @@
                             @csrf
                             <button type="button"
                                 onclick="confirmReject({{ $leave->id }})"
-                                class="bg-red-600 text-white px-3 py-1 rounded">
-                                Reject
+                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow">
+                                ❌ Reject
                             </button>
                         </form>
 

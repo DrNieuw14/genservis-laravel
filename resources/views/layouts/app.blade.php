@@ -230,12 +230,14 @@
 
                                 @forelse($notifications as $notif)
 
-                                <form method="POST" action="{{ route('notifications.read', $notif->id) }}">
+                                <form method="POST"
+                                    action="{{ route('notifications.read', $notif->id) }}">
                                     @csrf
 
-                                    <button type="submit"
-                                        class="w-full text-left px-4 py-3 border-b hover:bg-gray-100">
-
+                                   <button
+                                    type="submit"
+                                    class="w-full text-left px-4 py-3 border-b hover:bg-gray-100">
+                                    
                                         <div class="text-sm font-semibold">
                                             {{ $notif->title }}
                                         </div>

@@ -47,7 +47,7 @@ class LeaveController extends Controller
         'reason' => $request->reason,
         'start_date' => $request->start_date,
         'end_date' => $request->end_date,
-        'status' => 'pending'
+        'status' => 'Pending'
     ]);
 
     // 🔔 NOTIFY SUPERVISORS
@@ -58,7 +58,8 @@ class LeaveController extends Controller
             'user_id' => $admin->id,
             'type' => 'leave',
             'title' => 'New Leave Request',
-            'message' => Auth::user()->fullname . ' submitted a leave request.',
+            'message' => Auth::user()->name . ' submitted a leave request.',
+            'url' => route('leave.requests', [], false),
             'is_read' => 0
         ]);
 
@@ -71,6 +72,7 @@ class LeaveController extends Controller
         'type' => 'leave',
         'title' => 'Leave Submitted',
         'message' => 'Your leave request has been submitted.',
+        'url' => route('leave.requests', [], false),
         'is_read' => 0
     ]);
 
@@ -111,7 +113,7 @@ class LeaveController extends Controller
         }
 
         if ($search) {
-            $query->whereHas('personnel.user', function ($q) use ($search) {
+            $query->whereHas('personnel', function ($q) use ($search) {
                 $q->where('fullname', 'LIKE', '%' . $search . '%');
             });
         }
@@ -138,6 +140,7 @@ class LeaveController extends Controller
             'type' => 'leave',
             'title' => 'Leave Approved',
             'message' => 'Your leave request has been approved.',
+            'url' => route('leave.history', [], false),
             'is_read' => 0
         ]);
 
@@ -161,6 +164,7 @@ class LeaveController extends Controller
             'type' => 'leave',
             'title' => 'Leave Rejected',
             'message' => 'Your leave request has been rejected.',
+            'url' => route('leave.history', [], false),
             'is_read' => 0
         ]);
 

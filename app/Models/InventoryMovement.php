@@ -6,17 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class InventoryMovement extends Model
 {
+   
     protected $fillable = [
 
         'material_id',
+        'performed_by',
         'movement_type',
         'quantity',
         'previous_stock',
         'new_stock',
         'remarks',
-        'performed_by',
 
     ];
+
 
     /*
     |--------------------------------------------------------------------------
