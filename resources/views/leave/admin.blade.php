@@ -142,23 +142,35 @@
                 </td>
 
                 <td class="p-4">
-                    {{ $leave->type }}
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs">
+                        Leave
+                    </span>
                 </td>
 
                 <td class="p-4">
-                    @if($leave->approved_at)
-                        {{ \Carbon\Carbon::parse($leave->approved_at)->format('M d, Y h:i A') }}
-                        <br>
-                        <small class="text-gray-500">
-                            by {{ $leave->approver->name ?? 'N/A' }}
-                        </small>
+                    {{ $leave->reason }}
+                </td>
+
+                <td class="p-4">
+                    @if($leave->status == 'Approved')
+                        <span class="text-green-600 font-semibold">
+                            Approved
+                        </span>
+                    @elseif($leave->status == 'Rejected')
+                        <span class="text-red-600 font-semibold">
+                            Rejected
+                        </span>
                     @else
                         -
                     @endif
                 </td>
 
-                <td class="p-4">{{ $leave->date_from }}</td>
-                <td class="p-4">{{ $leave->date_to }}</td>
+                <td class="p-4">
+                    {{ \Carbon\Carbon::parse($leave->start_date)->format('M d, Y') }}
+                </td>
+                <td class="p-4">
+                    {{ \Carbon\Carbon::parse($leave->end_date)->format('M d, Y') }}
+                </td>
 
                 <td class="p-4">
                     @if($leave->status == 'Pending')
@@ -211,7 +223,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="7" class="text-center p-4 text-gray-500">
+                <td colspan="8" class="text-center p-4 text-gray-500">
                     No leave requests found
                 </td>
             </tr>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Helpers\ActivityLogger;
 
 class UserApprovalController extends Controller
 {
@@ -26,14 +27,34 @@ class UserApprovalController extends Controller
     public function approve($id)
     {
         $user = User::findOrFail($id);
-        $user->update(['status' => 'approved']);
+
+        $user->update([
+            'status' => 'approved'
+        ]);
+
+        ActivityLogger::log(
+            'Users',
+            'Approved User',
+            'Approved user: ' . ($user->fullname ?? $user->name)
+        );
+
         return back()->with('success', "{$user->name} has been approved successfully.");
     }
 
     public function reject($id)
     {
         $user = User::findOrFail($id);
-        $user->update(['status' => 'rejected']);
+
+        $user->update([
+            'status' => 'rejected'
+        ]);
+
+        ActivityLogger::log(
+            'Users',
+            'Rejected User',
+            'Rejected user: ' . ($user->fullname ?? $user->name)
+        );
+
         return back()->with('success', "{$user->name} has been rejected.");
     }
 }

@@ -8,6 +8,7 @@ use App\Models\LeaveRequest;
 use App\Models\Notification;
 use App\Events\NewNotificationEvent;
 use App\Models\Personnel;
+use App\Helpers\ActivityLogger;
 
 class LeaveController extends Controller
 {
@@ -50,6 +51,12 @@ class LeaveController extends Controller
         'status' => 'Pending'
     ]);
 
+    ActivityLogger::log(
+        'Leave',
+        'Submitted Leave',
+        'Submitted leave request from ' . ($personnel->fullname ?? 'Unknown Personnel')
+    );
+
     // 🔔 NOTIFY SUPERVISORS
     $supervisors = \App\Models\User::where('role', 'supervisor')->get();
 
@@ -72,7 +79,7 @@ class LeaveController extends Controller
         'type' => 'leave',
         'title' => 'Leave Submitted',
         'message' => 'Your leave request has been submitted.',
-        'url' => route('leave.requests', [], false),
+        'url' => route('leave.history', [], false),
         'is_read' => 0
     ]);
 
@@ -128,10 +135,14 @@ class LeaveController extends Controller
         $leave = LeaveRequest::findOrFail($id);
 
         $leave->update([
-            'status' => 'Approved',
-            'approved_by' => auth()->id(),
-            'approved_at' => now()
+            'status' => 'Approved'
         ]);
+
+        ActivityLogger::log(
+            'Leave',
+            'Approved Leave',
+            'Approved leave request of ' . ($leave->personnel->fullname ?? 'Unknown Personnel')
+        );
 
         $userId = $leave->personnel->user_id;
 
@@ -152,10 +163,14 @@ class LeaveController extends Controller
         $leave = LeaveRequest::findOrFail($id);
 
         $leave->update([
-            'status' => 'Rejected',
-            'approved_by' => auth()->id(),
-            'approved_at' => now()
+            'status' => 'Rejected'
         ]);
+
+        ActivityLogger::log(
+            'Leave',
+            'Rejected Leave',
+            'Rejected leave request of ' . ($leave->personnel->fullname ?? 'Unknown Personnel')
+        );
 
         $userId = $leave->personnel->user_id;
 

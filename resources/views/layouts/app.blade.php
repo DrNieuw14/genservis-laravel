@@ -97,7 +97,8 @@
                 📜 Material Logs
 
             </a>
-
+            <!-- Divider -->
+            <div class="border-t my-2"></div>
 
             <!-- INVENTORY SETTINGS -->
 
@@ -161,33 +162,61 @@
                 <!-- PERSONNEL -->
                 @if(Auth::user()->role === 'personnel')
 
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
+                        Personnel Services
+                    </div>
+
                     <a href="/personnel/dashboard"
-                    class="block px-3 py-2 rounded 
-                    {{ request()->is('personnel/dashboard') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
-                        Dashboard
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->is('personnel/dashboard') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        🏠 Dashboard
                     </a>
 
                     <a href="/attendance"
-                    class="block px-3 py-2 rounded hover:bg-green-100">
-                        Attendance
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->is('attendance*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        ⏱ Attendance
                     </a>
 
                     <a href="/schedule"
-                    class="block px-3 py-2 rounded hover:bg-green-100">
-                        Scheduling
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->is('schedule*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📅 Scheduling
                     </a>
+
+                    <div class="border-t my-3"></div>
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
+                        Leave Services
+                    </div>
 
                     <a href="/leave"
-                    class="block px-3 py-2 rounded hover:bg-green-100">
-                        Leave
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->is('leave') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📝 Apply Leave
                     </a>
 
-                    <a href="/material-request" class="block px-4 py-2 hover:bg-green-200">
+                    <a href="/leave/history"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->is('leave/history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📄 Leave History
+                    </a>
+
+                    <div class="border-t my-3"></div>
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
+                        Inventory Services
+                    </div>
+
+                    <a href="/material-request"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->is('material-request') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
                         📦 Material Request
                     </a>
 
                     <a href="{{ route('material-request.history') }}"
-                    class="block px-4 py-2 hover:bg-green-200">
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->is('material-request/history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
                         📜 Request History
                     </a>
 
