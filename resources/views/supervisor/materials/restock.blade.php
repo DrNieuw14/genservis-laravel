@@ -111,6 +111,68 @@
 
             </div>
 
+            <!-- INVOICE / DR NUMBER -->
+            <div class="mb-5">
+
+                <label class="block mb-2 font-semibold text-gray-700">
+
+                    Invoice / Delivery Receipt No.
+
+                </label>
+
+                <input type="text"
+                    name="invoice_no"
+                    placeholder="Optional DR / Invoice Number"
+                    class="w-full border border-gray-300
+                            rounded-xl px-4 py-3
+                            focus:ring-2 focus:ring-blue-400
+                            focus:outline-none">
+
+            </div>
+            <!-- EXPIRATION OPTION -->
+                <div class="mb-5">
+
+                    <label class="block mb-2 font-semibold text-gray-700">
+
+                        Has Expiration?
+
+                    </label>
+
+                    <select
+                        name="has_expiration"
+                        id="has_expiration"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3">
+
+                        <option value="0">
+                            Not Applicable
+                        </option>
+
+                        <option value="1">
+                            Yes, Item Has Expiration
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- EXPIRATION DATE -->
+                <div class="mb-5" id="expiration_div" style="display:none;">
+
+                    <label class="block mb-2 font-semibold text-gray-700">
+
+                        Expiration Date
+
+                    </label>
+
+                    <input
+                        type="date"
+                        name="expiration_date"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3">
+
+                </div>
+
+
+
             <!-- REMARKS -->
             <div class="mb-6">
 
@@ -161,5 +223,21 @@
     </div>
 
 </div>
+
+<script>
+
+document
+.getElementById('has_expiration')
+.addEventListener('change', function(){
+
+    document.getElementById('expiration_div')
+        .style.display =
+        this.value == 1
+            ? 'block'
+            : 'none';
+
+});
+
+</script>
 
 @endsection

@@ -8,15 +8,21 @@ class MaterialRestockLog extends Model
 {
     protected $fillable = [
 
-        'material_id',
-        'previous_stock',
-        'added_stock',
-        'new_stock',
-        'supplier',
-        'remarks',
-        'restocked_by',
+    'material_id',
+    'batch_no',
+    'previous_stock',
+    'added_stock',
+    'quantity_remaining',
+    'new_stock',
+    'supplier',
+    'invoice_no',
 
-    ];
+    'has_expiration',
+    'expiration_date',
+
+    'remarks',
+    'restocked_by',
+];
 
     /*
     |--------------------------------------------------------------------------

@@ -17,6 +17,13 @@
             ➕ Add Material
         </a>
 
+        <a href="{{ route('materials.import.form') }}"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-xl shadow-lg">
+
+            📥 Import Inventory
+
+        </a>
+
         <a href="{{ route('supervisor.inventory.movements.index') }}"
             class="bg-white text-blue-700 px-5 py-3 rounded-xl shadow-lg hover:scale-105 transition font-semibold">
 
@@ -26,7 +33,7 @@
     </div>
 
     <!-- STATS -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-6 mb-6">
 
         <!-- TOTAL -->
         <div class="bg-white rounded-2xl shadow-xl p-6">
@@ -80,9 +87,181 @@
 
         </div>
 
+        <!-- EXPIRING SOON -->
+        <div class="bg-orange-500 text-white rounded-2xl shadow-xl p-6">
+
+            <h3 class="text-sm">
+                Expiring Soon
+            </h3>
+
+            <p class="text-3xl font-bold mt-2">
+                {{ $expiringSoon }}
+            </p>
+
+            <p class="text-xs mt-2">
+                Within 30 Days
+            </p>
+
+        </div>
+
+        <!-- EXPIRED -->
+        <div class="bg-red-700 text-white rounded-2xl shadow-xl p-6">
+
+            <h3 class="text-sm">
+                Expired Batches
+            </h3>
+
+            <p class="text-3xl font-bold mt-2">
+                {{ $expiredItems }}
+            </p>
+
+            <p class="text-xs mt-2">
+                Immediate Attention
+            </p>
+
+        </div>
+
     </div>
 
     <!-- SEARCH -->
+
+    <!-- INVENTORY HEALTH MATRIX -->
+
+    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+
+        <div class="flex justify-between items-center mb-4">
+
+            <h3 class="text-xl font-bold text-gray-700">
+                📊 Inventory Health by Category
+            </h3>
+
+            <span class="text-sm text-gray-500">
+                Healthy • Low • Critical • Out of Stock
+            </span>
+
+        </div>
+
+        <div class="overflow-x-auto">
+
+            <table class="min-w-full">
+
+                <thead>
+
+                    <tr class="border-b">
+
+                        <th class="text-left py-3">
+                            Category
+                        </th>
+
+                        <th class="text-center py-3 text-green-600">
+                            Healthy
+                        </th>
+
+                        <th class="text-center py-3 text-yellow-600">
+                            Low
+                        </th>
+
+                        <th class="text-center py-3 text-red-500">
+                            Critical
+                        </th>
+
+                        <th class="text-center py-3 text-gray-700">
+                            Out
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach($inventoryHealth as $row)
+
+                        <tr class="border-b hover:bg-gray-50">
+
+                            <td class="py-3 font-medium">
+                                {{ $row->name }}
+                            </td>
+
+                            <td class="text-center">
+
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+
+                                    {{ $row->healthy }}
+
+                                </span>
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">
+
+                                    {{ $row->low }}
+
+                                </span>
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
+
+                                    {{ $row->critical }}
+
+                                </span>
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold">
+
+                                    {{ $row->out }}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    @endforeach
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- CATEGORY SUMMARY -->
+
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
+
+        @foreach($categorySummary as $category)
+
+            <a href="{{ route('materials.index', ['category_id' => $category->id]) }}"
+                class="bg-white rounded-xl shadow-md p-4 text-center hover:shadow-xl hover:scale-105 transition block
+                {{ request('category_id') == $category->id ? 'ring-4 ring-blue-500' : '' }}">
+
+                <div class="text-sm font-semibold text-gray-600">
+                    {{ $category->name }}
+                </div>
+
+                <div class="text-2xl font-bold text-blue-600 mt-2">
+                    {{ $category->materials_count }}
+                </div>
+
+                <div class="text-xs text-gray-400">
+                    Items
+                </div>
+
+            </a>
+
+        @endforeach
+
+    </div>
     <div class="bg-white rounded-2xl shadow-xl p-4 mb-6">
        
         <form method="GET" action="{{ route('materials.index') }}">
@@ -110,6 +289,27 @@
                             {{ request('department_id') == $department->id ? 'selected' : '' }}>
 
                             {{ $department->department_name }}
+
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+                <!-- CATEGORY FILTER -->
+                <select name="category_id"
+                        class="border rounded-xl p-3 focus:ring-2 focus:ring-purple-400">
+
+                    <option value="">
+                        All Categories
+                    </option>
+
+                    @foreach(($categories ?? []) as $category)
+
+                        <option value="{{ $category->id }}"
+                            {{ request('category_id') == $category->id ? 'selected' : '' }}>
+
+                            {{ $category->name }}
 
                         </option>
 

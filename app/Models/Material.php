@@ -9,6 +9,7 @@ class Material extends Model
     protected $fillable = [
     'name',
     'quantity',
+    'threshold',
     'category_id',
     'department_id',
     'unit_id',

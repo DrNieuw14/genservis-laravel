@@ -269,6 +269,280 @@
 
     </div>
 
+    <!-- INVENTORY BATCHES -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 mt-6">
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">
+            📦 Inventory Batches
+        </h2>
+
+        <p class="text-gray-500 mb-4">
+            Batch tracking, supplier source, and remaining stock per inventory batch.
+        </p>
+
+        <div class="overflow-x-auto">
+
+            <table class="w-full">
+
+                <thead class="bg-gray-100">
+
+                    <tr>
+
+                        <th class="p-3 text-left">Batch No</th>
+                        <th class="p-3 text-left">Received</th>
+                        <th class="p-3 text-left">Remaining</th>
+                        <th class="p-3 text-left">Supplier</th>
+                        <th class="p-3 text-left">Invoice</th>
+                        <th class="p-3 text-left">Expiration</th>
+                        <th class="p-3 text-left">Days Left</th>
+                        <th class="p-3 text-left">Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @forelse($restocks as $batch)
+
+                        <tr class="border-t">
+
+                            <td class="p-3 font-semibold text-blue-700">
+                                {{ $batch->batch_no ?? 'N/A' }}
+                            </td>
+
+                            <td class="p-3">
+                                {{ $batch->added_stock }}
+                            </td>
+
+                            <td class="p-3 font-bold text-blue-700">
+
+                                {{ $batch->quantity_remaining ?? 0 }}
+
+                            </td>
+
+                            <td class="p-3">
+                                {{ $batch->supplier ?? 'N/A' }}
+                            </td>
+
+                            <td class="p-3">
+                                {{ $batch->invoice_no ?? 'N/A' }}
+                            </td>
+
+                            <!-- EXPIRATION -->
+                            <td class="p-3">
+
+                                @if($batch->has_expiration)
+
+                                    {{ \Carbon\Carbon::parse(
+                                        $batch->expiration_date
+                                    )->format('M d, Y') }}
+
+                                @else
+
+                                    N/A
+
+                                @endif
+
+                            </td>
+
+                            <!-- DAYS LEFT -->
+                            <td class="p-3">
+
+                                @if($batch->has_expiration)
+
+                                    @php
+
+                                        $days = (int) now()->diffInDays(
+                                            $batch->expiration_date,
+                                            false
+                                        );
+
+                                    @endphp
+
+                                    @if($days < 0)
+
+                                        <span class="text-red-600 font-bold">
+                                            Expired
+                                        </span>
+
+                                    @elseif($days <= 30)
+
+                                        <span class="text-orange-600 font-bold">
+                                            {{ $days }} Days
+                                        </span>
+
+                                    @else
+
+                                        <span class="text-green-600 font-semibold">
+                                            {{ $days }} Days
+                                        </span>
+
+                                    @endif
+
+                                @else
+
+                                    N/A
+
+                                @endif
+
+                            </td>
+
+                            <!-- STATUS -->
+                            <td class="p-3">
+
+                                @if($batch->quantity_remaining > 0)
+
+                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+
+                                        🟢 Available
+
+                                    </span>
+
+                                @else
+
+                                    <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">
+
+                                        ⚫ Consumed
+
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+
+                            <td colspan="8"
+                                class="p-4 text-center text-gray-500">
+
+                                No batch records found.
+
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- RECENT MATERIAL DISTRIBUTION -->
+<div class="bg-white rounded-2xl shadow-xl p-6 mt-6">
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">
+        👥 Recent Material Distribution
+    </h2>
+
+    <p class="text-gray-500 mb-4">
+        Shows personnel who received this material through approved requests.
+    </p>
+
+    <div class="overflow-x-auto">
+
+        <table class="w-full">
+
+            <thead class="bg-gray-100">
+
+                <tr>
+
+                    <th class="p-3 text-left">Request No</th>
+                    <th class="p-3 text-left">Personnel</th>
+                    <th class="p-3 text-left">Department</th>
+                    <th class="p-3 text-left">Quantity</th>
+                    <th class="p-3 text-left">Status</th>
+                    <th class="p-3 text-left">Date</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @forelse($distributions as $distribution)
+
+                    <tr class="border-t">
+
+                        <td class="p-3 font-semibold text-blue-700">
+                            {{ $distribution->request->request_number ?? 'N/A' }}
+                        </td>
+
+                        <td class="p-3">
+                            {{ $distribution->request->user->fullname
+                                ?? $distribution->request->user->username
+                                ?? 'N/A' }}
+                        </td>
+
+                        <td class="p-3">
+                            {{ $distribution->request->department->department_name ?? 'N/A' }}
+                        </td>
+
+                        <td class="p-3 font-bold">
+                            {{ $distribution->quantity }}
+                        </td>
+
+                        <td class="p-3">
+
+                            @if($distribution->request->status == 'approved')
+
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                                    ✅ Approved
+                                </span>
+
+                            @elseif($distribution->request->status == 'pending')
+
+                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
+                                    ⏳ Pending
+                                </span>
+
+                            @else
+
+                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
+                                    ❌ Rejected
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                        <td class="p-3">
+                            {{ $distribution->created_at->format('M d, Y') }}
+                        </td>
+
+                    </tr>
+
+                @empty
+
+                    <tr>
+
+                        <td colspan="6"
+                            class="p-4 text-center text-gray-500">
+
+                            No distribution records found.
+
+                        </td>
+
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </div>
 
 @endsection

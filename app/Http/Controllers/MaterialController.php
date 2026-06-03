@@ -12,5 +12,7 @@ class MaterialController extends Controller
         $materials = Material::with(['category', 'unit'])->get();
 
         return view('materials.index', compact('materials'));
+
+        
     }
 }

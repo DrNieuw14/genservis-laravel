@@ -16,7 +16,26 @@ use App\Http\Controllers\Supervisor\DepartmentController;
 use App\Http\Controllers\Supervisor\InventoryMovementController;
 
 
+Route::get('/zip-test', function () {
 
+    return [
+        'php_version' => PHP_VERSION,
+        'zip_loaded' => extension_loaded('zip'),
+        'zip_class' => class_exists('ZipArchive'),
+        'loaded_ini' => php_ini_loaded_file(),
+    ];
+
+});
+
+Route::get(
+    '/materials/import',
+    [MaterialController::class, 'importForm']
+)->name('materials.import.form');
+
+Route::post(
+    '/materials/import',
+    [MaterialController::class, 'importStore']
+)->name('materials.import.store');
 
 Route::middleware(['auth'])->group(function () {
 
@@ -225,6 +244,7 @@ Route::middleware('role:supervisor')->group(function () {
     
 
     // ✅ Inventory (Materials)
+
     Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
     Route::get('/materials/create', [MaterialController::class, 'create'])->name('materials.create');
     Route::post('/materials/store', [MaterialController::class, 'store'])->name('materials.store');
@@ -273,6 +293,18 @@ Route::middleware('role:supervisor')->group(function () {
         Route::post('leave',         [LeaveController::class, 'store']);
         Route::get('leave/history',  [LeaveController::class, 'history'])->name('leave.history');
     });
+
+});
+
+Route::get('/zip-test', function () {
+
+    return [
+        'php_binary' => PHP_BINARY,
+        'php_version' => PHP_VERSION,
+        'zip_loaded' => extension_loaded('zip'),
+        'zip_class' => class_exists('ZipArchive'),
+        'loaded_ini' => php_ini_loaded_file(),
+    ];
 
 });
 

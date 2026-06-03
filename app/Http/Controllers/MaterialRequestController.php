@@ -13,8 +13,10 @@ use App\Models\User;
 use App\Models\Notification;
 use App\Events\NewNotificationEvent;
 use App\Models\MaterialLog;
+use App\Models\MaterialRestockLog;
 use App\Models\Department;
 use App\Models\InventoryMovement;
+
 
 class MaterialRequestController extends Controller
 {
@@ -214,7 +216,52 @@ class MaterialRequestController extends Controller
             // 🔻 SAVE PREVIOUS STOCK
             $previousQuantity = $material->quantity;
 
-            // 🔻 Deduct stock
+            /*
+            |--------------------------------------------------------------------------
+            | FIFO BATCH DEDUCTION
+            |--------------------------------------------------------------------------
+            */
+
+            $remainingRequestQty = $item->quantity;
+
+            $batches = MaterialRestockLog::where(
+                    'material_id',
+                    $material->id
+                )
+                ->where('quantity_remaining', '>', 0)
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+            foreach ($batches as $batch) {
+
+                if ($remainingRequestQty <= 0) {
+                    break;
+                }
+
+                if ($batch->quantity_remaining >= $remainingRequestQty) {
+
+                    $batch->quantity_remaining -= $remainingRequestQty;
+
+                    $batch->save();
+
+                    $remainingRequestQty = 0;
+
+                } else {
+
+                    $remainingRequestQty -= $batch->quantity_remaining;
+
+                    $batch->quantity_remaining = 0;
+
+                    $batch->save();
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE MATERIAL STOCK
+            |--------------------------------------------------------------------------
+            */
+
             $material->quantity -= $item->quantity;
 
             $material->save();

@@ -9,21 +9,33 @@ use App\Models\Category;
 use App\Models\Unit;
 use App\Models\MaterialLog;
 use App\Models\MaterialRestockLog;
+use App\Models\MaterialRequestItem;
 use App\Models\InventoryMovement;
 use App\Models\Department;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;  
+use App\Imports\MaterialImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class MaterialController extends Controller
 {
 
-    
-
-
-
     // 📋 List Materials
     public function index(Request $request)
     {
+
+        $expiringSoon = MaterialRestockLog::where('has_expiration', 1)
+            ->where('quantity_remaining', '>', 0)
+            ->whereDate('expiration_date', '<=', now()->addDays(30))
+            ->whereDate('expiration_date', '>=', now())
+            ->count();
+
+        $expiredItems = MaterialRestockLog::where('has_expiration', 1)
+            ->where('quantity_remaining', '>', 0)
+            ->whereDate('expiration_date', '<', now())
+            ->count();
+
         $query = Material::with([
             'category',
             'unit',
@@ -52,6 +64,16 @@ class MaterialController extends Controller
             );
 
         }
+
+        // 📦 Category Filter
+        if ($request->category_id) {
+
+            $query->where(
+                'category_id',
+                $request->category_id
+            );
+
+        }
         
 
 
@@ -72,13 +94,74 @@ class MaterialController extends Controller
         
         $departments = Department::all();
 
+        $categories = Category::all();
+
+        $categorySummary = Category::withCount('materials')
+        ->orderBy('materials_count', 'desc')
+        ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | INVENTORY HEALTH MATRIX
+        |--------------------------------------------------------------------------
+        */
+
+        $inventoryHealth = Category::with('materials')->get()->map(function ($category) {
+
+            $healthy = 0;
+            $low = 0;
+            $critical = 0;
+            $out = 0;
+
+            foreach ($category->materials as $material) {
+
+                if ($material->quantity <= 0) {
+
+                    $out++;
+
+                } elseif ($material->quantity <= 5) {
+
+                    $critical++;
+
+                } elseif ($material->quantity <= $material->threshold) {
+
+                    $low++;
+
+                } else {
+
+                    $healthy++;
+
+                }
+            }
+
+            return (object)[
+
+                'name' => $category->name,
+
+                'healthy' => $healthy,
+
+                'low' => $low,
+
+                'critical' => $critical,
+
+                'out' => $out,
+
+            ];
+
+        });
+
         return view('supervisor.materials.index', compact(
             'materials',
             'departments',
+            'categories',
+            'categorySummary',
+            'inventoryHealth',
             'totalMaterials',
             'lowStock',
             'criticalStock',
-            'outOfStock'
+            'outOfStock',
+            'expiringSoon',
+            'expiredItems'
         ));
 
     }
@@ -151,13 +234,26 @@ class MaterialController extends Controller
         ]);
 
         return redirect()->route('materials.index')
-                         ->with('success', 'Material added successfully');
+        ->with('success', 'Material added successfully');
     }
 
     // ✏️ Edit Material Form
     public function edit($id)
     {
         $material = Material::findOrFail($id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | GENERATE BATCH NUMBER
+        |--------------------------------------------------------------------------
+        */
+
+        $lastBatch = MaterialRestockLog::max('id') + 1;
+
+        $batchNo = 'RST-' .
+                    date('Y') .
+                    '-' .
+                    str_pad($lastBatch, 4, '0', STR_PAD_LEFT);
 
         $categories = Category::all();
 
@@ -339,143 +435,233 @@ class MaterialController extends Controller
             ->take(10)
             ->get();
 
+        /*
+        |--------------------------------------------------------------------------
+        | RECENT MATERIAL DISTRIBUTION
+        |--------------------------------------------------------------------------
+        */
+
+        $distributions = MaterialRequestItem::with([
+                'request.user',
+                'request.department'
+            ])
+            ->where('material_id', $material->id)
+            ->latest()
+            ->take(10)
+            ->get();
+
         return view(
             'supervisor.materials.show',
             compact(
                 'material',
                 'movements',
-                'restocks'
+                'restocks',
+                'distributions'
             )
         );
     }
 
         /*
-|--------------------------------------------------------------------------
-| RESTOCK FORM
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | RESTOCK FORM
+        |--------------------------------------------------------------------------
+        */
 
-public function restockForm($id)
-{
-    $material = Material::findOrFail($id);
+        public function restockForm($id)
+        {
+            $material = Material::findOrFail($id);
 
-    return view(
-        'supervisor.materials.restock',
-        compact('material')
-    );
-}
-
-/*
-|--------------------------------------------------------------------------
-| RESTOCK MATERIAL
-|--------------------------------------------------------------------------
-*/
-
-public function restock(Request $request, $id)
-{
-    $request->validate([
-
-        'added_stock' => 'required|integer|min:1',
-
-        'supplier' => 'nullable|string|max:255',
-
-        'remarks' => 'nullable|string',
-
-    ]);
-
-    $material = Material::findOrFail($id);
+            return view(
+                'supervisor.materials.restock',
+                compact('material')
+            );
+        }
 
     /*
     |--------------------------------------------------------------------------
-    | OLD STOCK
+    | RESTOCK MATERIAL
     |--------------------------------------------------------------------------
     */
+    public function restock(Request $request, $id)
+    {
 
-    $oldStock = $material->quantity;
+        $request->validate([
 
-    /*
-    |--------------------------------------------------------------------------
-    | ADD STOCK
-    |--------------------------------------------------------------------------
-    */
+            'added_stock' => 'required|integer|min:1',
 
-    $material->quantity += $request->added_stock;
+            'supplier' => 'nullable|string|max:255',
 
-    $material->save();
+            'invoice_no' => 'nullable|string|max:255',
 
-    /*
-    |--------------------------------------------------------------------------
-    | SAVE RESTOCK LOG
-    |--------------------------------------------------------------------------
-    */
+            'has_expiration' => 'required|boolean',
 
-    MaterialRestockLog::create([
+            'expiration_date' => 'nullable|date|after:today',
 
-        'material_id'    => $material->id,
+            'remarks' => 'nullable|string',
 
-        'previous_stock' => $oldStock,
+        ]);
 
-        'added_stock'    => $request->added_stock,
+        $material = Material::findOrFail($id);
 
-        'new_stock'      => $material->quantity,
+        /*
+        |--------------------------------------------------------------------------
+        | GENERATE BATCH NUMBER
+        |--------------------------------------------------------------------------
+        */
 
-        'supplier'       => $request->supplier,
+        $lastBatchId = MaterialRestockLog::max('id') ?? 0;
 
-        'remarks'        => $request->remarks,
+        $batchNo = 'RST-' .
+                    date('Y') .
+                    '-' .
+                    str_pad(
+                        $lastBatchId + 1,
+                        4,
+                        '0',
+                        STR_PAD_LEFT
+                    );
 
-        'restocked_by'   => auth()->id(),
+        /*
+        |--------------------------------------------------------------------------
+        | OLD STOCK
+        |--------------------------------------------------------------------------
+        */
 
-    ]);
+        $oldStock = $material->quantity;
 
-    /*
-    |--------------------------------------------------------------------------
-    | SAVE INVENTORY MOVEMENT
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | ADD STOCK
+        |--------------------------------------------------------------------------
+        */
 
-    InventoryMovement::create([
+        $material->quantity += $request->added_stock;
 
-        'material_id' => $material->id,
+        $material->save();
 
-        'movement_type' => 'restock',
+        /*
+        |--------------------------------------------------------------------------
+        | SAVE RESTOCK LOG
+        |--------------------------------------------------------------------------
+        */
 
-        'quantity' => $request->added_stock,
+        MaterialRestockLog::create([
 
-        'previous_stock' => $oldStock,
+            'material_id' => $material->id,
 
-        'new_stock' => $material->quantity,
+            'batch_no' => $batchNo,
 
-        'remarks' => $request->remarks,
+            'previous_stock' => $oldStock,
 
-        'performed_by' => auth()->id(),
+            'added_stock' => $request->added_stock,
 
-    ]);
+            'quantity_remaining' => $request->added_stock,
 
-    /*
-    |--------------------------------------------------------------------------
-    | OPTIONAL GENERAL MATERIAL LOG
-    |--------------------------------------------------------------------------
-    */
+            'new_stock' => $material->quantity,
 
-    MaterialLog::create([
+            'supplier' => $request->supplier,
 
-        'material_id' => $material->id,
+            'invoice_no' => $request->invoice_no,
 
-        'user_id' => Auth::id(),
+            'has_expiration' => $request->has_expiration,
 
-        'action' => 'restock',
+            'expiration_date' =>
+                $request->has_expiration
+                    ? $request->expiration_date
+                    : null,
 
-        'quantity' => $request->added_stock,
+            'remarks' => $request->remarks,
 
-        'remarks' => 'Material restocked',
+            'restocked_by' => auth()->id(),
 
-    ]);
+        ]);
 
-    return redirect()
+        /*
+        |--------------------------------------------------------------------------
+        | SAVE INVENTORY MOVEMENT
+        |--------------------------------------------------------------------------
+        */
+
+        InventoryMovement::create([
+
+            'material_id' => $material->id,
+
+            'movement_type' => 'restock',
+
+            'quantity' => $request->added_stock,
+
+            'previous_stock' => $oldStock,
+
+            'new_stock' => $material->quantity,
+
+            'remarks' => $request->remarks,
+
+            'performed_by' => auth()->id(),
+
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | OPTIONAL GENERAL MATERIAL LOG
+        |--------------------------------------------------------------------------
+        */
+
+        MaterialLog::create([
+
+            'material_id' => $material->id,
+
+            'user_id' => Auth::id(),
+
+            'action' => 'restock',
+
+            'quantity' => $request->added_stock,
+
+            'remarks' => 'Material restocked',
+
+        ]);
+
+       return redirect()
         ->route('materials.index')
-        ->with('success', 'Material restocked successfully!');
-}
+        ->with(
+            'success',
+            'Material restocked successfully!'
+        );
+    } 
 
-    
+    /*
+    |--------------------------------------------------------------------------
+    | IMPORT FORM
+    |--------------------------------------------------------------------------
+    */
+
+    public function importForm()
+    {
+        return view('supervisor.materials.import');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | IMPORT STORE
+    |--------------------------------------------------------------------------
+    */
+
+    public function importStore(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        Excel::import(
+            new MaterialImport,
+            $request->file('file')
+        );
+
+        return redirect()
+            ->route('materials.index')
+            ->with(
+                'success',
+                'Inventory imported successfully!'
+            );
+    }
 
 }
