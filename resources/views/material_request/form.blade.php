@@ -41,9 +41,15 @@
 
                 <label class="block text-sm font-semibold mb-1">
 
-                    Department / Office
+                    Destination Department / Office
 
                 </label>
+
+                <p class="text-xs text-gray-500 mt-1">
+
+                    Materials will be requested from the Centralized Stockroom and assigned to the selected department.
+
+                </p>
 
                 <select
                     name="department_id"
@@ -65,6 +71,40 @@
                     @endforeach
 
                 </select>
+
+            </div>
+
+            <!-- STOCKROOM INFO -->
+
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+
+                <h3 class="font-bold text-blue-800 mb-2">
+                    🏢 Source & Destination
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div>
+                        <p class="text-xs text-gray-500">
+                            Source Location
+                        </p>
+
+                        <p class="font-semibold text-gray-800">
+                            Centralized Stockroom
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-gray-500">
+                            Requested For
+                        </p>
+
+                        <p class="font-semibold text-gray-800">
+                            Selected Department / Office
+                        </p>
+                    </div>
+
+                </div>
 
             </div>
 
@@ -147,8 +187,12 @@
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
 
                 <h3 class="font-bold text-blue-800 mb-3">
-                    📋 Request Summary
+                    📋 Material Requisition Summary
                 </h3>
+
+                <p class="text-xs text-gray-500 mb-3">
+                    Review all requested materials before submission.
+                </p>
 
                 <!-- ITEM LIST -->
                 <div id="summary-items"
@@ -196,7 +240,7 @@
             <!-- SUBMIT -->
             <button class="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
 
-                Submit Request
+                📨 Submit Material Requisition
 
             </button>
 

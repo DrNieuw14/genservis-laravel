@@ -14,6 +14,8 @@ use App\Http\Controllers\Supervisor\CategoryController;
 use App\Http\Controllers\Supervisor\UnitController;
 use App\Http\Controllers\Supervisor\DepartmentController;
 use App\Http\Controllers\Supervisor\InventoryMovementController;
+use App\Http\Controllers\Supervisor\DepartmentInventoryController;
+
 
 
 Route::get('/zip-test', function () {
@@ -149,8 +151,24 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all',  [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
 
+
     // ── Supervisor / Admin routes ──
 Route::middleware('role:supervisor')->group(function () {
+
+    Route::get(
+        '/department-inventory',
+        [\App\Http\Controllers\Supervisor\DepartmentInventoryController::class, 'index']
+    )->name('department.inventory');
+
+    Route::get(
+        '/department-inventory-summary',
+        [DepartmentInventoryController::class, 'summary']
+    )->name('department.inventory.summary');
+
+    Route::get(
+        '/department-inventory-balance',
+        [DepartmentInventoryController::class, 'balance']
+    )->name('department.inventory.balance');
 
     /*
     |--------------------------------------------------------------------------
@@ -198,6 +216,10 @@ Route::middleware('role:supervisor')->group(function () {
 
     Route::post('/supervisor/material-requests/{id}/reject', [MaterialRequestController::class, 'reject']);
     
+    Route::post(
+        '/supervisor/material-requests/{id}/release',
+        [MaterialRequestController::class, 'release']
+    );
 
 
     // ✅ Units

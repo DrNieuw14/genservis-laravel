@@ -16,6 +16,7 @@ use App\Models\MaterialLog;
 use App\Models\MaterialRestockLog;
 use App\Models\Department;
 use App\Models\InventoryMovement;
+use App\Models\DepartmentMaterial;
 
 
 class MaterialRequestController extends Controller
@@ -40,13 +41,39 @@ class MaterialRequestController extends Controller
     public function history()
     {
         $requests = MaterialRequest::with([
-            'items.material'
+            'items.material',
+            'department'
         ])
         ->where('user_id', auth()->id())
         ->latest()
         ->get();
 
-        return view('material_request.history', compact('requests'));
+        $pendingCount = $requests
+            ->where('status', 'pending')
+            ->count();
+
+        $approvedCount = $requests
+            ->where('status', 'approved')
+            ->count();
+
+        $releasedCount = $requests
+            ->where('status', 'released')
+            ->count();
+
+        $rejectedCount = $requests
+            ->where('status', 'rejected')
+            ->count();
+
+        return view(
+            'material_request.history',
+            compact(
+                'requests',
+                'pendingCount',
+                'approvedCount',
+                'releasedCount',
+                'rejectedCount'
+            )
+        );
     }
 
     // 🖨 Request Slip
@@ -166,23 +193,45 @@ class MaterialRequestController extends Controller
     }
 
     // 📊 Supervisor view (NEW FUNCTION)
-    public function index()
-    {
-        // ❌ block non-supervisor
-        if (!auth()->check() || auth()->user()->role !== 'supervisor') {
-            abort(403);
+        public function index()
+        {
+            if (!auth()->check() || auth()->user()->role !== 'supervisor') {
+                abort(403);
+            }
+
+            $requests = MaterialRequest::with([
+                'user',
+                'department',
+                'items.material'
+            ])->latest()->get();
+
+            $pendingCount = $requests
+                ->where('status', 'pending')
+                ->count();
+
+            $approvedCount = $requests
+                ->where('status', 'approved')
+                ->count();
+
+            $releasedCount = $requests
+                ->where('status', 'released')
+                ->count();
+
+            $rejectedCount = $requests
+                ->where('status', 'rejected')
+                ->count();
+
+            return view(
+                'material_request.admin',
+                compact(
+                    'requests',
+                    'pendingCount',
+                    'approvedCount',
+                    'releasedCount',
+                    'rejectedCount'
+                )
+            );
         }
-
-        // 📦 get all requests with materials + user
-        $requests = MaterialRequest::with([
-            'user',
-            'department',
-            'items.material'
-        ])->latest()->get();
-
-        // 📄 send to view
-        return view('material_request.admin', compact('requests'));
-    }
 
         
 
@@ -190,7 +239,9 @@ class MaterialRequestController extends Controller
     public function approve($id)
     {
         
-        $materialRequest = MaterialRequest::findOrFail($id);
+        $materialRequest = MaterialRequest::with([
+            'items'
+        ])->findOrFail($id);
 
         // ❌ Prevent double approval
         if ($materialRequest->status === 'approved') {
@@ -447,6 +498,84 @@ class MaterialRequestController extends Controller
         event(new NewNotificationEvent($notif));
     
         return back()->with('success', 'Request rejected successfully.');
-        }
+}
+
+/*
+|--------------------------------------------------------------------------
+| 📦 Release Request
+|--------------------------------------------------------------------------
+*/
+public function release($id)
+{
+    $materialRequest = MaterialRequest::findOrFail($id);
+
+    if ($materialRequest->status !== 'approved') {
+
+        return back()->with(
+            'error',
+            'Only approved requests can be released.'
+        );
+    }
+
+    $materialRequest->update([
+
+        'status' => 'released',
+
+        'released_by' => auth()->id(),
+
+        'released_at' => now()
+
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEPARTMENT MATERIAL TRACKING
+    |--------------------------------------------------------------------------
+    */
+
+    foreach ($materialRequest->items as $item) {
+
+        DepartmentMaterial::create([
+
+            'department_id' => $materialRequest->department_id,
+
+            'material_id' => $item->material_id,
+
+            'quantity' => $item->quantity,
+
+            'request_id' => $materialRequest->id,
+
+            'released_by' => auth()->id(),
+
+            'released_at' => now()
+
+        ]);
+    }
+
+    $notif = Notification::create([
+
+        'user_id' => $materialRequest->user_id,
+
+        'type' => 'material',
+
+        'title' => 'Materials Released',
+
+        'url' => '/material-request/history',
+
+        'message' =>
+            'Your requested materials are ready for pickup.',
+
+        'is_read' => 0
+
+    ]);
+
+    event(new NewNotificationEvent($notif));
+
+    return back()->with(
+        'success',
+        'Materials released successfully.'
+    );
+}
+
 }
 
