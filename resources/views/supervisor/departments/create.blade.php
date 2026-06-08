@@ -4,23 +4,25 @@
 
 <div class="min-h-screen bg-gradient-to-r from-cyan-700 to-blue-900 p-10">
 
-    <!-- HEADER -->
+    <div class="max-w-4xl mx-auto">
 
-    <div class="mb-8">
+        <!-- HEADER -->
+        <div class="mb-8">
 
-        <h1 class="text-4xl font-bold text-white flex items-center gap-3">
-            ➕ Add Department
-        </h1>
+            <h1 class="text-4xl font-bold text-white flex items-center gap-3">
+                ➕ Add Department
+            </h1>
 
-        <p class="text-gray-200 mt-2">
-            Create and manage departments for GenServis.
-        </p>
+            <p class="text-gray-200 mt-2">
+                Create and manage departments for GenServis.
+            </p>
 
-    </div>
+        </div>
 
-    <!-- FORM CARD -->
+        <!-- FORM CARD -->
+        
 
-    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-4xl">
+<div class="bg-white rounded-3xl shadow-2xl p-8 max-w-4xl mx-auto">
 
         <form action="{{ route('supervisor.departments.store') }}"
               method="POST">

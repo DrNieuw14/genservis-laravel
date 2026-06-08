@@ -108,6 +108,33 @@
 
             </div>
 
+            <!-- CATEGORY FILTER -->
+
+            <div class="mb-6">
+
+                <label class="block text-sm font-semibold mb-1">
+                    Material Category
+                </label>
+
+                <select id="category-filter"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none">
+
+                    <option value="">
+                        All Categories
+                    </option>
+
+                    @foreach($categories as $category)
+
+                        <option value="{{ $category->id }}">
+                            {{ $category->name }}
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+            </div>
+
             <!-- ITEMS CONTAINER -->
             <div id="items-container">
 
@@ -131,6 +158,7 @@
                                 <option
                                     value="{{ $material->id }}"
                                     data-stock="{{ $material->quantity }}"
+                                    data-category="{{ $material->category_id }}"
                                     {{ $material->quantity <= 0 ? 'disabled' : '' }}
                                 >
                                     {{ $material->name }}
@@ -336,6 +364,7 @@
             <option
                 value="{{ $material->id }}"
                 data-stock="{{ $material->quantity }}"
+                data-category="{{ $material->category_id }}"
                 {{ $material->quantity <= 0 ? 'disabled' : '' }}
             >
                 {{ $material->name }}
@@ -589,6 +618,52 @@
     document.addEventListener('change', updateSummary);
 
     document.addEventListener('input', updateSummary);
+
+</script>
+
+<script>
+
+document.getElementById('category-filter')
+.addEventListener('change', function () {
+
+    const categoryId = this.value;
+
+    document.querySelectorAll('.material-select').forEach(select => {
+
+        const tom = select.tomselect;
+
+        if (!tom) return;
+
+        tom.clear();
+
+        tom.clearOptions();
+
+        tom.addOption({
+            value: '',
+            text: '-- Select Material --'
+        });
+
+        @foreach($materials as $material)
+
+            if (
+                categoryId === '' ||
+                categoryId == '{{ $material->category_id }}'
+            ) {
+
+                tom.addOption({
+                    value: '{{ $material->id }}',
+                    text: '{{ $material->name }} — Stock: {{ $material->quantity }}'
+                });
+
+            }
+
+        @endforeach
+
+        tom.refreshOptions(false);
+
+    });
+
+});
 
 </script>
 

@@ -14,9 +14,11 @@ use App\Models\Notification;
 use App\Events\NewNotificationEvent;
 use App\Models\MaterialLog;
 use App\Models\MaterialRestockLog;
+use App\Models\Category;
 use App\Models\Department;
 use App\Models\InventoryMovement;
 use App\Models\DepartmentMaterial;
+
 
 
 class MaterialRequestController extends Controller
@@ -24,15 +26,18 @@ class MaterialRequestController extends Controller
     // 📄 Show form
     public function create()
     {
-        $materials = Material::all();
+        $materials = Material::with('category')->get();
 
         $departments = Department::all();
+
+        $categories = Category::all();
 
         return view(
             'material_request.form',
             compact(
                 'materials',
-                'departments'
+                'departments',
+                'categories'
             )
         );
     }

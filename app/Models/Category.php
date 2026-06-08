@@ -11,5 +11,25 @@ class Category extends Model
     public function materials()
     {
         return $this->hasMany(Material::class);
+
+        
+    }
+
+    public function create()
+    {
+        $materials = Material::with('category')->get();
+
+        $departments = Department::all();
+
+        $categories = Category::all();
+
+        return view(
+            'material_request.form',
+            compact(
+                'materials',
+                'departments',
+                'categories'
+            )
+        );
     }
 }

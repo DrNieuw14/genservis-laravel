@@ -36,4 +36,42 @@ class DepartmentController extends Controller
             ->route('supervisor.departments.index')
             ->with('success', 'Department added successfully.');
     }
+
+    public function edit($id)
+    {
+        $department = Department::findOrFail($id);
+
+        return view(
+            'supervisor.departments.edit',
+            compact('department')
+        );
+    }
+
+    public function update(Request $request, $id)
+    {
+        $department = Department::findOrFail($id);
+
+        $request->validate([
+            'department_name' => 'required',
+            'department_code' => 'nullable',
+            'description' => 'nullable'
+        ]);
+
+        $department->update([
+
+            'department_name' => $request->department_name,
+
+            'department_code' => $request->department_code,
+
+            'description' => $request->description
+
+        ]);
+
+        return redirect()
+            ->route('supervisor.departments.index')
+            ->with(
+                'success',
+                'Department updated successfully.'
+            );
+    }
 }
