@@ -7,16 +7,17 @@ window.Alpine = Alpine;
 Alpine.start();
 
 // ✅ ADD THIS BELOW (do NOT remove above)
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
+//import Echo from 'laravel-echo';
+//import Pusher from 'pusher-js';
 
-window.Pusher = Pusher;
+//window.Pusher = Pusher;
 
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: 'local',
-    wsHost: window.location.hostname,
-    wsPort: 6001,
-    forceTLS: false,
-    disableStats: true,
-});
+//window.Echo = new Echo({
+//    broadcaster: 'pusher',
+//    key: 'local',
+//    cluster: 'mt1',
+//    wsHost: window.location.hostname,
+//    wsPort: 6001,
+//    forceTLS: false,
+//    disableStats: true,
+//});

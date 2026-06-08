@@ -158,7 +158,9 @@
                                 <option
                                     value="{{ $material->id }}"
                                     data-stock="{{ $material->quantity }}"
-                                    data-category="{{ $material->category_id }}"
+                                    data-category="{{ $material->category->name ?? 'N/A' }}"
+                                    data-unit="{{ $material->unit->name ?? 'pcs' }}"
+                                    data-threshold="{{ $material->threshold }}"
                                     {{ $material->quantity <= 0 ? 'disabled' : '' }}
                                 >
                                     {{ $material->name }}
@@ -173,6 +175,38 @@
                             @endforeach
 
                         </select>
+                    </div>
+
+                    <div class="material-info hidden bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4">
+
+                        <h4 class="font-semibold text-blue-800 mb-2">
+                            📦 Material Information
+                        </h4>
+
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+
+                            <div>
+                                <span class="text-gray-500">Category:</span>
+                                <span class="info-category font-medium">-</span>
+                            </div>
+
+                            <div>
+                                <span class="text-gray-500">Unit:</span>
+                                <span class="info-unit font-medium">-</span>
+                            </div>
+
+                            <div>
+                                <span class="text-gray-500">Available:</span>
+                                <span class="info-stock font-medium text-green-600">-</span>
+                            </div>
+
+                            <div>
+                                <span class="text-gray-500">Status:</span>
+                                <span class="info-status font-medium">-</span>
+                            </div>
+
+                        </div>
+
                     </div>
 
                     <!-- QUANTITY -->
@@ -201,6 +235,8 @@
                 </div>
 
             </div>
+
+           
 
             <!-- ADD ITEM -->
             <button type="button"
@@ -335,6 +371,9 @@
             const selectedOption =
                 element.options[element.selectedIndex];
 
+            console.log(selectedOption);
+            console.log(selectedOption.dataset);
+
             const stock =
                 selectedOption.dataset.stock || 0;
 
@@ -343,6 +382,54 @@
 
             const quantityInput =
                 row.querySelector('.quantity-input');
+
+            const infoCard = row.querySelector('.material-info');
+
+            console.log('Info Card:', infoCard);
+
+            if (!infoCard) {
+                console.error('Material info card not found');
+                return;
+            }
+
+            const category =
+                selectedOption.dataset.category;
+
+            const unit =
+                selectedOption.dataset.unit;
+
+            const threshold =
+                parseInt(selectedOption.dataset.threshold || 0);
+
+            const stockNumber =
+                parseInt(stock);
+
+            let status = 'Available';
+            let statusColor = 'text-green-600';
+
+            if(stockNumber <= 0){
+                status = 'Out of Stock';
+                statusColor = 'text-red-600';
+            }
+            else if(stockNumber <= threshold){
+                status = 'Low Stock';
+                statusColor = 'text-yellow-600';
+            }
+
+            if (infoCard) {
+                infoCard.classList.remove('hidden');
+            }
+
+            if (infoCard) {
+
+                infoCard.querySelector('.info-category').innerText = category;
+                infoCard.querySelector('.info-unit').innerText = unit;
+                infoCard.querySelector('.info-stock').innerText = stock + ' ' + unit;
+                infoCard.querySelector('.info-status').innerText = status;
+
+                infoCard.querySelector('.info-status').className =
+                    'info-status font-medium ' + statusColor;
+            }
 
             quantityInput.max = stock;
 
@@ -364,7 +451,9 @@
             <option
                 value="{{ $material->id }}"
                 data-stock="{{ $material->quantity }}"
-                data-category="{{ $material->category_id }}"
+                data-category="{{ $material->category->name ?? 'N/A' }}"
+                data-unit="{{ $material->unit->name ?? 'pcs' }}"
+                data-threshold="{{ $material->threshold }}"
                 {{ $material->quantity <= 0 ? 'disabled' : '' }}
             >
                 {{ $material->name }}
@@ -406,6 +495,38 @@
                     ${materialOptions}
 
                 </select>
+
+                    <div class="material-info hidden bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4">
+
+                        <h4 class="font-semibold text-blue-800 mb-2">
+                            📦 Material Information
+                        </h4>
+
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+
+                                <div>
+                                    <span class="text-gray-500">Category:</span>
+                                    <span class="info-category font-medium">-</span>
+                                </div>
+
+                                <div>
+                                    <span class="text-gray-500">Unit:</span>
+                                    <span class="info-unit font-medium">-</span>
+                                </div>
+
+                                <div>
+                                    <span class="text-gray-500">Available:</span>
+                                    <span class="info-stock font-medium text-green-600">-</span>
+                                </div>
+
+                                <div>
+                                    <span class="text-gray-500">Status:</span>
+                                    <span class="info-status font-medium">-</span>
+                                </div>
+
+                            </div>
+
+                    </div>
 
             </div>
 
@@ -477,6 +598,13 @@
             const value =
                 parseInt(input.value || 0);
 
+            console.log(
+                'Value:',
+                value,
+                'Max:',
+                max
+            );
+
             // ❌ EXCEEDS STOCK
             if(value > max){
 
@@ -505,44 +633,53 @@
 
         }
 
+
     });
 
 </script>
 
 <script>
 
-    // ✅ PREVENT DUPLICATE MATERIALS
-    document.addEventListener('change', function(e){
+document.addEventListener('change', function(e){
 
-        if(e.target.classList.contains('material-select')){
+    if(!e.target.classList.contains('material-select')) {
+        return;
+    }
 
-            const selectedValues = [];
+    const currentSelect = e.target;
 
-            document.querySelectorAll('.material-select').forEach(select => {
+    const currentValue = currentSelect.value;
 
-                const value = select.value;
+    if(currentValue === '') {
+        return;
+    }
 
-                // SKIP EMPTY
-                if(value === '') return;
+    let duplicateFound = false;
 
-                // DUPLICATE DETECTED
-                if(selectedValues.includes(value)){
+    document.querySelectorAll('.material-select').forEach(select => {
 
-                    alert('This material is already selected.');
-
-                    select.tomselect.clear();
-
-                } else {
-
-                    selectedValues.push(value);
-
-                }
-
-            });
-
+        if(
+            select !== currentSelect &&
+            select.value === currentValue
+        ){
+            duplicateFound = true;
         }
 
     });
+
+    if(duplicateFound){
+
+        alert('This material is already selected.');
+
+        if(currentSelect.tomselect){
+            currentSelect.tomselect.clear();
+        }else{
+            currentSelect.value = '';
+        }
+
+    }
+
+});
 
 </script>
 
