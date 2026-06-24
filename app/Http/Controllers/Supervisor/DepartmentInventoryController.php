@@ -23,34 +23,7 @@ class DepartmentInventoryController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | 📊 Department Inventory Summary
-    |--------------------------------------------------------------------------
-    */
-    public function summary()
-    {
-        $summary = DepartmentMaterial::selectRaw('
-                department_id,
-                material_id,
-                SUM(quantity) as total_quantity
-            ')
-            ->with([
-                'department',
-                'material'
-            ])
-            ->groupBy(
-                'department_id',
-                'material_id'
-            )
-            ->get();
-
-        return view(
-            'supervisor.department_inventory.summary',
-            compact('summary')
-        );
-    }
-
+    
     /*
     |--------------------------------------------------------------------------
     | 📦 Department Inventory Balance
@@ -60,23 +33,34 @@ class DepartmentInventoryController extends Controller
     {
         $balances = DepartmentMaterial::selectRaw('
                 department_id,
-                material_id,
+                COUNT(DISTINCT material_id) as total_materials,
                 SUM(quantity) as total_quantity
             ')
-            ->with([
-                'department',
-                'material'
-            ])
-            ->groupBy(
-                'department_id',
-                'material_id'
-            )
+            ->with('department')
+            ->groupBy('department_id')
             ->orderBy('department_id')
             ->get();
 
         return view(
             'supervisor.department_inventory.balance',
             compact('balances')
+        );
+    }
+
+    public function details($departmentId)
+    {
+        $department = \App\Models\Department::findOrFail($departmentId);
+
+        $materials = DepartmentMaterial::with('material')
+            ->where('department_id', $departmentId)
+            ->get();
+
+        return view(
+            'supervisor.department_inventory.details',
+            compact(
+                'department',
+                'materials'
+            )
         );
     }
 

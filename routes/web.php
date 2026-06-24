@@ -170,6 +170,11 @@ Route::middleware('role:supervisor')->group(function () {
         '/department-inventory-balance',
         [DepartmentInventoryController::class, 'balance']
     )->name('department.inventory.balance');
+    
+    Route::get(
+        '/department-inventory-balance/{department}',
+        [DepartmentInventoryController::class, 'details']
+    )->name('department.inventory.details');
 
     /*
     |--------------------------------------------------------------------------

@@ -21,11 +21,15 @@
                     </th>
 
                     <th class="p-4 text-left">
-                        Material
+                        Total Materials
                     </th>
 
                     <th class="p-4 text-left">
-                        Current Balance
+                        Total Quantity
+                    </th>
+
+                    <th class="p-4 text-center">
+                        Action
                     </th>
 
                 </tr>
@@ -36,18 +40,33 @@
 
                 @forelse($balances as $item)
 
-                    <tr class="border-b">
+                    <tr class="border-b hover:bg-gray-50">
 
-                        <td class="p-4">
+                        <td class="p-4 font-semibold">
                             {{ $item->department->department_name }}
                         </td>
 
                         <td class="p-4">
-                            {{ $item->material->name }}
+                            {{ $item->total_materials }}
                         </td>
 
                         <td class="p-4 font-bold text-green-600">
                             {{ $item->total_quantity }}
+                        </td>
+
+                        <td class="p-4 text-center">
+
+                            <a
+                                href="{{ route(
+                                    'department.inventory.details',
+                                    $item->department_id
+                                ) }}"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+
+                                View Details
+
+                            </a>
+
                         </td>
 
                     </tr>
@@ -56,7 +75,7 @@
 
                     <tr>
 
-                        <td colspan="3" class="p-8 text-center text-gray-500">
+                        <td colspan="4" class="p-8 text-center text-gray-500">
 
                             No department inventory found.
 

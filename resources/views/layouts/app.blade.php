@@ -126,16 +126,7 @@
 
             </a>
 
-            <!-- Department Summary -->
-
-            <a href="{{ route('department.inventory.summary') }}"
-            class="block px-3 py-2 rounded
-            {{ request()->is('department-inventory-summary') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
-
-                📊 Department Summary
-
-            </a>
-
+            
             <a href="{{ route('department.inventory.balance') }}"
             class="block px-3 py-2 rounded
             {{ request()->is('department-inventory-balance') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
