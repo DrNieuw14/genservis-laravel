@@ -44,8 +44,15 @@ class Material extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    // 📜 Material Requests
+
     public function requestItems()
     {
         return $this->hasMany(MaterialRequestItem::class);
+    }
+
+    public function walkinItems()
+    {
+        return $this->hasMany(WalkinRequestItem::class);
     }
 }

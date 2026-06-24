@@ -18,18 +18,20 @@ class Personnel extends Model
         'department',
         'assigned_area',
         'status',
-         'user_id',
+        'user_id',
     ];
 
     protected $attributes = [
         'status' => 'Active',
     ];
 
-    // ✅ Correct relationship
-      public function user()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
-
+    public function walkinRequests()
+    {
+        return $this->hasMany(WalkinRequest::class);
+    }
 }

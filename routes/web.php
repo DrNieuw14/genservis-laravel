@@ -9,6 +9,7 @@ use App\Http\Controllers\PersonnelController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Supervisor\MaterialController;
+use App\Http\Controllers\Supervisor\WalkinRequestController;
 use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\Supervisor\CategoryController;
 use App\Http\Controllers\Supervisor\UnitController;
@@ -172,6 +173,43 @@ Route::middleware('role:supervisor')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | WALK-IN MATERIAL ISSUANCE
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/walkin-requests',
+        [WalkinRequestController::class, 'index']
+    )->name('walkin.index');
+
+    Route::get(
+        '/walkin-requests/create',
+        [WalkinRequestController::class, 'create']
+    )->name('walkin.create');
+
+    Route::post(
+        '/walkin-requests/store',
+        [WalkinRequestController::class, 'store']
+    )->name('walkin.store');
+
+    Route::get(
+        '/walkin-requests/history',
+        [WalkinRequestController::class, 'history']
+    )->name('walkin.history');
+
+    /* KEEP THESE LAST */
+    Route::get(
+        '/walkin-requests/{id}',
+        [WalkinRequestController::class, 'show']
+    )->name('walkin.show');
+
+    Route::get(
+        '/walkin-requests/{id}/print',
+        [WalkinRequestController::class, 'print']
+    )->name('walkin.print');
+
+    /*
+    |--------------------------------------------------------------------------
     | DEPARTMENTS
     |--------------------------------------------------------------------------
     */
@@ -221,7 +259,7 @@ Route::middleware('role:supervisor')->group(function () {
         [MaterialRequestController::class, 'release']
     );
 
-
+  
     // ✅ Units
     Route::get('/units', [UnitController::class, 'index'])
         ->name('units.index');

@@ -37,11 +37,11 @@
                 <tr class="border-b">
 
                     <td class="p-4">
-                        {{ $item->department->department_name }}
+                        {{ $item->department?->department_name ?? 'Unknown Department' }}
                     </td>
 
                     <td class="p-4">
-                        {{ $item->material->name }}
+                        {{ $item->material?->name ?? 'Deleted Material' }}
                     </td>
 
                     <td class="p-4">
@@ -49,7 +49,7 @@
                     </td>
 
                     <td class="p-4">
-                        {{ $item->releaser->fullname ?? $item->releaser->username }}
+                        {{ $item->releaser?->fullname ?? $item->releaser?->username ?? 'Unknown User' }}
                     </td>
 
                     <td class="p-4">

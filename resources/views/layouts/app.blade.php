@@ -88,6 +88,24 @@
 
             </a>
 
+            <!-- Walk-In Issuance -->
+
+            <a href="{{ route('walkin.create') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('walkin.create') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                🚶 Walk-In Issuance
+
+            </a>
+
+            <a href="{{ route('walkin.history') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('walkin.history') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                📋 Walk-In History
+
+            </a>
+
             <!-- Material Logs -->
 
             <a href="{{ route('materials.logs') }}"
@@ -349,6 +367,7 @@
 
             <!-- CONTENT -->
             <main class="p-6">
+                {{ $slot ?? '' }}
                 @yield('content')
             </main>
 

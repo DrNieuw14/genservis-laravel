@@ -12,6 +12,7 @@ use App\Models\MaterialRestockLog;
 use App\Models\MaterialRequestItem;
 use App\Models\InventoryMovement;
 use App\Models\Department;
+use App\Models\DepartmentMaterial;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;  
 use App\Imports\MaterialImport;
@@ -298,15 +299,28 @@ class MaterialController extends Controller
     }
 
     // 🗑 Delete Material
-    public function destroy($id)
+    
+
+    public function destroy(Material $material)
     {
-        $material = Material::findOrFail($id);
+        if (
+            DepartmentMaterial::where(
+                'material_id',
+                $material->id
+            )->exists()
+        ) {
+            return back()->with(
+                'error',
+                'Cannot delete material because it is already used in department inventory.'
+            );
+        }
 
         $material->delete();
 
-        return redirect()
-            ->route('materials.index')
-            ->with('success', 'Material deleted successfully!');
+        return back()->with(
+            'success',
+            'Material deleted successfully.'
+        );
     }
 
     // 📜 Material Logs

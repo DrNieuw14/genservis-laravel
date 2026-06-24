@@ -47,4 +47,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Personnel::class, 'personnel_id');
     }
+    
+    public function issuedWalkinRequests()
+    {
+        return $this->hasMany(
+            WalkinRequest::class,
+            'issued_by'
+        );
+    }
 }

@@ -11,4 +11,9 @@ class Department extends Model
         'department_code',
         'description',
     ];
+
+    public function walkinRequests()
+    {
+        return $this->hasMany(WalkinRequest::class);
+    }
 }
