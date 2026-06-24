@@ -32,208 +32,83 @@
 
     </div>
 
-    <!-- STATS -->
-    <div class="grid grid-cols-1 md:grid-cols-6 gap-6 mb-6">
-
-        <!-- TOTAL -->
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-
-            <h3 class="text-gray-500 text-sm">
-                Total Materials
-            </h3>
-
-            <p class="text-3xl font-bold text-blue-600 mt-2">
-                {{ $totalMaterials }}
-            </p>
-
-        </div>
-
-        <!-- LOW STOCK -->
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-
-            <h3 class="text-gray-500 text-sm">
-                Low Stock
-            </h3>
-
-            <p class="text-3xl font-bold text-yellow-500 mt-2">
-                {{ $lowStock }}
-            </p>
-
-        </div>
-
-        <!-- CRITICAL STOCK -->
-        <div class="bg-white rounded-2xl shadow-xl p-6 border-l-4 border-red-600">
-
-            <h3 class="text-gray-500 text-sm">
-                Critical Stock
-            </h3>
-
-            <p class="text-3xl font-bold text-red-600 mt-2">
-                {{ $criticalStock }}
-            </p>
-
-        </div>
-
-        <!-- OUT OF STOCK -->
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-
-            <h3 class="text-gray-500 text-sm">
-                Out of Stock
-            </h3>
-
-            <p class="text-3xl font-bold text-red-500 mt-2">
-                {{ $outOfStock }}
-            </p>
-
-        </div>
-
-        <!-- EXPIRING SOON -->
-        <div class="bg-orange-500 text-white rounded-2xl shadow-xl p-6">
-
-            <h3 class="text-sm">
-                Expiring Soon
-            </h3>
-
-            <p class="text-3xl font-bold mt-2">
-                {{ $expiringSoon }}
-            </p>
-
-            <p class="text-xs mt-2">
-                Within 30 Days
-            </p>
-
-        </div>
-
-        <!-- EXPIRED -->
-        <div class="bg-red-700 text-white rounded-2xl shadow-xl p-6">
-
-            <h3 class="text-sm">
-                Expired Batches
-            </h3>
-
-            <p class="text-3xl font-bold mt-2">
-                {{ $expiredItems }}
-            </p>
-
-            <p class="text-xs mt-2">
-                Immediate Attention
-            </p>
-
-        </div>
-
-    </div>
-
-    <!-- SEARCH -->
-
-    <!-- INVENTORY HEALTH MATRIX -->
-
-    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
-
-        <div class="flex justify-between items-center mb-4">
-
-            <h3 class="text-xl font-bold text-gray-700">
-                📊 Inventory Health by Category
-            </h3>
-
-            <span class="text-sm text-gray-500">
-                Healthy • Low • Critical • Out of Stock
-            </span>
-
-        </div>
-
-        <div class="overflow-x-auto">
-
-            <table class="min-w-full">
-
-                <thead>
-
-                    <tr class="border-b">
-
-                        <th class="text-left py-3">
-                            Category
-                        </th>
-
-                        <th class="text-center py-3 text-green-600">
-                            Healthy
-                        </th>
-
-                        <th class="text-center py-3 text-yellow-600">
-                            Low
-                        </th>
-
-                        <th class="text-center py-3 text-red-500">
-                            Critical
-                        </th>
-
-                        <th class="text-center py-3 text-gray-700">
-                            Out
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @foreach($inventoryHealth as $row)
-
-                        <tr class="border-b hover:bg-gray-50">
-
-                            <td class="py-3 font-medium">
-                                {{ $row->name }}
-                            </td>
-
-                            <td class="text-center">
-
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
-
-                                    {{ $row->healthy }}
-
-                                </span>
-
-                            </td>
-
-                            <td class="text-center">
-
-                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">
-
-                                    {{ $row->low }}
-
-                                </span>
-
-                            </td>
-
-                            <td class="text-center">
-
-                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
-
-                                    {{ $row->critical }}
-
-                                </span>
-
-                            </td>
-
-                            <td class="text-center">
-
-                                <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold">
-
-                                    {{ $row->out }}
-
-                                </span>
-
-                            </td>
-
-                        </tr>
-
-                    @endforeach
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+
+    <!-- TOTAL -->
+    <a href="{{ route('materials.index') }}"
+    class="
+    rounded-2xl shadow-xl p-5 block hover:scale-105 transition
+    {{ !request('status')
+        ? 'bg-blue-600 text-white ring-4 ring-white'
+        : 'bg-white'
+    }}">
+        <h3 class="text-sm">Total Materials</h3>
+        <p class="text-3xl font-bold mt-2">
+            {{ $totalMaterials }}
+        </p>
+    </a>
+
+    <!-- LOW -->
+    <a href="{{ route('materials.index',['status'=>'low']) }}"
+    class="
+    rounded-2xl shadow-xl p-5 hover:scale-105 transition block
+    {{ request('status') == 'low'
+        ? 'bg-yellow-600 text-white ring-4 ring-white'
+        : 'bg-yellow-500 text-white'
+    }}">
+        <h3 class="text-sm">Low Stock</h3>
+        <p class="text-3xl font-bold mt-2">{{ $lowStock }}</p>
+    </a>
+
+    <!-- CRITICAL -->
+    <a href="{{ route('materials.index',['status'=>'critical']) }}"
+    class="
+    rounded-2xl shadow-xl p-5 hover:scale-105 transition block
+    {{ request('status') == 'critical'
+        ? 'bg-red-700 text-white ring-4 ring-white animate-pulse'
+        : 'bg-red-600 text-white'
+    }}">
+        <h3 class="text-sm">Critical Stock</h3>
+        <p class="text-3xl font-bold mt-2">{{ $criticalStock }}</p>
+    </a>
+
+    <!-- OUT -->
+    <a href="{{ route('materials.index',['status'=>'out']) }}"
+    class="
+    rounded-2xl shadow-xl p-5 hover:scale-105 transition block
+    {{ request('status') == 'out'
+        ? 'bg-gray-900 text-white ring-4 ring-white'
+        : 'bg-slate-700 text-white'
+    }}">
+        <h3 class="text-sm">Out of Stock</h3>
+        <p class="text-3xl font-bold mt-2">{{ $outOfStock }}</p>
+    </a>
+
+    <!-- EXPIRING -->
+    <a href="{{ route('materials.index',['status'=>'expiring']) }}"
+    class="
+    rounded-2xl shadow-xl p-5 hover:scale-105 transition block
+    {{ request('status') == 'expiring'
+        ? 'bg-orange-700 text-white ring-4 ring-white'
+        : 'bg-orange-500 text-white'
+    }}">
+        <h3 class="text-sm">Expiring Soon</h3>
+        <p class="text-3xl font-bold mt-2">{{ $expiringSoon }}</p>
+    </a>
+
+    <!-- EXPIRED -->
+    <a href="{{ route('materials.index',['status'=>'expired']) }}"
+    class="
+    rounded-2xl shadow-xl p-5 hover:scale-105 transition block
+    {{ request('status') == 'expired'
+        ? 'bg-red-900 text-white ring-4 ring-white'
+        : 'bg-red-800 text-white'
+    }}">
+        <h3 class="text-sm">Expired Batches</h3>
+        <p class="text-3xl font-bold mt-2">{{ $expiredItems }}</p>
+    </a>
+
+</div>
 
     <!-- CATEGORY SUMMARY -->
 

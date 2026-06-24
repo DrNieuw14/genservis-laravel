@@ -76,18 +76,72 @@ class MaterialController extends Controller
 
         }
         
+        $materials = $query->latest()->get();
 
+        /*
+        |--------------------------------------------------------------------------
+        | STATUS FILTER
+        |--------------------------------------------------------------------------
+        */
+
+        $status = $request->status;
+
+        if ($status == 'critical') {
+
+            $query->where('quantity', '>', 0)
+                ->where('quantity', '<=', 5);
+
+        }
+
+        elseif ($status == 'low') {
+
+            $query->where('quantity', '>', 5)
+                ->whereColumn('quantity', '<=', 'threshold');
+
+        }
+
+        elseif ($status == 'out') {
+
+            $query->where('quantity', '<=', 0);
+
+        }
+
+        elseif ($status == 'expiring') {
+
+            $query->whereHas('restockLogs', function ($q) {
+
+                $q->where('has_expiration', 1)
+                ->where('quantity_remaining', '>', 0)
+                ->whereDate('expiration_date', '<=', now()->addDays(30))
+                ->whereDate('expiration_date', '>=', now());
+
+            });
+
+        }
+
+        elseif ($status == 'expired') {
+
+            $query->whereHas('restockLogs', function ($q) {
+
+                $q->where('has_expiration', 1)
+                ->where('quantity_remaining', '>', 0)
+                ->whereDate('expiration_date', '<', now());
+
+            });
+
+        }
 
         $materials = $query->latest()->get();
 
         // 📊 Statistics
         $totalMaterials = Material::count();
 
-        $lowStock = Material::whereColumn('quantity', '<=', 'threshold')
-            ->where('quantity', '>', 0)
+        $criticalStock = Material::where('quantity', '>', 0)
+            ->where('quantity', '<=', 5)
             ->count();
 
-        $criticalStock = Material::where('quantity', '<=', 5)
+        $lowStock = Material::where('quantity', '>', 5)
+            ->whereColumn('quantity', '<=', 'threshold')
             ->count();
 
         $outOfStock = Material::where('quantity', '<=', 0)->count();
@@ -100,63 +154,12 @@ class MaterialController extends Controller
         $categorySummary = Category::withCount('materials')
         ->orderBy('materials_count', 'desc')
         ->get();
-
-        /*
-        |--------------------------------------------------------------------------
-        | INVENTORY HEALTH MATRIX
-        |--------------------------------------------------------------------------
-        */
-
-        $inventoryHealth = Category::with('materials')->get()->map(function ($category) {
-
-            $healthy = 0;
-            $low = 0;
-            $critical = 0;
-            $out = 0;
-
-            foreach ($category->materials as $material) {
-
-                if ($material->quantity <= 0) {
-
-                    $out++;
-
-                } elseif ($material->quantity <= 5) {
-
-                    $critical++;
-
-                } elseif ($material->quantity <= $material->threshold) {
-
-                    $low++;
-
-                } else {
-
-                    $healthy++;
-
-                }
-            }
-
-            return (object)[
-
-                'name' => $category->name,
-
-                'healthy' => $healthy,
-
-                'low' => $low,
-
-                'critical' => $critical,
-
-                'out' => $out,
-
-            ];
-
-        });
-
+        
         return view('supervisor.materials.index', compact(
             'materials',
             'departments',
             'categories',
             'categorySummary',
-            'inventoryHealth',
             'totalMaterials',
             'lowStock',
             'criticalStock',
@@ -164,7 +167,6 @@ class MaterialController extends Controller
             'expiringSoon',
             'expiredItems'
         ));
-
     }
 
     // ➕ Show Create Form
