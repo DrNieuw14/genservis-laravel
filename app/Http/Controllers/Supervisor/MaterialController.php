@@ -76,8 +76,6 @@ class MaterialController extends Controller
 
         }
         
-        $materials = $query->latest()->get();
-
         /*
         |--------------------------------------------------------------------------
         | STATUS FILTER
@@ -678,6 +676,152 @@ class MaterialController extends Controller
                 'success',
                 'Inventory imported successfully!'
             );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | INVENTORY SUMMARY REPORT
+    |--------------------------------------------------------------------------
+    */
+
+    public function inventorySummary()
+    {
+        $totalMaterials = Material::count();
+
+        $criticalStock = Material::where('quantity', '>', 0)
+            ->where('quantity', '<=', 5)
+            ->count();
+
+        $lowStock = Material::where('quantity', '>', 5)
+            ->whereColumn('quantity', '<=', 'threshold')
+            ->count();
+
+        $outOfStock = Material::where('quantity', '<=', 0)
+            ->count();
+
+        $availableMaterials = Material::where('quantity', '>', 0)
+            ->where('quantity', '>', DB::raw('threshold'))
+            ->count(); 
+            
+            $healthyMaterials = $availableMaterials;
+
+            $inventoryHealth = $totalMaterials > 0
+                ? round(($healthyMaterials / $totalMaterials) * 100)
+                : 0;
+
+            if ($inventoryHealth >= 90) {
+                $healthStatus = 'Excellent';
+            } elseif ($inventoryHealth >= 75) {
+                $healthStatus = 'Good';
+            } elseif ($inventoryHealth >= 50) {
+                $healthStatus = 'Fair';
+            } else {
+                $healthStatus = 'Poor';
+            }
+
+        $expiringSoon = MaterialRestockLog::where('has_expiration', 1)
+            ->where('quantity_remaining', '>', 0)
+            ->whereDate('expiration_date', '<=', now()->addDays(30))
+            ->whereDate('expiration_date', '>=', now())
+            ->count();
+
+        $expiredItems = MaterialRestockLog::where('has_expiration', 1)
+            ->where('quantity_remaining', '>', 0)
+            ->whereDate('expiration_date', '<', now())
+            ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | DETAILED REPORT DATA
+        |--------------------------------------------------------------------------
+        */
+
+        $criticalMaterials = Material::with('department')
+            ->where('quantity', '>', 0)
+            ->where('quantity', '<=', 5)
+            ->orderBy('quantity')
+            ->get();
+
+        $lowStockMaterials = Material::with('department')
+            ->where('quantity', '>', 5)
+            ->whereColumn('quantity', '<=', 'threshold')
+            ->orderBy('quantity')
+            ->get();
+
+        $outOfStockMaterials = Material::with('department')
+            ->where('quantity', '<=', 0)
+            ->orderBy('name')
+            ->get();
+
+        $expiringMaterials = MaterialRestockLog::with([
+            'material.department'
+        ])
+        ->where('has_expiration', 1)
+        ->where('quantity_remaining', '>', 0)
+        ->whereDate('expiration_date', '<=', now()->addDays(30))
+        ->whereDate('expiration_date', '>=', now())
+        ->orderBy('expiration_date')
+        ->get();
+
+        $expiredMaterials = MaterialRestockLog::with([
+            'material.department'
+        ])
+        ->where('has_expiration', 1)
+        ->where('quantity_remaining', '>', 0)
+        ->whereDate('expiration_date', '<', now())
+        ->orderBy('expiration_date')
+        ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | DEPARTMENT INVENTORY SUMMARY
+        |--------------------------------------------------------------------------
+        */
+
+        $departmentSummary = Department::with('materials')->get();
+
+        $departmentSummary = Department::select(
+                'departments.id',
+                'departments.department_name'
+            )
+            ->leftJoin(
+                'department_materials',
+                'departments.id',
+                '=',
+                'department_materials.department_id'
+            )
+            ->selectRaw('
+                COUNT(DISTINCT department_materials.material_id) as total_materials,
+                COALESCE(SUM(department_materials.quantity),0) as total_quantity,
+                MAX(department_materials.released_at) as last_release
+            ')
+            ->groupBy(
+                'departments.id',
+                'departments.department_name'
+            )
+            ->orderBy('departments.department_name')
+            ->get();
+
+        return view(
+            'supervisor.reports.inventory_summary',
+        compact(
+            'totalMaterials',
+            'availableMaterials',
+            'inventoryHealth',
+            'healthStatus',
+            'criticalStock',
+            'lowStock',
+            'outOfStock',
+            'expiringSoon',
+            'expiredItems',
+            'criticalMaterials',
+            'lowStockMaterials',
+            'outOfStockMaterials',
+            'expiringMaterials',
+            'expiredMaterials',
+            'departmentSummary',
+        )
+        );
     }
 
 }

@@ -16,80 +16,123 @@
         </div>
     </div>
 
-    <form action="{{ route('walkin.store') }}" method="POST">
+    <form
+    id="walkinForm"
+    action="{{ route('walkin.store') }}"
+    method="POST">
         @csrf
 
-        <!-- Request Information -->
-        <div class="border rounded-lg p-5 mb-6 bg-gray-50">
+        <!-- Destination Department -->
+        <div class="mb-6">
 
-            <h3 class="text-lg font-semibold text-green-700 mb-4">
-                Request Information
+            <label class="block mb-2 font-semibold">
+                Destination Department / Office
+            </label>
+
+            <select
+                id="departmentSelect"
+                name="department_id"
+                class="w-full border rounded-lg p-3"
+                required>
+
+                <option value="">
+                    -- Select Department --
+                </option>
+
+                @foreach($departments as $department)
+                    <option value="{{ $department->id }}">
+                        {{ $department->department_name }}
+                    </option>
+                @endforeach
+
+            </select>
+
+        </div>
+
+        <!-- Source & Destination -->
+        <div class="border border-blue-200 bg-blue-50 rounded-xl p-5 mb-6">
+
+            <h3 class="text-lg font-semibold text-blue-700 mb-4">
+                🏢 Source & Destination
             </h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-6">
 
                 <div>
-                    <label class="block mb-2 font-semibold">
-                        Employee Name
-                    </label>
+                    <p class="text-gray-500 text-sm">
+                        Source Location
+                    </p>
 
-                    <input
-                        type="text"
-                        name="employee_name"
-                        class="w-full border rounded-lg p-3"
-                        required>
+                    <p class="font-bold text-lg">
+                        Centralized Stockroom
+                    </p>
                 </div>
 
                 <div>
-                    <label class="block mb-2 font-semibold">
-                        Department
-                    </label>
+                    <p class="text-gray-500 text-sm">
+                        Requested For
+                    </p>
 
-                    <select
-                        name="department_id"
-                        class="w-full border rounded-lg p-3"
-                        required>
+                    <p
+                        id="departmentPreview"
+                        class="font-bold text-lg">
 
-                        <option value="">
-                            Select Department
-                        </option>
+                        Selected Department / Office
 
-                        @foreach($departments as $department)
-                            <option value="{{ $department->id }}">
-                                {{ $department->department_name }}
-                            </option>
-                        @endforeach
-
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block mb-2 font-semibold">
-                        Room
-                    </label>
-
-                    <input
-                        type="text"
-                        name="room"
-                        class="w-full border rounded-lg p-3"
-                        required>
-                </div>
-
-                <div>
-                    <label class="block mb-2 font-semibold">
-                        Purpose
-                    </label>
-
-                    <input
-                        type="text"
-                        name="purpose"
-                        class="w-full border rounded-lg p-3"
-                        required>
+                    </p>
                 </div>
 
             </div>
 
         </div>
+
+        <div class="border rounded-lg p-5 mb-6 bg-gray-50">
+
+    <h3 class="text-lg font-semibold text-green-700 mb-4">
+        📝 Issuance Information
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div>
+            <label class="block mb-2 font-semibold">
+                Employee Name
+            </label>
+
+            <input
+                type="text"
+                name="employee_name"
+                class="w-full border rounded-lg p-3"
+                required>
+        </div>
+
+        <div>
+            <label class="block mb-2 font-semibold">
+                Room
+            </label>
+
+            <input
+                type="text"
+                name="room"
+                class="w-full border rounded-lg p-3"
+                required>
+        </div>
+
+        <div>
+            <label class="block mb-2 font-semibold">
+                Purpose
+            </label>
+
+            <input
+                type="text"
+                name="purpose"
+                class="w-full border rounded-lg p-3"
+                required>
+        </div>
+
+    </div>
+
+</div>
 
         <!-- Material Information -->
 <div class="border rounded-lg p-5 bg-gray-50">
@@ -137,9 +180,13 @@
 
                         @foreach($materials as $material)
 
-                            <option value="{{ $material->id }}">
+                            <option
+                                value="{{ $material->id }}"
+                                data-name="{{ $material->name }}">
+
                                 {{ $material->name }}
                                 (Available: {{ $material->quantity }})
+
                             </option>
 
                         @endforeach
@@ -193,7 +240,8 @@
         <div class="mt-6 flex gap-3">
 
             <button
-                type="submit"
+                type="button"
+                onclick="showConfirmationModal()"
                 class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow">
 
                 📤 Issue Material
@@ -247,6 +295,345 @@ function removeRow(button)
     }
 }
 
+function showConfirmationModal()
+{
+    const employee =
+        document.querySelector(
+            'input[name="employee_name"]'
+        ).value;
+
+    const room =
+        document.querySelector(
+            'input[name="room"]'
+        ).value;
+
+    const purpose =
+        document.querySelector(
+            'input[name="purpose"]'
+        ).value;
+
+    const departmentSelect =
+        document.querySelector(
+            'select[name="department_id"]'
+        );
+
+    const department =
+        departmentSelect.options[
+            departmentSelect.selectedIndex
+        ].text;
+
+    if(
+        !employee ||
+        !room ||
+        !purpose ||
+        !departmentSelect.value
+    )
+    {
+        alert(
+            'Please complete all request information.'
+        );
+
+        return;
+    }
+
+    document.getElementById(
+        'confirmEmployee'
+    ).textContent = employee;
+
+    document.getElementById(
+        'confirmDepartment'
+    ).textContent = department;
+
+    document.getElementById(
+        'confirmRoom'
+    ).textContent = room;
+
+    document.getElementById(
+        'confirmPurpose'
+    ).textContent = purpose;
+
+    let materialRows = '';
+
+    document.querySelectorAll(
+        '#materialsTable tbody tr'
+    ).forEach(row => {
+
+        let material =
+            row.querySelector('select');
+
+        let quantity =
+            row.querySelector(
+                'input[name="quantity[]"]'
+            );
+
+        if(
+            material.value &&
+            parseInt(quantity.value) > 0
+        )
+        {
+            materialRows += `
+                <tr class="border-b">
+                    <td class="py-2">
+                        ${material.options[
+                            material.selectedIndex
+                        ].dataset.name}
+                    </td>
+                    <td class="text-right py-2">
+                        ${quantity.value}
+                    </td>
+                </tr>
+            `;
+        }
+    });
+
+    if(materialRows === '')
+    {
+        alert(
+            'Please add at least one material.'
+        );
+
+        return;
+    }
+
+    document.getElementById(
+        'confirmMaterials'
+    ).innerHTML = materialRows;
+
+    document.getElementById(
+        'confirmationModal'
+    ).classList.remove('hidden');
+
+    document.getElementById(
+        'confirmationModal'
+    ).classList.add('flex');
+}
+
+function closeConfirmationModal()
+{
+    document.getElementById(
+        'confirmationModal'
+    ).classList.add('hidden');
+
+    document.getElementById(
+        'confirmationModal'
+    ).classList.remove('flex');
+}
+
+let isSubmitting = false;
+
+function submitWalkinForm()
+{
+    if (isSubmitting)
+    {
+        return;
+    }
+
+    isSubmitting = true;
+
+    document.getElementById(
+        'confirmIssueBtn'
+    ).disabled = true;
+
+    document.getElementById(
+        'cancelIssueBtn'
+    ).disabled = true;
+
+    document.getElementById(
+        'confirmationModal'
+    ).classList.add('hidden');
+
+    document.getElementById(
+        'confirmationModal'
+    ).classList.remove('flex');
+
+    document.getElementById(
+        'processingModal'
+    ).classList.remove('hidden');
+
+    document.getElementById(
+        'processingModal'
+    ).classList.add('flex');
+
+    document.getElementById(
+        'walkinForm'
+    ).submit();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const departmentSelect =
+        document.getElementById('departmentSelect');
+
+    const departmentPreview =
+        document.getElementById('departmentPreview');
+
+    departmentSelect.addEventListener('change', function () {
+
+        departmentPreview.textContent =
+            this.options[this.selectedIndex].text;
+
+    });
+
+});
+
 </script>
+
+<!-- Confirmation Modal -->
+<div
+    id="confirmationModal"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-[9999]">
+
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6">
+
+        <h2 class="text-2xl font-bold text-yellow-600 mb-4">
+            ⚠ Confirm Material Issuance
+        </h2>
+
+        <div class="space-y-2 text-gray-700">
+
+           <p>
+                <strong>Source Location:</strong>
+                Centralized Stockroom
+            </p>
+
+            <p>
+                <strong>Destination:</strong>
+                <span id="confirmDepartment"></span>
+            </p>
+
+            <p>
+                <strong>Requested By:</strong>
+                <span id="confirmEmployee"></span>
+            </p>
+
+            <p>
+                <strong>Room:</strong>
+                <span id="confirmRoom"></span>
+            </p>
+
+            <p>
+                <strong>Purpose:</strong>
+                <span id="confirmPurpose"></span>
+            </p>
+            
+        </div>
+
+        <div class="mt-5">
+
+            <h3 class="font-semibold text-gray-800 mb-2">
+                Materials
+            </h3>
+
+            <div
+                class="border rounded-lg p-3 bg-gray-50 max-h-64 overflow-y-auto">
+
+                <table class="w-full">
+
+                    <thead>
+
+                        <tr class="border-b">
+
+                            <th class="text-left py-2">
+                                Material
+                            </th>
+
+                            <th class="text-right py-2">
+                                Qty
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="confirmMaterials">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div
+            class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+
+            This action will deduct inventory stock.
+
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+
+            <button
+                id="cancelIssueBtn"
+                type="button"
+                onclick="closeConfirmationModal()"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded">
+
+                Cancel
+
+            </button>
+
+            <button
+                id="confirmIssueBtn"
+                type="button"
+                onclick="submitWalkinForm()"
+                class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded">
+
+                Confirm Issue
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Processing Modal -->
+<div
+    id="processingModal"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-[9999]">
+
+    <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md text-center">
+
+        <div class="flex justify-center mb-4">
+
+            <svg
+                class="animate-spin h-12 w-12 text-green-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24">
+
+                <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4">
+                </circle>
+
+                <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                </path>
+
+            </svg>
+
+        </div>
+
+        <h2 class="text-xl font-bold text-green-700">
+            Processing Material Issuance
+        </h2>
+
+        <p class="text-gray-600 mt-2">
+            Please wait...
+        </p>
+
+    </div>
+
+</div>
 
 @endsection

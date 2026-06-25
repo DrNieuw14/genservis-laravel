@@ -16,7 +16,7 @@ use App\Http\Controllers\Supervisor\UnitController;
 use App\Http\Controllers\Supervisor\DepartmentController;
 use App\Http\Controllers\Supervisor\InventoryMovementController;
 use App\Http\Controllers\Supervisor\DepartmentInventoryController;
-
+use App\Http\Controllers\Supervisor\ReportController;
 
 
 Route::get('/zip-test', function () {
@@ -160,11 +160,17 @@ Route::middleware('role:supervisor')->group(function () {
         '/department-inventory',
         [\App\Http\Controllers\Supervisor\DepartmentInventoryController::class, 'index']
     )->name('department.inventory');
+    
+    Route::get('/reports', [ReportController::class, 'index'])
+    ->name('reports.index');
 
-    Route::get(
-        '/department-inventory-summary',
-        [DepartmentInventoryController::class, 'summary']
-    )->name('department.inventory.summary');
+    Route::get('/reports/inventory', [ReportController::class, 'inventory'])
+    ->name('reports.inventory');
+
+    //Route::get(
+    //    '/department-inventory-summary',
+    //    [DepartmentInventoryController::class, 'summary']
+    // )->name('department.inventory.summary');
 
     Route::get(
         '/department-inventory-balance',
@@ -175,6 +181,18 @@ Route::middleware('role:supervisor')->group(function () {
         '/department-inventory-balance/{department}',
         [DepartmentInventoryController::class, 'details']
     )->name('department.inventory.details');
+
+    /*
+    |--------------------------------------------------------------------------
+    | INVENTORY REPORTS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/inventory/reports/summary',
+        [MaterialController::class, 'inventorySummary']
+    )->name('inventory.summary');
+
 
     /*
     |--------------------------------------------------------------------------

@@ -195,9 +195,24 @@
 
             </a>
 
+            <!-- Divider -->
+            <div class="border-t my-2"></div>
+
+            <!-- REPORTS -->
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-6 mb-2">
+                Reports
+            </div>
+
+            <a href="{{ route('reports.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->is('reports*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                📊 Reports Center
+
+            </a>
+
         @endif
-
-
                 <!-- PERSONNEL -->
                 @if(Auth::user()->role === 'personnel')
 

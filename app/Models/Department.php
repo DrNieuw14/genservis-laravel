@@ -16,4 +16,9 @@ class Department extends Model
     {
         return $this->hasMany(WalkinRequest::class);
     }
+
+    public function materials()
+    {
+        return $this->hasMany(Material::class);
+    }
 }

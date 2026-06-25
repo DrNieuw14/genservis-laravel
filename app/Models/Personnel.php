@@ -25,13 +25,16 @@ class Personnel extends Model
         'status' => 'Active',
     ];
 
+    // ✅ User account linked to personnel
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    // ✅ Walk-in material issuances
     public function walkinRequests()
     {
         return $this->hasMany(WalkinRequest::class);
     }
+
 }

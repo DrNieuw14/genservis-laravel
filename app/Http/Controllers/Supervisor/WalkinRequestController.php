@@ -10,6 +10,7 @@ use App\Models\WalkinRequestItem;
 use App\Models\DepartmentMaterial;
 use App\Models\MaterialLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class WalkinRequestController extends Controller
@@ -55,6 +56,8 @@ class WalkinRequestController extends Controller
                 );
             }
         }
+
+DB::transaction(function () use ($request) {
         
         $walkin = WalkinRequest::create([
             'reference_no' => 'WI-' . now()->format('YmdHis'),
@@ -68,46 +71,46 @@ class WalkinRequestController extends Controller
 
     
         foreach ($request->material_id as $index => $materialId)
-{
+        {
 
-    $material = Material::findOrFail($materialId);
-    $qty = $request->quantity[$index];
+            $material = Material::findOrFail($materialId);
+            $qty = $request->quantity[$index];
 
-    $stockBefore = $material->quantity;
-    $stockAfter = $stockBefore - $qty;
+            $stockBefore = $material->quantity;
+            $stockAfter = $stockBefore - $qty;
 
-    WalkinRequestItem::create([
-        'walkin_request_id' => $walkin->id,
-        'material_id' => $materialId,
-        'quantity' => $qty,
-        'unit' => $material->unit->name,
-        'stock_before' => $stockBefore,
-        'stock_after' => $stockAfter,
-    ]);
+            WalkinRequestItem::create([
+                'walkin_request_id' => $walkin->id,
+                'material_id' => $materialId,
+                'quantity' => $qty,
+                'unit' => $material->unit->name,
+                'stock_before' => $stockBefore,
+                'stock_after' => $stockAfter,
+            ]);
 
-    DepartmentMaterial::create([
-        'department_id' => $request->department_id,
-        'material_id' => $materialId,
-        'quantity' => $qty,
-        'request_id' => $walkin->id,
-        'released_by' => auth()->id(),
-        'released_at' => now(),
-    ]);
+            DepartmentMaterial::create([
+                'department_id' => $request->department_id,
+                'material_id' => $materialId,
+                'quantity' => $qty,
+                'request_id' => $walkin->id,
+                'released_by' => auth()->id(),
+                'released_at' => now(),
+            ]);
 
-    $material->decrement(
-        'quantity',
-        $qty
-    );
+            $material->decrement(
+                'quantity',
+                $qty
+            );
 
-    MaterialLog::create([
-        'material_id' => $material->id,
-        'user_id' => auth()->id(),
-        'action' => 'DEDUCTED',
-        'quantity' => $qty,
-        'remarks' => 'Walk-In Issue #' . $walkin->reference_no,
-    ]);
-}
-        
+            MaterialLog::create([
+                'material_id' => $material->id,
+                'user_id' => auth()->id(),
+                'action' => 'DEDUCTED',
+                'quantity' => $qty,
+                'remarks' => 'Walk-In Issue #' . $walkin->reference_no,
+            ]);
+        }
+    }); 
 
             return redirect()
             ->route('walkin.create')
@@ -132,4 +135,19 @@ class WalkinRequestController extends Controller
             compact('requests')
         );
     }
+
+    public function show($id)
+    {
+        $request = WalkinRequest::with([
+            'department',
+            'items.material',
+            'issuer'
+        ])->findOrFail($id);
+
+        return view(
+            'supervisor.walkin_requests.show',
+            compact('request')
+        );
+    }
+
 }
