@@ -4,12 +4,12 @@
 
 <div class="max-w-7xl mx-auto">
 
-    <h1 class="text-3xl font-bold mb-2">
-        📦 Inventory Reports
+    <h1 class="text-4xl font-bold text-white mb-2">
+    📦 Inventory Reporting Center
     </h1>
 
-    <p class="text-gray-600 mb-8">
-        Select an inventory report to preview or print.
+    <p class="text-blue-100 text-lg mb-8 max-w-3xl">
+        Generate executive and operational inventory reports to support planning, monitoring, and inventory management.
     </p>
 
     <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -24,8 +24,8 @@
                 Overall inventory statistics for administrators.
             </p>
 
-            <a href="{{ route('inventory.summary') }}"
-               class="inline-block mt-5 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            <a href="{{ route('inventory.executive') }}"
+            class="inline-block mt-5 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 Open
             </a>
         </div>

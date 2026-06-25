@@ -4,17 +4,28 @@
 
 <div class="max-w-7xl mx-auto">
 
-    <h1 class="text-3xl font-bold mb-2">
-        📊 Reports Dashboard
-    </h1>
+    <!-- ==========================================
+    REPORTS CENTER HEADER
+    ========================================== -->
 
-    <p class="text-gray-600 mb-8">
-        Select a report category to generate or print reports.
-    </p>
+    <div class="mb-10">
+
+        <h1 class="text-4xl font-bold text-white mt-4">
+            📊 Reports Dashboard
+        </h1>
+
+        <p class="text-blue-100 text-lg mt-3 max-w-4xl leading-relaxed">
+            Access administrative and operational reports for inventory,
+            personnel, attendance, and leave management.
+            Generate professional reports to support decision-making,
+            monitoring, auditing, and campus operations.
+        </p>
+
+    </div>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        <div class="border rounded-lg p-6 shadow hover:shadow-lg transition">
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
             <h2 class="text-xl font-bold mb-2">
                 📦 Inventory Reports
             </h2>
@@ -29,7 +40,7 @@
             </a>
         </div>
 
-        <div class="border rounded-lg p-6 shadow opacity-60">
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
 
             <h2 class="text-xl font-bold mb-2">
                 👥 Personnel Reports
@@ -41,7 +52,7 @@
 
         </div>
 
-        <div class="border rounded-lg p-6 shadow opacity-60">
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
 
             <h2 class="text-xl font-bold mb-2">
                 📅 Attendance Reports
@@ -53,7 +64,7 @@
 
         </div>
 
-        <div class="border rounded-lg p-6 shadow opacity-60">
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
 
             <h2 class="text-xl font-bold mb-2">
                 📝 Leave Reports

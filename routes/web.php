@@ -193,6 +193,10 @@ Route::middleware('role:supervisor')->group(function () {
         [MaterialController::class, 'inventorySummary']
     )->name('inventory.summary');
 
+    Route::get(
+    'inventory/reports/executive-summary',
+    [MaterialController::class, 'executiveSummary']
+    )->name('inventory.executive');
 
     /*
     |--------------------------------------------------------------------------

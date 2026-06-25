@@ -824,4 +824,66 @@ class MaterialController extends Controller
         );
     }
 
+    public function executiveSummary()
+    {
+        $totalMaterials = Material::count();
+
+        $criticalStock = Material::where('quantity', '>', 0)
+            ->where('quantity', '<=', 5)
+            ->count();
+
+        $lowStock = Material::where('quantity', '>', 5)
+            ->whereColumn('quantity', '<=', 'threshold')
+            ->count();
+
+        $outOfStock = Material::where('quantity', '<=', 0)
+            ->count();
+
+        $availableMaterials = Material::where('quantity', '>', 0)
+            ->where('quantity', '>', DB::raw('threshold'))
+            ->count();
+
+        $expiringSoon = MaterialRestockLog::where('has_expiration',1)
+            ->where('quantity_remaining','>',0)
+            ->whereDate('expiration_date','<=',now()->addDays(30))
+            ->whereDate('expiration_date','>=',now())
+            ->count();
+
+        $inventoryHealth = $totalMaterials > 0
+            ? round(($availableMaterials / $totalMaterials) * 100)
+            : 0;
+
+        if ($inventoryHealth >= 90) {
+            $healthStatus = 'Excellent';
+        } elseif ($inventoryHealth >= 75) {
+            $healthStatus = 'Good';
+        } elseif ($inventoryHealth >= 50) {
+            $healthStatus = 'Fair';
+        } else {
+            $healthStatus = 'Poor';
+        }
+
+        $topCritical = Material::with('department')
+            ->where('quantity','>',0)
+            ->where('quantity','<=',5)
+            ->orderBy('quantity')
+            ->take(10)
+            ->get();
+
+        return view(
+            'supervisor.reports.executive_summary',
+            compact(
+                'totalMaterials',
+                'availableMaterials',
+                'criticalStock',
+                'lowStock',
+                'outOfStock',
+                'expiringSoon',
+                'inventoryHealth',
+                'healthStatus',
+                'topCritical'
+            )
+        );
+    }
+
 }
