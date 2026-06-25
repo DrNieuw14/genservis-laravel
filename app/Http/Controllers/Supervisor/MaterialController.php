@@ -886,4 +886,79 @@ class MaterialController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | INDIVIDUAL INVENTORY REPORTS
+    |--------------------------------------------------------------------------
+    */
+
+    public function criticalReport()
+    {
+        // Critical stock materials (quantity > 0 and <= threshold)
+        $criticalMaterials = Material::with([
+            'category',
+            'department',
+            'unit'
+        ])
+        ->where('quantity', '>', 0)
+        ->where('quantity', '<=', 5)
+        ->orderBy('quantity')
+        ->orderBy('name')
+        ->get();
+
+        // Overall inventory count
+        $totalMaterials = Material::count();
+
+        // Statistics
+        $criticalCount = $criticalMaterials->count();
+
+        $criticalPercentage = $totalMaterials > 0
+            ? round(($criticalCount / $totalMaterials) * 100, 2)
+            : 0;
+
+        $departmentsAffected = $criticalMaterials
+            ->pluck('department.department_name')
+            ->filter()
+            ->unique()
+            ->count();
+
+        return view('supervisor.reports.critical_stock', [
+
+            'criticalMaterials'   => $criticalMaterials,
+
+            'criticalCount'       => $criticalCount,
+
+            'criticalPercentage'  => $criticalPercentage,
+
+            'departmentsAffected' => $departmentsAffected,
+
+            'generatedDate'       => now(),
+
+            'generatedBy'         => auth()->user(),
+
+        ]);
+    }
+
+    public function lowStockReport()
+    {
+        return view('supervisor.reports.low_stock');
+    }
+
+    public function outOfStockReport()
+    {
+        return view('supervisor.reports.out_of_stock');
+    }
+
+    public function expirationReport()
+    {
+        return view('supervisor.reports.expiration_report');
+    }
+
+    public function departmentSummaryReport()
+    {
+        return view('supervisor.reports.department_summary');
+    }
+
+
+
 }

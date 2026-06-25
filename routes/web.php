@@ -194,9 +194,40 @@ Route::middleware('role:supervisor')->group(function () {
     )->name('inventory.summary');
 
     Route::get(
-    'inventory/reports/executive-summary',
-    [MaterialController::class, 'executiveSummary']
+        '/inventory/reports/executive-summary',
+        [MaterialController::class, 'executiveSummary']
     )->name('inventory.executive');
+
+    /*
+    |--------------------------------------------------------------------------
+    | INDIVIDUAL INVENTORY REPORTS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/inventory/reports/critical-stock',
+        [MaterialController::class, 'criticalReport']
+    )->name('inventory.critical');
+
+    Route::get(
+        '/inventory/reports/low-stock',
+        [MaterialController::class, 'lowStockReport']
+    )->name('inventory.low');
+
+    Route::get(
+        '/inventory/reports/out-of-stock',
+        [MaterialController::class, 'outOfStockReport']
+    )->name('inventory.out');
+
+    Route::get(
+        '/inventory/reports/expiration',
+        [MaterialController::class, 'expirationReport']
+    )->name('inventory.expiration');
+
+    Route::get(
+        '/inventory/reports/department-summary',
+        [MaterialController::class, 'departmentSummaryReport'
+    ])->name('inventory.department');
 
     /*
     |--------------------------------------------------------------------------
