@@ -15,69 +15,108 @@ Materials currently at critical inventory levels.
 
 @section('kpi-cards')
 
-<div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
 
-    <div class="bg-white rounded-lg shadow p-5">
+    {{-- Critical Items --}}
+    <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl shadow-lg text-white p-6">
 
-        <h4 class="text-gray-500 text-sm">
+        <div class="flex justify-between items-center">
 
-            Total Critical Items
+            <div>
 
-        </h4>
+                <p class="uppercase tracking-wider text-sm text-red-100">
+                    Critical Items
+                </p>
 
-        <p class="text-4xl font-bold text-red-600">
+                <h2 class="text-5xl font-extrabold mt-3">
+                    {{ $criticalCount }}
+                </h2>
 
-            {{ $criticalCount }}
+            </div>
 
-        </p>
+            <div class="text-5xl opacity-70">
+                🚨
+            </div>
 
-    </div>
-
-    <div class="bg-white rounded-lg shadow p-5">
-
-        <h4 class="text-gray-500 text-sm">
-
-            Critical Percentage
-
-        </h4>
-
-        <p class="text-4xl font-bold text-red-600">
-
-            {{ $criticalPercentage }}%
-
-        </p>
+        </div>
 
     </div>
 
-    <div class="bg-white rounded-lg shadow p-5">
 
-        <h4 class="text-gray-500 text-sm">
+    {{-- Critical Percentage --}}
+    <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-lg text-white p-6">
 
-            Departments Affected
+        <div class="flex justify-between items-center">
 
-        </h4>
+            <div>
 
-        <p class="text-4xl font-bold text-orange-600">
+                <p class="uppercase tracking-wider text-sm text-orange-100">
+                    Critical Percentage
+                </p>
 
-            {{ $departmentsAffected }}
+                <h2 class="text-5xl font-extrabold mt-3">
+                    {{ number_format($criticalPercentage,1) }}%
+                </h2>
 
-        </p>
+            </div>
+
+            <div class="text-5xl opacity-70">
+                📊
+            </div>
+
+        </div>
 
     </div>
 
-    <div class="bg-white rounded-lg shadow p-5">
 
-        <h4 class="text-gray-500 text-sm">
+    {{-- Departments --}}
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg text-white p-6">
 
-            Status
+        <div class="flex justify-between items-center">
 
-        </h4>
+            <div>
 
-        <p class="text-xl font-bold text-red-700">
+                <p class="uppercase tracking-wider text-sm text-blue-100">
+                    Departments Affected
+                </p>
 
-            Immediate Action
+                <h2 class="text-5xl font-extrabold mt-3">
+                    {{ $departmentsAffected }}
+                </h2>
 
-        </p>
+            </div>
+
+            <div class="text-5xl opacity-70">
+                🏢
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- Overall Status --}}
+    <div class="bg-gradient-to-r from-gray-700 to-gray-900 rounded-2xl shadow-lg text-white p-6">
+
+        <div class="flex justify-between items-center">
+
+            <div>
+
+                <p class="uppercase tracking-wider text-sm text-gray-300">
+                    Inventory Status
+                </p>
+
+                <h2 class="text-2xl font-bold mt-4">
+                    🔴 CRITICAL
+                </h2>
+
+            </div>
+
+            <div class="text-5xl opacity-70">
+                ⚠️
+            </div>
+
+        </div>
 
     </div>
 

@@ -185,13 +185,14 @@
             </table>
         </div>
 
-        <button
-            onclick="window.print()"
-            class="no-print bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+        <a
+            href="{{ route('inventory.summary.print') }}"
+            target="_blank"
+            class="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded">
 
             🖨 Print Report
 
-        </button>
+        </a>
 
     </div>
 

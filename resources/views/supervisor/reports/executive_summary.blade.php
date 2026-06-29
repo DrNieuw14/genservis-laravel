@@ -25,10 +25,10 @@
         </div>
 
         <button
-            onclick="window.print()"
+            onclick="window.open('{{ route('inventory.executive.print') }}','_blank')"
             class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded">
 
-            🖨 Print Report
+            🖨 Print Official Report
 
         </button>
 
@@ -96,57 +96,81 @@
 
     <!-- Executive Assessment -->
 
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+    <div class="bg-blue-50 border border-blue-200 rounded-xl shadow-sm p-6 mb-8">
 
-        <h2 class="text-2xl font-bold text-blue-800 mb-4">
-            Executive Assessment
+        <h2 class="text-3xl font-bold text-blue-800 mb-6">
+
+            📊 Executive Assessment
+
         </h2>
 
-        @if($inventoryHealth >= 90)
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            <p class="text-lg">
+            {{-- Inventory Health --}}
+            <div>
 
-                Inventory operations are currently
-                <strong>Excellent</strong>.
-                Most inventory items are sufficiently stocked,
-                and only a small number require monitoring.
+                <p class="text-gray-500 uppercase text-sm">
+                    Inventory Health
+                </p>
 
-            </p>
+                <h2 class="text-4xl font-bold mt-2">
 
-        @elseif($inventoryHealth >= 75)
+                    {{ number_format($inventoryHealth,1) }}%
 
-            <p class="text-lg">
+                </h2>
 
-                Inventory condition is
-                <strong>Good</strong>.
-                Continue monitoring low-stock materials
-                to avoid shortages.
+            </div>
 
-            </p>
+            {{-- Overall Status --}}
+            <div>
 
-        @elseif($inventoryHealth >= 50)
+                <p class="text-gray-500 uppercase text-sm">
+                    Overall Status
+                </p>
 
-            <p class="text-lg">
+                <h2 class="text-3xl font-bold mt-2
+                    @if($statusColor=='green') text-green-600
+                    @elseif($statusColor=='blue') text-blue-600
+                    @elseif($statusColor=='yellow') text-yellow-500
+                    @else text-red-600
+                    @endif">
 
-                Inventory condition is
-                <strong>Fair</strong>.
-                Restocking should be prioritized
-                for several materials.
+                    {{ strtoupper($healthStatus) }}
 
-            </p>
+                </h2>
 
-        @else
+            </div>
 
-            <p class="text-lg text-red-700">
+            {{-- Available Materials --}}
+            <div>
 
-                Inventory condition is
-                <strong>Poor</strong>.
-                Immediate procurement is recommended
-                to prevent operational disruption.
+                <p class="text-gray-500 uppercase text-sm">
+                    Available Materials
+                </p>
 
-            </p>
+                <h2 class="text-4xl font-bold mt-2 text-green-600">
 
-        @endif
+                    {{ $availableMaterials }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+        <hr class="my-6">
+
+        <h3 class="text-xl font-semibold mb-3">
+
+            Management Recommendation
+
+        </h3>
+
+        <p class="text-lg leading-8 text-gray-700">
+
+            {{ $recommendation }}
+
+        </p>
 
     </div>
 
@@ -172,22 +196,40 @@
                 <tr>
 
                     <th class="p-3 text-left">
+
                         Material
+
                     </th>
 
                     <th class="p-3">
+
                         Department
+
                     </th>
 
                     <th class="p-3">
-                        Qty
+
+                        Quantity
+
+                    </th>
+
+                    <th class="p-3">
+
+                        Status
+
+                    </th>
+
+                    <th class="p-3">
+
+                        Priority
+
                     </th>
 
                 </tr>
 
             </thead>
 
-            <tbody>
+        <tbody>
 
             @forelse($topCritical as $material)
 
@@ -205,9 +247,69 @@
 
                     </td>
 
-                    <td class="text-center text-red-600 font-bold">
+                    <td class="text-center font-bold">
 
                         {{ $material->quantity }}
+
+                    </td>
+
+                    <td class="text-center">
+
+                        @if($material->quantity <= 0)
+
+                            <span class="bg-black text-white px-3 py-1 rounded-full text-xs">
+
+                                Out of Stock
+
+                            </span>
+
+                        @elseif($material->quantity <= 5)
+
+                            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs">
+
+                                Critical
+
+                            </span>
+
+                        @elseif($material->quantity <= $material->threshold)
+
+                            <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs">
+
+                                Low Stock
+
+                            </span>
+
+                        @else
+
+                            <span class="bg-green-600 text-white px-3 py-1 rounded-full text-xs">
+
+                                Available
+
+                            </span>
+
+                        @endif
+
+                    </td>
+
+                    <td class="text-center">
+
+                        @if($material->quantity <= 0)
+
+                            🔥 Urgent
+
+                        @elseif($material->quantity <= 5)
+
+                            🔴 High
+
+                        @elseif($material->quantity <= $material->threshold)
+
+                            🟡 Medium
+
+                        @else
+
+                            🟢 Low
+
+                        @endif
 
                     </td>
 
@@ -220,6 +322,327 @@
                     <td colspan="3" class="text-center p-6">
 
                         No critical materials.
+
+                    </td>
+
+                </tr>
+
+            @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+     Inventory Distribution
+========================================== -->
+
+<div class="bg-white rounded-lg shadow mt-8">
+
+    <div class="border-b p-5">
+
+        <h2 class="text-2xl font-bold">
+
+            📊 Inventory Distribution
+
+        </h2>
+
+    </div>
+
+    <div class="p-6 space-y-6">
+
+        <!-- Available -->
+
+        <div>
+
+            <div class="flex justify-between mb-1">
+
+                <span class="font-semibold">
+
+                    Available Materials
+
+                </span>
+
+                <span>
+
+                    {{ $availableMaterials }}
+                    ({{ $availablePercent }}%)
+
+                </span>
+
+            </div>
+
+            <div class="w-full bg-gray-200 rounded-full h-4">
+
+                <div
+                    class="bg-green-600 h-4 rounded-full"
+                    style="width: {{ $availablePercent }}%;">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Critical -->
+
+        <div>
+
+            <div class="flex justify-between mb-1">
+
+                <span class="font-semibold">
+
+                    Critical Stock
+
+                </span>
+
+                <span>
+
+                    {{ $criticalStock }}
+                    ({{ $criticalPercent }}%)
+
+                </span>
+
+            </div>
+
+            <div class="w-full bg-gray-200 rounded-full h-4">
+
+                <div
+                    class="bg-red-600 h-4 rounded-full"
+                    style="width: {{ $criticalPercent }}%;">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Low Stock -->
+
+        <div>
+
+            <div class="flex justify-between mb-1">
+
+                <span class="font-semibold">
+
+                    Low Stock
+
+                </span>
+
+                <span>
+
+                    {{ $lowStock }}
+                    ({{ $lowPercent }}%)
+
+                </span>
+
+            </div>
+
+            <div class="w-full bg-gray-200 rounded-full h-4">
+
+                <div
+                    class="bg-yellow-500 h-4 rounded-full"
+                    style="width: {{ $lowPercent }}%;">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Out of Stock -->
+
+        <div>
+
+            <div class="flex justify-between mb-1">
+
+                <span class="font-semibold">
+
+                    Out of Stock
+
+                </span>
+
+                <span>
+
+                    {{ $outOfStock }}
+                    ({{ $outPercent }}%)
+
+                </span>
+
+            </div>
+
+            <div class="w-full bg-gray-200 rounded-full h-4">
+
+                <div
+                    class="bg-gray-700 h-4 rounded-full"
+                    style="width: {{ $outPercent }}%;">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Expiring Soon -->
+
+        <div>
+
+            <div class="flex justify-between mb-1">
+
+                <span class="font-semibold">
+
+                    Expiring Soon
+
+                </span>
+
+                <span>
+
+                    {{ $expiringSoon }}
+                    ({{ $expiringPercent }}%)
+
+                </span>
+
+            </div>
+
+            <div class="w-full bg-gray-200 rounded-full h-4">
+
+                <div
+                    class="bg-purple-600 h-4 rounded-full"
+                    style="width: {{ $expiringPercent }}%;">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+     Department Impact Analysis
+========================================== -->
+
+<div class="bg-white rounded-lg shadow mt-8">
+
+    <div class="border-b p-5">
+
+        <h2 class="text-2xl font-bold">
+
+            🏢 Department Impact Analysis
+
+        </h2>
+
+        <p class="text-gray-500 mt-1">
+
+            Departments with inventory materials requiring attention.
+
+        </p>
+
+    </div>
+
+    <div class="overflow-x-auto">
+
+        <table class="w-full">
+
+            <thead class="bg-gray-100">
+
+                <tr>
+
+                    <th class="p-3 text-left">
+                        Department
+                    </th>
+
+                    <th class="p-3 text-center">
+                        Total Materials
+                    </th>
+
+                    <th class="p-3 text-center">
+                        Affected Materials
+                    </th>
+
+                    <th class="p-3 text-center">
+                        Impact Level
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            @forelse($departmentImpact as $department)
+
+                @php
+                    $impactPercent = $department->total_materials > 0
+                        ? round(($department->affected_materials / $department->total_materials) * 100)
+                        : 0;
+                @endphp
+
+                <tr class="border-t hover:bg-gray-50">
+
+                    <td class="p-3 font-semibold">
+
+                        {{ $department->department->department_name ?? 'Unknown Department' }}
+
+                    </td>
+
+                    <td class="text-center">
+
+                        {{ $department->total_materials }}
+
+                    </td>
+
+                    <td class="text-center font-bold">
+
+                        {{ $department->affected_materials }}
+
+                    </td>
+
+                    <td class="text-center">
+
+                        @if($impactPercent >= 75)
+
+                            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs">
+
+                                High Impact
+
+                            </span>
+
+                        @elseif($impactPercent >= 40)
+
+                            <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs">
+
+                                Medium Impact
+
+                            </span>
+
+                        @else
+
+                            <span class="bg-green-600 text-white px-3 py-1 rounded-full text-xs">
+
+                                Low Impact
+
+                            </span>
+
+                        @endif
+
+                    </td>
+
+                </tr>
+
+            @empty
+
+                <tr>
+
+                    <td colspan="4" class="text-center py-6 text-gray-500">
+
+                        No department data available.
 
                     </td>
 

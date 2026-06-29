@@ -710,14 +710,44 @@ class MaterialController extends Controller
                 : 0;
 
             if ($inventoryHealth >= 90) {
+
                 $healthStatus = 'Excellent';
+
+                $statusColor = 'green';
+
+                $recommendation =
+                    'Inventory levels are excellent. Continue routine monitoring and maintain current replenishment practices.';
+
             } elseif ($inventoryHealth >= 75) {
+
                 $healthStatus = 'Good';
+
+                $statusColor = 'blue';
+
+                $recommendation =
+                    'Inventory is stable. Continue monitoring critical materials and schedule regular replenishment.';
+
             } elseif ($inventoryHealth >= 50) {
+
                 $healthStatus = 'Fair';
+
+                $statusColor = 'yellow';
+
+                $recommendation =
+                    'Inventory requires attention. Procurement should prioritize critical materials to prevent shortages.';
+
             } else {
+
                 $healthStatus = 'Poor';
+
+                $statusColor = 'red';
+
+                $recommendation =
+                    'Inventory condition is poor. Immediate procurement is recommended to prevent operational disruption.';
+
             }
+
+            
 
         $expiringSoon = MaterialRestockLog::where('has_expiration', 1)
             ->where('quantity_remaining', '>', 0)
@@ -824,6 +854,52 @@ class MaterialController extends Controller
         );
     }
 
+    public function inventorySummaryPrint()
+    {
+        $totalMaterials = Material::count();
+
+        $availableMaterials = Material::whereColumn(
+            'quantity',
+            '>',
+            'threshold'
+        )->count();
+
+        $criticalMaterials = Material::where('quantity', '<=', 5)
+            ->where('quantity', '>', 0)
+            ->with(['department', 'category'])
+            ->get();
+
+        $criticalCount = $criticalMaterials->count();
+
+        $lowStock = Material::whereColumn(
+            'quantity',
+            '<=',
+            'threshold'
+        )
+        ->where('quantity', '>', 5)
+        ->count();
+
+        $outOfStock = Material::where('quantity', '<=', 0)
+            ->count();
+
+        $health = $totalMaterials > 0
+            ? round(($availableMaterials / $totalMaterials) * 100)
+            : 0;
+
+        return view(
+            'supervisor.reports.inventory_summary_print',
+            compact(
+                'totalMaterials',
+                'availableMaterials',
+                'criticalMaterials',
+                'criticalCount',
+                'lowStock',
+                'outOfStock',
+                'health'
+            )
+        );
+    }
+
     public function executiveSummary()
     {
         $totalMaterials = Material::count();
@@ -854,14 +930,78 @@ class MaterialController extends Controller
             : 0;
 
         if ($inventoryHealth >= 90) {
+
             $healthStatus = 'Excellent';
+
+            $statusColor = 'green';
+
+            $recommendation =
+                'Inventory levels are excellent. Continue routine monitoring and maintain current replenishment practices.';
+
         } elseif ($inventoryHealth >= 75) {
+
             $healthStatus = 'Good';
+
+            $statusColor = 'blue';
+
+            $recommendation =
+                'Inventory is stable. Continue monitoring critical materials and schedule regular replenishment.';
+
         } elseif ($inventoryHealth >= 50) {
+
             $healthStatus = 'Fair';
+
+            $statusColor = 'yellow';
+
+            $recommendation =
+                'Inventory requires attention. Procurement should prioritize critical materials to prevent shortages.';
+
         } else {
+
             $healthStatus = 'Poor';
+
+            $statusColor = 'red';
+
+            $recommendation =
+                'Inventory condition is poor. Immediate procurement is recommended to prevent operational disruption.';
         }
+
+        // =========================================
+        // Inventory Distribution Percentages
+        // =========================================
+
+        $availablePercent = $totalMaterials > 0
+            ? round(($availableMaterials / $totalMaterials) * 100)
+            : 0;
+
+        $criticalPercent = $totalMaterials > 0
+            ? round(($criticalStock / $totalMaterials) * 100)
+            : 0;
+
+        $lowPercent = $totalMaterials > 0
+            ? round(($lowStock / $totalMaterials) * 100)
+            : 0;
+
+        $outPercent = $totalMaterials > 0
+            ? round(($outOfStock / $totalMaterials) * 100)
+            : 0;
+
+        $expiringPercent = $totalMaterials > 0
+            ? round(($expiringSoon / $totalMaterials) * 100)
+            : 0;
+
+        // =========================================
+        // Department Impact Analysis
+        // =========================================
+
+         $departmentImpact = Material::selectRaw('
+                department_id,
+                COUNT(*) as total_materials,
+                 SUM(CASE WHEN quantity <= threshold THEN 1 ELSE 0 END) as affected_materials
+            ')
+            ->with('department')
+            ->groupBy('department_id')
+            ->get();
 
         $topCritical = Material::with('department')
             ->where('quantity','>',0)
@@ -881,7 +1021,122 @@ class MaterialController extends Controller
                 'expiringSoon',
                 'inventoryHealth',
                 'healthStatus',
-                'topCritical'
+                'statusColor',
+                'recommendation',
+                'topCritical',
+                'availablePercent',
+                'criticalPercent',
+                'lowPercent',
+                'outPercent',
+                'departmentImpact',
+                'expiringPercent'
+
+            )
+        );
+    }
+
+    public function executiveSummaryPrint()
+    {
+        $totalMaterials = Material::count();
+
+        $availableMaterials = Material::whereColumn('quantity', '>', 'threshold')->count();
+
+        $criticalStock = Material::where('quantity', '<=', 5)
+            ->where('quantity', '>', 0)
+            ->count();
+
+        $lowStock = Material::whereColumn('quantity', '<=', 'threshold')
+            ->where('quantity', '>', 5)
+            ->count();
+
+        $outOfStock = Material::where('quantity', '<=', 0)->count();
+
+        $expiringSoon = 0;
+
+        $inventoryHealth = $totalMaterials > 0
+            ? round(($availableMaterials / $totalMaterials) * 100)
+            : 0;
+
+        if ($inventoryHealth >= 90) {
+            $healthStatus = 'Excellent';
+        } elseif ($inventoryHealth >= 75) {
+            $healthStatus = 'Good';
+        } elseif ($inventoryHealth >= 50) {
+            $healthStatus = 'Fair';
+        } else {
+            $healthStatus = 'Poor';
+        }
+
+        $topCritical = Material::with('department')
+            ->where('quantity', '>', 0)
+            ->where('quantity', '<=', 5)
+            ->orderBy('quantity')
+            ->take(10)
+            ->get();
+
+        // =========================================
+        // Inventory Distribution Percentages
+        // =========================================
+
+        $availablePercent = $totalMaterials > 0
+            ? round(($availableMaterials / $totalMaterials) * 100)
+            : 0;
+
+        $criticalPercent = $totalMaterials > 0
+            ? round(($criticalStock / $totalMaterials) * 100)
+            : 0;
+
+        $lowPercent = $totalMaterials > 0
+            ? round(($lowStock / $totalMaterials) * 100)
+            : 0;
+
+        $outPercent = $totalMaterials > 0
+            ? round(($outOfStock / $totalMaterials) * 100)
+            : 0;
+
+        $expiringPercent = $totalMaterials > 0
+            ? round(($expiringSoon / $totalMaterials) * 100)
+            : 0;
+
+
+        // =========================================
+        // Department Impact Analysis
+        // =========================================
+
+        $departmentImpact = Material::selectRaw("
+                department_id,
+                COUNT(*) as total_materials,
+                SUM(
+                    CASE
+                        WHEN quantity <= threshold THEN 1
+                        ELSE 0
+                    END
+                ) as affected_materials
+            ")
+            ->with('department')
+            ->groupBy('department_id')
+            ->get();
+
+        return view(
+            'supervisor.reports.executive_summary_print',
+            compact(
+                'totalMaterials',
+                'availableMaterials',
+                'criticalStock',
+                'lowStock',
+                'outOfStock',
+                'expiringSoon',
+                'inventoryHealth',
+                'healthStatus',
+                'topCritical',
+
+                'availablePercent',
+                'criticalPercent',
+                'lowPercent',
+                'outPercent',
+                'expiringPercent',
+
+                'departmentImpact'
             )
         );
     }
@@ -937,6 +1192,44 @@ class MaterialController extends Controller
             'generatedBy'         => auth()->user(),
 
         ]);
+    }
+
+    public function criticalReportPrint()
+    {
+        $criticalMaterials = Material::with([
+            'category',
+            'department',
+            'unit'
+        ])
+        ->where('quantity', '>', 0)
+        ->where('quantity', '<=', 5)
+        ->orderBy('quantity')
+        ->orderBy('name')
+        ->get();
+
+        $totalMaterials = Material::count();
+
+        $criticalCount = $criticalMaterials->count();
+
+        $criticalPercentage = $totalMaterials > 0
+            ? round(($criticalCount / $totalMaterials) * 100, 2)
+            : 0;
+
+        $departmentsAffected = $criticalMaterials
+            ->pluck('department.department_name')
+            ->filter()
+            ->unique()
+            ->count();
+
+        return view(
+            'supervisor.reports.critical_stock_print',
+            compact(
+                'criticalMaterials',
+                'criticalCount',
+                'criticalPercentage',
+                'departmentsAffected'
+            )
+        );
     }
 
     public function lowStockReport()

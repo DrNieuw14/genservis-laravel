@@ -194,9 +194,19 @@ Route::middleware('role:supervisor')->group(function () {
     )->name('inventory.summary');
 
     Route::get(
+        '/inventory/reports/summary/print',
+        [MaterialController::class, 'inventorySummaryPrint']
+    )->name('inventory.summary.print');
+
+    Route::get(
         '/inventory/reports/executive-summary',
         [MaterialController::class, 'executiveSummary']
     )->name('inventory.executive');
+
+    Route::get(
+        '/inventory/reports/executive-summary/print',
+        [MaterialController::class, 'executiveSummaryPrint']
+    )->name('inventory.executive.print');
 
     /*
     |--------------------------------------------------------------------------
@@ -204,10 +214,11 @@ Route::middleware('role:supervisor')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get(
-        '/inventory/reports/critical-stock',
-        [MaterialController::class, 'criticalReport']
-    )->name('inventory.critical');
+    Route::get('/inventory/reports/critical-stock', [MaterialController::class, 'criticalReport'])
+    ->name('inventory.critical');
+
+    Route::get('/inventory/reports/critical-stock/print', [MaterialController::class, 'criticalReportPrint'])
+        ->name('inventory.critical.print');
 
     Route::get(
         '/inventory/reports/low-stock',
