@@ -193,6 +193,17 @@ Route::middleware('role:supervisor')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
+            | MATERIAL DETAILS (AJAX)
+            |--------------------------------------------------------------------------
+            */
+
+            Route::get(
+                'materials/{material}/details',
+                [MaterialController::class, 'details']
+            )->name('materials.details');
+
+            /*
+            |--------------------------------------------------------------------------
             | PROCUREMENT PLAN ITEMS
             |--------------------------------------------------------------------------
             */
@@ -234,11 +245,6 @@ Route::middleware('role:supervisor')->group(function () {
 
     Route::get('/reports/inventory', [ReportController::class, 'inventory'])
     ->name('reports.inventory');
-
-    //Route::get(
-    //    '/department-inventory-summary',
-    //    [DepartmentInventoryController::class, 'summary']
-    // )->name('department.inventory.summary');
 
     Route::get(
         '/department-inventory-balance',

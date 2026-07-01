@@ -1252,6 +1252,32 @@ class MaterialController extends Controller
         return view('supervisor.reports.department_summary');
     }
 
+    public function details(Material $material)
+    {
+        $material->load([
+            'unit',
+            'category'
+        ]);
 
+        return response()->json([
+
+            'id' => $material->id,
+
+            'name' => $material->name,
+
+            'unit' => optional($material->unit)->name,
+
+            'category' => optional($material->category)->name,
+
+            // Current default cost used by PPMP
+            'estimated_unit_cost' => $material->cost,
+
+            // Future features
+            'quantity' => $material->quantity,
+
+            'threshold' => $material->threshold,
+
+        ]);
+    }
 
 }

@@ -271,9 +271,17 @@ class ProcurementPlanItemController extends Controller
     /**
      * Delete Procurement Item
      */
-    public function destroy(
-        ProcurementPlanItem $item
-    ) {
-        //
+    public function destroy(ProcurementPlanItem $item)
+    {
+        $planId = $item->plan_id;
+
+        $item->delete();
+
+        return redirect()
+            ->route('procurement.plans.show', $planId)
+            ->with(
+                'success',
+                'Procurement Item deleted successfully.'
+            );
     }
 }

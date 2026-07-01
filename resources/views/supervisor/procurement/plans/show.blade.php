@@ -136,109 +136,11 @@ Allocated Budget
 </div>
 
     <!-- Budget Summary -->
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-
-        <!-- Allocated Budget -->
-
-        <div class="bg-white rounded-xl shadow p-6">
-
-            <div class="text-gray-500">
-                Allocated Budget
-            </div>
-
-            <div class="text-3xl font-bold text-green-700 mt-2">
-
-                ₱ {{ number_format($plan->allocated_budget, 2) }}
-
-            </div>
-
-        </div>
-
-        <!-- Planned Procurement -->
-
-        <div class="bg-white rounded-xl shadow p-6">
-
-            <div class="text-gray-500">
-                Planned Procurement
-            </div>
-
-            <div class="text-3xl font-bold text-blue-700 mt-2">
-
-                ₱ {{ number_format($plan->total_planned_cost, 2) }}
-
-            </div>
-
-        </div>
-
-        <!-- Remaining Budget -->
-
-        <div class="bg-white rounded-xl shadow p-6">
-
-            <div class="text-gray-500">
-                Remaining Budget
-            </div>
-
-            <div class="text-3xl font-bold text-orange-600 mt-2">
-
-                ₱ {{ number_format($plan->remaining_budget_computed, 2) }}
-
-            </div>
-
-        </div>
-
-    </div>
+    @include('supervisor.procurement.plans.partials._budget_cards')
 
     <!-- Budget Utilization -->
 
-    <div class="bg-white rounded-xl shadow p-6 mt-6">
-
-        <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-semibold text-gray-800">
-                📊 Budget Utilization
-            </h3>
-
-            <span class="text-sm font-semibold text-gray-600">
-                {{ $plan->budget_utilization_percentage }}%
-            </span>
-        </div>
-
-        @php
-            $percentage = min($plan->budget_utilization_percentage, 100);
-
-            $barColor = 'bg-green-500';
-
-            if ($plan->budget_utilization_percentage >= 90) {
-                $barColor = 'bg-red-600';
-            } elseif ($plan->budget_utilization_percentage >= 60) {
-                $barColor = 'bg-yellow-500';
-            }
-        @endphp
-
-        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-
-            <div
-                class="{{ $barColor }} h-4 transition-all duration-500"
-                style="width: {{ $percentage }}%;">
-            </div>
-
-        </div>
-
-        <div class="flex justify-between mt-3 text-sm text-gray-600">
-
-            <span>
-                ₱{{ number_format($plan->total_planned_cost,2) }}
-                Used
-            </span>
-
-            <span>
-                ₱{{ number_format($plan->allocated_budget,2) }}
-                Budget
-            </span>
-
-        </div>
-
-    </div>
+    @include('supervisor.procurement.plans.partials._budget_progress')
 
     <!-- Procurement Toolbar -->
 
@@ -248,7 +150,7 @@ Allocated Budget
 
             <button
                 type="button"
-                onclick="document.getElementById('addMaterialModal').classList.remove('hidden')"
+                onclick="openAddMaterialModal()"
                 class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded">
 
                 ➕ Add Material
@@ -283,376 +185,324 @@ Allocated Budget
 
     </div>
 
-    <!-- Procurement Items -->
+<!-- Procurement Items -->
+@include('supervisor.procurement.plans.partials._procurement_table')
 
-    <div class="bg-white rounded-xl shadow mt-6">
 
-        <div class="p-6 border-b">
 
-            <h2 class="text-xl font-bold">
+<!-- Procurement Modal -->
+@include('supervisor.procurement.plans.partials._procurement_modal')
 
-                Procurement Items
 
-            </h2>
 
-            <p class="text-gray-500">
+<script>
 
-                Add materials that will be included in this Annual Procurement Plan.
+    window.procurementRoutes = {
 
-            </p>
+        storeItem:
+            "{{ route('procurement.plans.items.store', $plan->id) }}",
 
-        </div>
+        showItem:
+            "{{ route('procurement.plans.items.show', ':id') }}",
 
-        <div class="overflow-x-auto">
+        updateItem:
+             "{{ route('procurement.plans.items.update', ':id') }}",
 
-            <table class="min-w-full">
+        materialDetails:
+            "{{ route('procurement.materials.details', ':id') }}"
 
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-4 py-3 text-left">Material</th>
-                        <th class="px-4 py-3 text-left">Unit</th>
-                        <th class="px-4 py-3 text-right">Unit Cost</th>
-                        <th class="px-4 py-3 text-center">Q1</th>
-                        <th class="px-4 py-3 text-center">Q2</th>
-                        <th class="px-4 py-3 text-center">Q3</th>
-                        <th class="px-4 py-3 text-center">Q4</th>
-                        <th class="px-4 py-3 text-center">Annual Qty</th>
-                        <th class="px-4 py-3 text-right">Amount</th>
-                        <th class="px-4 py-3 text-center">Action</th>
-                    </tr>
-                </thead>
-            
-            <tbody>
+    };
 
-                 @forelse($plan->items as $item)
+</script>
 
-                <tr class="border-b hover:bg-gray-50">
+<script>
 
-                    <td class="px-4 py-3">
-                        {{ $item->material_name }}
-                    </td>
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeProcurementWorkspace();
+    });
 
-                    <td class="px-4 py-3">
-                        {{ optional($item->unit)->name }}
-                    </td>
+        [
+        'estimated_unit_cost',
+        'q1',
+        'q2',
+        'q3',
+        'q4'
+    ].forEach(function(id) {
 
-                    <td class="px-4 py-3 text-right">
-                        ₱ {{ number_format($item->estimated_unit_cost,2) }}
-                    </td>
+        document
+            .getElementById(id)
+            .addEventListener('input', updateProcurementSummary);
 
-                    <td class="px-4 py-3 text-center">{{ $item->q1 }}</td>
-                    <td class="px-4 py-3 text-center">{{ $item->q2 }}</td>
-                    <td class="px-4 py-3 text-center">{{ $item->q3 }}</td>
-                    <td class="px-4 py-3 text-center">{{ $item->q4 }}</td>
+    });
 
-                    <td class="px-4 py-3 text-center">
-                        {{ $item->annual_quantity }}
-                    </td>
+    function initializeProcurementWorkspace()
+        {
+            registerMaterialSelection();
+        }
 
-                    <td class="px-4 py-3 text-right">
-                        ₱ {{ number_format($item->annual_cost,2) }}
-                    </td>
+    function registerMaterialSelection()
+        {
+        const materialSelect = document.getElementById('materialSelect');
 
-                    <td class="px-4 py-3 text-center">
-                        <button
-                            type="button"
-                            class="text-blue-600 hover:underline"
-                            onclick="editProcurementItem({{ $item->id }})">
+            if (!materialSelect) {
+                return;
+            }
 
-                            Edit
+         materialSelect.addEventListener('change', function () {
 
-                        </button>
-                        |
-                        <button class="text-red-600 hover:underline">Delete</button>
-                    </td>
+            const option = this.options[this.selectedIndex];
 
-                </tr>
+            document.getElementById('categoryDisplay').value =
+                option.dataset.category || '';
 
-                @empty
+             document.getElementById('unitDisplay').value =
+                 option.dataset.unit || '';
 
-                <tr>
-                    <td colspan="10" class="text-center text-gray-500 py-10">
-                        No Procurement Items Yet
-                    </td>
-                </tr>
+            document.getElementById('stockDisplay').value =
+                option.dataset.stock || '';
+            });
+        }
 
-                @endforelse
+</script>
 
-            </tbody>
+<script>
 
-        </table>
+    async function loadMaterialDetails(materialId)
+        
+        {
+        if (!materialId) {
+            document
+                .getElementById('materialInfoCard')
+                .classList.add('hidden');
+                return;
+            }
 
-            
-        </div>
+            const url =
+            window.procurementRoutes.materialDetails
+                .replace(':id', materialId);
 
-    </div>
+            try {
+            const response = await fetch(url);
 
-    
+            if (!response.ok) {
+                throw new Error('Unable to load material details.');
+                }
 
-</div>
+            const material = await response.json();
 
-    <!-- Add Material Modal -->
+            document.getElementById('materialCategory').innerText =
+                material.category ?? '-';
 
-    <div
-        id="addMaterialModal"
-        class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
+            document.getElementById('materialUnit').innerText =
+                material.unit ?? '-';
 
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl">
+            document.getElementById('materialStock').innerText =
+                material.quantity;
 
-            <div class="flex justify-between items-center border-b px-6 py-4">
+            document.getElementById('materialThreshold').innerText =
+                material.threshold;
 
-                <h2
-                    id="procurementModalTitle"
-                    class="text-xl font-bold">
+            document
+                .getElementById('materialInfoCard')
+                .classList.remove('hidden');
 
-                    Add Procurement Item
+            } catch (error) {
 
-                </h2>
+                console.error(error);
 
-                <button
-                    type="button"
-                    onclick="document.getElementById('addMaterialModal').classList.add('hidden')">
+            }
+        }
 
-                    ✕
+    function updateProcurementSummary()
+        {
+            const unitCost =
+                parseFloat(document.getElementById('estimated_unit_cost').value) || 0;
 
-                </button>
+            const q1 =
+                parseInt(document.getElementById('q1').value) || 0;
 
-            </div>
+            const q2 =
+                parseInt(document.getElementById('q2').value) || 0;
 
-            <div class="p-6">
+            const q3 =
+                parseInt(document.getElementById('q3').value) || 0;
 
-                <form
-                    id="procurementItemForm"
-                    action="{{ route('procurement.plans.items.store', $plan->id) }}"
-                    method="POST">
+            const q4 =
+                parseInt(document.getElementById('q4').value) || 0;
 
-                    @csrf
+            const totalQuantity =
+                q1 + q2 + q3 + q4;
 
-                    <input
-                        type="hidden"
-                        id="formMethod"
-                        name="_method"
-                        value="POST">
+            const estimatedTotal =
+                totalQuantity * unitCost;
 
-                    <input
-                        type="hidden"
-                        id="procurementItemId"
-                        name="item_id">
+            const remainingBudget =
+            {{ $plan->remaining_budget_computed }};
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            document.getElementById('totalQuantityDisplay').innerText =
+                totalQuantity;
 
-                        <!-- Material -->
+            document.getElementById('estimatedTotalDisplay').innerText =
+                '₱' + estimatedTotal.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
 
-                        <div class="md:col-span-2">
+                const remainingBalance =
+                remainingBudget - estimatedTotal;
 
-                            <label class="font-semibold">
+            document.getElementById('remainingBudgetDisplay').innerText =
+                '₱' + remainingBalance.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+        }
 
-                                Material
+    function openProcurementModal()
+        {
+            document
+                .getElementById('addMaterialModal')
+                .classList.remove('hidden');
+        }
 
-                            </label>
+    function closeProcurementModal()
+        {
+            document
+                .getElementById('addMaterialModal')
+                .classList.add('hidden');
+        }
 
-                            <select
-                                id="material_id"
-                                name="material_id"
-                                class="w-full border rounded mt-2">
+    function resetProcurementModal()
+        {
+            const form = document.getElementById('procurementItemForm');
 
-                                <option value="">
+            form.reset();
 
-                                    -- Select Material --
+            document.getElementById('procurementItemId').value = '';
 
-                                </option>
+            document.getElementById('formMethod').value = 'POST';
 
-                                @foreach($materials as $material)
+            document
+                .getElementById('materialInfoCard')
+                ?.classList.add('hidden');
 
-                                    <option value="{{ $material->id }}">
+            updateProcurementSummary();
+        }
 
-                                        {{ $material->name }}
+        
+    function switchToCreateMode()
+        {
+            document.getElementById('procurementModalTitle').innerText =
+                'Add Procurement Item';
 
-                                    </option>
+            document.getElementById('procurementSubmitButton').innerText =
+                'Save Procurement Item';
 
-                                @endforeach
+            const form =
+                document.getElementById('procurementItemForm');
 
-                            </select>
+            form.action =
+                window.procurementRoutes.storeItem;
 
-                        </div>
+            document.getElementById('formMethod').value = 'POST';
+        }
 
-                        <!-- Estimated Cost -->
+    function openAddMaterialModal()
+        {
+            resetProcurementModal();
 
-                        <div>
+            switchToCreateMode();
 
-                            <label class="font-semibold">
+            document.getElementById('estimated_unit_cost').value = '';
 
-                                Estimated Unit Cost
+            document.getElementById('q1').value = 0;
+            document.getElementById('q2').value = 0;
+            document.getElementById('q3').value = 0;
+            document.getElementById('q4').value = 0;
 
-                            </label>
+            openProcurementModal();
+        }
+        
+    function confirmDelete(itemId, materialName)
+        {
+            Swal.fire({
 
-                            <input
-                                id="estimated_unit_cost"
-                                type="number"
-                                step="0.01"
-                                name="estimated_unit_cost"
-                                class="w-full border rounded mt-2">
+                title: 'Delete Procurement Item?',
 
-                        </div>
+                html:
+                    '<strong>' + materialName + '</strong><br><br>' +
+                    'This action cannot be undone.',
 
-                        <!-- Q1 -->
+                icon: 'warning',
 
-                        <div>
+                showCancelButton: true,
 
-                            <label class="font-semibold">
+                confirmButtonColor: '#d33',
 
-                                Q1
+                cancelButtonColor: '#6b7280',
 
-                            </label>
+                confirmButtonText: 'Delete',
 
-                            <input
-                                id="q1"
-                                type="number"
-                                name="q1"
-                                value="0"
-                                class="w-full border rounded mt-2">
+                cancelButtonText: 'Cancel'
 
-                        </div>
+            }).then((result) => {
 
-                        <!-- Q2 -->
+                if (result.isConfirmed) {
 
-                        <div>
+                    document
+                        .getElementById('deleteForm' + itemId)
+                        .submit();
 
-                            <label class="font-semibold">
-
-                                Q2
-
-                            </label>
-
-                            <input
-                                id="q2"
-                                type="number"
-                                name="q2"
-                                value="0"
-                                class="w-full border rounded mt-2">
-
-                        </div>
-
-                        <!-- Q3 -->
-
-                        <div>
-
-                            <label class="font-semibold">
-
-                                Q3
-
-                            </label>
-
-                            <input
-                                id="q3"
-                                type="number"
-                                name="q3"
-                                value="0"
-                                class="w-full border rounded mt-2">
-
-                        </div>
-
-                        <!-- Q4 -->
-
-                        <div>
-
-                            <label class="font-semibold">
-
-                                Q4
-
-                            </label>
-
-                            <input
-                                id="q4"
-                                type="number"
-                                name="q4"
-                                value="0"
-                                class="w-full border rounded mt-2">
-
-                        </div>
-
-                    </div>
-
-                    <div class="border-t mt-6 pt-4 flex justify-end gap-3">
-
-                        <button
-                            type="button"
-                            onclick="document.getElementById('addMaterialModal').classList.add('hidden')"
-                            class="px-5 py-2 border rounded">
-
-                            Cancel
-
-                        </button>
-
-                        <button
-                            id="procurementSubmitButton"
-                            type="submit"
-                            class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded">
-
-                            Save Procurement Item
-
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-            <div class="border-t px-6 py-4 flex justify-end">
-
-                <button
-                    type="button"
-                    onclick="document.getElementById('addMaterialModal').classList.add('hidden')"
-                    class="px-5 py-2 border rounded">
-
-                    Close
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <script>
-
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const materialSelect = document.getElementById('materialSelect');
-
-            if (!materialSelect) return;
-
-            materialSelect.addEventListener('change', function () {
-
-                const option = this.options[this.selectedIndex];
-
-                document.getElementById('categoryDisplay').value =
-                    option.dataset.category || '';
-
-                document.getElementById('unitDisplay').value =
-                    option.dataset.unit || '';
-
-                document.getElementById('stockDisplay').value =
-                    option.dataset.stock || '';
+                }
 
             });
+        }
 
-        });
+    function switchToEditMode(item)
+        {
+            document.getElementById('procurementModalTitle').innerText =
+                'Edit Procurement Item';
 
-    </script>
+            document.getElementById('procurementSubmitButton').innerText =
+                'Update Procurement Item';
 
-    <script>
+            const form =
+                document.getElementById('procurementItemForm');
 
-        async function editProcurementItem(itemId)
+            form.action =
+                window.procurementRoutes.updateItem
+                    .replace(':id', item.id);
+
+            document.getElementById('formMethod').value = 'PUT';
+        }
+
+    function populateProcurementModal(item)
+        {
+            document.getElementById('procurementItemId').value =
+                item.id;
+
+            document.getElementById('material_id').value =
+                item.material_id;
+
+            document.getElementById('estimated_unit_cost').value =
+                item.estimated_unit_cost;
+
+            document.getElementById('q1').value = item.q1;
+            document.getElementById('q2').value = item.q2;
+            document.getElementById('q3').value = item.q3;
+            document.getElementById('q4').value = item.q4;
+
+            updateProcurementSummary();
+        }
+        
+
+    async function editProcurementItem(itemId)
         {
             try {
 
-                const procurementItemShowUrl =
-                    "{{ route('procurement.plans.items.show', ':id') }}";
-
-                const url = procurementItemShowUrl.replace(':id', itemId);
+                const url =
+                    window.procurementRoutes.showItem
+                        .replace(':id', itemId);
 
                 const response = await fetch(url);
 
@@ -668,40 +518,11 @@ Allocated Budget
 
                 const item = await response.json();
 
-                console.log(item);
+                switchToEditMode(item);
 
-                document.getElementById('procurementModalTitle').innerText =
-                'Edit Procurement Item';
-            
-                document.getElementById('procurementSubmitButton').innerText =
-                'Update Procurement Item';
+                populateProcurementModal(item);
 
-                document.getElementById('procurementItemId').value = item.id;
-
-                const form = document.getElementById('procurementItemForm');
-
-                form.action = `/procurement/plans/items/${item.id}`;
-
-                const methodField = document.getElementById('formMethod');
-
-                if (methodField) {
-                    methodField.value = 'PUT';
-                }
-
-                document.getElementById('material_id').value = item.material_id;
-
-                document.getElementById('estimated_unit_cost').value =
-                    item.estimated_unit_cost;
-
-                document.getElementById('q1').value = item.q1;
-
-                document.getElementById('q2').value = item.q2;
-
-                document.getElementById('q3').value = item.q3;
-
-                document.getElementById('q4').value = item.q4;
-
-                document.getElementById('addMaterialModal').classList.remove('hidden');
+                openProcurementModal();
 
             } catch (error) {
 
@@ -710,6 +531,8 @@ Allocated Budget
             }
         }
 
-    </script>
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </x-app-layout>
