@@ -198,6 +198,92 @@
             <!-- Divider -->
             <div class="border-t my-2"></div>
 
+            <!-- PROCUREMENT PLANNING -->
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-6 mb-2">
+                Procurement Planning
+            </div>
+
+            <!-- Dashboard -->
+
+            <a href="{{ route('procurement.dashboard') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('procurement.dashboard') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                🏠 Dashboard
+
+            </a>
+
+            <!-- Annual PPMP -->
+
+            <a href="{{ route('procurement.plans.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('procurement.plans.*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                📄 Annual PPMP
+
+            </a>
+
+            <!-- Budget Monitoring -->
+
+            <a href="#"
+            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+
+                💰 Budget Monitoring
+                <span class="text-xs">(Coming Soon)</span>
+
+            </a>
+
+            <!-- Purchase Forecast -->
+
+            <a href="#"
+            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+
+                📈 Purchase Forecast
+                <span class="text-xs">(Coming Soon)</span>
+
+            </a>
+
+            <!-- Procurement Calendar -->
+
+            <a href="#"
+            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+
+                📅 Procurement Calendar
+                <span class="text-xs">(Coming Soon)</span>
+
+            </a>
+
+            <!-- Budget Monitoring -->
+
+            <a href="#"
+            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+
+                💰 Budget Monitoring
+                <span class="text-xs">(Coming Soon)</span>
+
+            </a>
+
+            <!-- Purchase Forecast -->
+
+            <a href="#"
+            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+
+                📈 Purchase Forecast
+                <span class="text-xs">(Coming Soon)</span>
+
+            </a>
+
+            <!-- Procurement Calendar -->
+
+            <a href="#"
+            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+
+                📅 Procurement Calendar
+                <span class="text-xs">(Coming Soon)</span>
+
+            </a>
+
             <!-- REPORTS -->
 
             <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-6 mb-2">

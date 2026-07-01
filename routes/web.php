@@ -17,6 +17,9 @@ use App\Http\Controllers\Supervisor\DepartmentController;
 use App\Http\Controllers\Supervisor\InventoryMovementController;
 use App\Http\Controllers\Supervisor\DepartmentInventoryController;
 use App\Http\Controllers\Supervisor\ReportController;
+use App\Http\Controllers\Supervisor\Procurement\ProcurementDashboardController;
+use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanController;
+use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanItemController;
 
 
 Route::get('/zip-test', function () {
@@ -155,6 +158,66 @@ Route::middleware(['auth'])->group(function () {
 
     // ── Supervisor / Admin routes ──
 Route::middleware('role:supervisor')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROCUREMENT PLANNING
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('procurement')
+        ->name('procurement.')
+        ->group(function () {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Dashboard
+            |--------------------------------------------------------------------------
+            */
+
+            Route::get(
+                '/dashboard',
+                [ProcurementDashboardController::class, 'index']
+            )->name('dashboard');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Annual PPMP
+            |--------------------------------------------------------------------------
+            */
+
+            Route::resource(
+                'plans',
+                ProcurementPlanController::class
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | PROCUREMENT PLAN ITEMS
+            |--------------------------------------------------------------------------
+            */
+
+            Route::get(
+                'plans/{plan}/items/create',
+                [ProcurementPlanItemController::class, 'create']
+            )->name('plans.items.create');
+
+            Route::post(
+                'plans/{plan}/items',
+                [ProcurementPlanItemController::class, 'store']
+            )->name('plans.items.store');
+
+            Route::put(
+                'plans/items/{item}',
+                [ProcurementPlanItemController::class, 'update']
+            )->name('plans.items.update');
+
+            Route::delete(
+                'plans/items/{item}',
+                [ProcurementPlanItemController::class, 'destroy']
+            )->name('plans.items.destroy');
+
+        });
 
     Route::get(
         '/department-inventory',
