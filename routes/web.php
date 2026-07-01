@@ -207,6 +207,11 @@ Route::middleware('role:supervisor')->group(function () {
                 [ProcurementPlanItemController::class, 'store']
             )->name('plans.items.store');
 
+            Route::get(
+                'plans/items/{item}',
+                [ProcurementPlanItemController::class, 'show']
+            )->name('plans.items.show');
+
             Route::put(
                 'plans/items/{item}',
                 [ProcurementPlanItemController::class, 'update']

@@ -79,4 +79,21 @@ class ProcurementPlan extends Model
     {
         return $this->items()->sum('annual_quantity');
     }
+
+    public function getRemainingBudgetComputedAttribute()
+    {
+        return $this->allocated_budget - $this->total_planned_cost;
+    }
+
+    public function getBudgetUtilizationPercentageAttribute()
+    {
+        if ($this->allocated_budget <= 0) {
+            return 0;
+        }
+
+        return round(
+            ($this->total_planned_cost / $this->allocated_budget) * 100,
+            2
+        );
+    }
 }

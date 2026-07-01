@@ -163,14 +163,109 @@ class ProcurementPlanItemController extends Controller
             );
     }
 
+    public function show(ProcurementPlanItem $item)
+    {
+        return response()->json([
+            'id' => $item->id,
+            'material_id' => $item->material_id,
+            'estimated_unit_cost' => $item->estimated_unit_cost,
+            'q1' => $item->q1,
+            'q2' => $item->q2,
+            'q3' => $item->q3,
+            'q4' => $item->q4,
+            'priority' => $item->priority,
+            'remarks' => $item->remarks,
+        ]);
+    }
+
     /**
      * Update Procurement Item
      */
-    public function update(
+        public function update(
         Request $request,
         ProcurementPlanItem $item
     ) {
-        //
+        $validated = $request->validate([
+
+            'material_id' => [
+                'required',
+                'exists:materials,id'
+            ],
+
+            'estimated_unit_cost' => [
+                'required',
+                'numeric',
+                'min:0'
+            ],
+
+            'q1' => [
+                'required',
+                'integer',
+                'min:0'
+            ],
+
+            'q2' => [
+                'required',
+                'integer',
+                'min:0'
+            ],
+
+            'q3' => [
+                'required',
+                'integer',
+                'min:0'
+            ],
+
+            'q4' => [
+                'required',
+                'integer',
+                'min:0'
+            ],
+
+            'priority' => [
+                'nullable',
+                'string'
+            ],
+
+            'remarks' => [
+                'nullable',
+                'string'
+            ],
+
+        ]);
+
+        DB::transaction(function () use ($validated, $item) {
+
+            $material = Material::findOrFail(
+                $validated['material_id']
+            );
+
+            $item->material_id = $material->id;
+            $item->material_name = $material->name;
+            $item->unit_id = $material->unit_id;
+
+            $item->estimated_unit_cost = $validated['estimated_unit_cost'];
+
+            $item->q1 = $validated['q1'];
+            $item->q2 = $validated['q2'];
+            $item->q3 = $validated['q3'];
+            $item->q4 = $validated['q4'];
+
+            $item->priority =
+                $validated['priority'] ?? 'Medium';
+
+            $item->remarks =
+                $validated['remarks'] ?? null;
+
+            $item->calculateTotals();
+
+            $item->save();
+        });
+
+        return back()->with(
+            'success',
+            'Procurement Item updated successfully.'
+        );
     }
 
     /**

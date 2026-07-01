@@ -149,7 +149,7 @@ Allocated Budget
 
             <div class="text-3xl font-bold text-green-700 mt-2">
 
-                ₱ {{ number_format($plan->allocated_budget,2) }}
+                ₱ {{ number_format($plan->allocated_budget, 2) }}
 
             </div>
 
@@ -165,7 +165,7 @@ Allocated Budget
 
             <div class="text-3xl font-bold text-blue-700 mt-2">
 
-                ₱0.00
+                ₱ {{ number_format($plan->total_planned_cost, 2) }}
 
             </div>
 
@@ -181,9 +181,60 @@ Allocated Budget
 
             <div class="text-3xl font-bold text-orange-600 mt-2">
 
-                ₱ {{ number_format($plan->allocated_budget,2) }}
+                ₱ {{ number_format($plan->remaining_budget_computed, 2) }}
 
             </div>
+
+        </div>
+
+    </div>
+
+    <!-- Budget Utilization -->
+
+    <div class="bg-white rounded-xl shadow p-6 mt-6">
+
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-semibold text-gray-800">
+                📊 Budget Utilization
+            </h3>
+
+            <span class="text-sm font-semibold text-gray-600">
+                {{ $plan->budget_utilization_percentage }}%
+            </span>
+        </div>
+
+        @php
+            $percentage = min($plan->budget_utilization_percentage, 100);
+
+            $barColor = 'bg-green-500';
+
+            if ($plan->budget_utilization_percentage >= 90) {
+                $barColor = 'bg-red-600';
+            } elseif ($plan->budget_utilization_percentage >= 60) {
+                $barColor = 'bg-yellow-500';
+            }
+        @endphp
+
+        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+
+            <div
+                class="{{ $barColor }} h-4 transition-all duration-500"
+                style="width: {{ $percentage }}%;">
+            </div>
+
+        </div>
+
+        <div class="flex justify-between mt-3 text-sm text-gray-600">
+
+            <span>
+                ₱{{ number_format($plan->total_planned_cost,2) }}
+                Used
+            </span>
+
+            <span>
+                ₱{{ number_format($plan->allocated_budget,2) }}
+                Budget
+            </span>
 
         </div>
 
@@ -303,7 +354,14 @@ Allocated Budget
                     </td>
 
                     <td class="px-4 py-3 text-center">
-                        <button class="text-blue-600 hover:underline">Edit</button>
+                        <button
+                            type="button"
+                            class="text-blue-600 hover:underline"
+                            onclick="editProcurementItem({{ $item->id }})">
+
+                            Edit
+
+                        </button>
                         |
                         <button class="text-red-600 hover:underline">Delete</button>
                     </td>
@@ -343,7 +401,9 @@ Allocated Budget
 
             <div class="flex justify-between items-center border-b px-6 py-4">
 
-                <h2 class="text-xl font-bold">
+                <h2
+                    id="procurementModalTitle"
+                    class="text-xl font-bold">
 
                     Add Procurement Item
 
@@ -362,10 +422,22 @@ Allocated Budget
             <div class="p-6">
 
                 <form
+                    id="procurementItemForm"
                     action="{{ route('procurement.plans.items.store', $plan->id) }}"
                     method="POST">
 
                     @csrf
+
+                    <input
+                        type="hidden"
+                        id="formMethod"
+                        name="_method"
+                        value="POST">
+
+                    <input
+                        type="hidden"
+                        id="procurementItemId"
+                        name="item_id">
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -380,6 +452,7 @@ Allocated Budget
                             </label>
 
                             <select
+                                id="material_id"
                                 name="material_id"
                                 class="w-full border rounded mt-2">
 
@@ -414,6 +487,7 @@ Allocated Budget
                             </label>
 
                             <input
+                                id="estimated_unit_cost"
                                 type="number"
                                 step="0.01"
                                 name="estimated_unit_cost"
@@ -432,6 +506,7 @@ Allocated Budget
                             </label>
 
                             <input
+                                id="q1"
                                 type="number"
                                 name="q1"
                                 value="0"
@@ -450,6 +525,7 @@ Allocated Budget
                             </label>
 
                             <input
+                                id="q2"
                                 type="number"
                                 name="q2"
                                 value="0"
@@ -468,6 +544,7 @@ Allocated Budget
                             </label>
 
                             <input
+                                id="q3"
                                 type="number"
                                 name="q3"
                                 value="0"
@@ -486,6 +563,7 @@ Allocated Budget
                             </label>
 
                             <input
+                                id="q4"
                                 type="number"
                                 name="q4"
                                 value="0"
@@ -507,6 +585,8 @@ Allocated Budget
                         </button>
 
                         <button
+                            id="procurementSubmitButton"
+                            type="submit"
                             class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded">
 
                             Save Procurement Item
@@ -560,6 +640,75 @@ Allocated Budget
             });
 
         });
+
+    </script>
+
+    <script>
+
+        async function editProcurementItem(itemId)
+        {
+            try {
+
+                const procurementItemShowUrl =
+                    "{{ route('procurement.plans.items.show', ':id') }}";
+
+                const url = procurementItemShowUrl.replace(':id', itemId);
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    console.error(response.status);
+
+                    const text = await response.text();
+
+                    console.error(text);
+
+                    throw new Error('Unable to load procurement item.');
+                }
+
+                const item = await response.json();
+
+                console.log(item);
+
+                document.getElementById('procurementModalTitle').innerText =
+                'Edit Procurement Item';
+            
+                document.getElementById('procurementSubmitButton').innerText =
+                'Update Procurement Item';
+
+                document.getElementById('procurementItemId').value = item.id;
+
+                const form = document.getElementById('procurementItemForm');
+
+                form.action = `/procurement/plans/items/${item.id}`;
+
+                const methodField = document.getElementById('formMethod');
+
+                if (methodField) {
+                    methodField.value = 'PUT';
+                }
+
+                document.getElementById('material_id').value = item.material_id;
+
+                document.getElementById('estimated_unit_cost').value =
+                    item.estimated_unit_cost;
+
+                document.getElementById('q1').value = item.q1;
+
+                document.getElementById('q2').value = item.q2;
+
+                document.getElementById('q3').value = item.q3;
+
+                document.getElementById('q4').value = item.q4;
+
+                document.getElementById('addMaterialModal').classList.remove('hidden');
+
+            } catch (error) {
+
+                alert(error.message);
+
+            }
+        }
 
     </script>
 
