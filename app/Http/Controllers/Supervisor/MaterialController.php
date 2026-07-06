@@ -467,6 +467,7 @@ class MaterialController extends Controller
 
         // Walk-In Issues
         $walkinDistributions = WalkinRequestItem::with([
+                'request.personnel',
                 'request.department'
             ])
             ->where('material_id', $material->id)
@@ -491,14 +492,24 @@ class MaterialController extends Controller
         // Normalize Walk-In Issues
         $walkinDistributions = $walkinDistributions->map(function ($item) {
 
+            $request = $item->request;
+
             return (object)[
                 'source'      => 'Walk-In Issue',
-                'reference'   => $item->request->reference_no,
-                'recipient'   => $item->request->requested_by,
-                'department'  => optional($item->request->department)->department_name ?? 'N/A',
+                'reference'   => $request->reference_no,
+
+                'recipient'   => optional($request->personnel)->fullname
+                                    ?? $request->requestor_name
+                                    ?? 'N/A',
+
+                'department'  => optional($request->department)->department_name
+                                    ?? 'N/A',
+
                 'quantity'    => $item->quantity,
-                'status'      => 'Released',
-                'date'        => $item->created_at,
+
+                'status'      => ucfirst($request->status),
+
+                'date'        => $request->created_at,
             ];
 
         });

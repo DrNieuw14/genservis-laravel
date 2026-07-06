@@ -478,7 +478,7 @@
 
                     <th class="p-3 text-left">Request No</th>
                     <th class="p-3 text-left">Personnel</th>
-                    <th class="p-3 text-left">Department</th>
+                    <th class="p-3 text-left">Destination</th>
                     <th class="p-3 text-left">Quantity</th>
                     <th class="p-3 text-left">Status</th>
                     <th class="p-3 text-left">Date</th>
@@ -497,14 +497,13 @@
                             {{ $distribution->reference ?? 'N/A' }}
                         </td>
 
-                        <td class="p-3">
-                            {{ $distribution->recipient->fullname
-                                ?? $distribution->recipient->username
-                                ?? 'N/A' }}
+                            <td class="p-3">
+                                {{ $distribution->recipient }}
+                            </td>
                         </td>
 
                         <td class="p-3">
-                            {{ $distribution->department->department_name ?? 'N/A' }}
+                            {{ $distribution->department }}
                         </td>
 
                         <td class="p-3 font-bold">
@@ -513,25 +512,18 @@
 
                         <td class="p-3">
 
-                            @if($distribution->status == 'approved')
+                            <span class="px-3 py-1 rounded-full text-sm
+                                @if(strtolower($distribution->status) == 'issued' || strtolower($distribution->status) == 'released')
+                                    bg-green-100 text-green-700
+                                @elseif(strtolower($distribution->status) == 'pending')
+                                    bg-yellow-100 text-yellow-700
+                                @else
+                                    bg-red-100 text-red-700
+                                @endif">
 
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-                                    ✅ Approved
-                                </span>
+                                {{ ucfirst($distribution->status) }}
 
-                            @elseif($distribution->status == 'pending')
-
-                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
-                                    ⏳ Pending
-                                </span>
-
-                            @else
-
-                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
-                                    ❌ Rejected
-                                </span>
-
-                            @endif
+                            </span>
 
                         </td>
 
