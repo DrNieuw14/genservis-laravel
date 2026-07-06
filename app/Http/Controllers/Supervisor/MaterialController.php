@@ -13,6 +13,7 @@ use App\Models\MaterialRequestItem;
 use App\Models\InventoryMovement;
 use App\Models\Department;
 use App\Models\DepartmentMaterial;
+use App\Models\WalkinRequestItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;  
 use App\Imports\MaterialImport;
@@ -455,14 +456,57 @@ class MaterialController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $distributions = MaterialRequestItem::with([
+        // Personnel Material Requests
+        $requestDistributions = MaterialRequestItem::with([
                 'request.user',
                 'request.department'
             ])
             ->where('material_id', $material->id)
             ->latest()
-            ->take(10)
             ->get();
+
+        // Walk-In Issues
+        $walkinDistributions = WalkinRequestItem::with([
+                'request.department'
+            ])
+            ->where('material_id', $material->id)
+            ->latest()
+            ->get();
+
+        // Normalize Personnel Requests
+        $requestDistributions = $requestDistributions->map(function ($item) {
+
+            return (object)[
+                'source'      => 'Personnel Request',
+                'reference'   => $item->request->request_number,
+                'recipient'   => optional($item->request->user)->name ?? 'N/A',
+                'department'  => optional($item->request->department)->department_name ?? 'N/A',
+                'quantity'    => $item->quantity,
+                'status'      => ucfirst($item->request->status),
+                'date'        => $item->created_at,
+            ];
+
+        });
+
+        // Normalize Walk-In Issues
+        $walkinDistributions = $walkinDistributions->map(function ($item) {
+
+            return (object)[
+                'source'      => 'Walk-In Issue',
+                'reference'   => $item->request->reference_no,
+                'recipient'   => $item->request->requested_by,
+                'department'  => optional($item->request->department)->department_name ?? 'N/A',
+                'quantity'    => $item->quantity,
+                'status'      => 'Released',
+                'date'        => $item->created_at,
+            ];
+
+        });
+
+        $distributions = $requestDistributions
+        ->concat($walkinDistributions)
+        ->sortByDesc('date')
+        ->values();
 
         return view(
             'supervisor.materials.show',

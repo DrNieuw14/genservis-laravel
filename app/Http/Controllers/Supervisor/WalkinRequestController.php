@@ -9,6 +9,7 @@ use App\Models\WalkinRequest;
 use App\Models\WalkinRequestItem;
 use App\Models\DepartmentMaterial;
 use App\Models\MaterialLog;
+use App\Models\InventoryMovement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -101,6 +102,16 @@ DB::transaction(function () use ($request) {
                 'quantity',
                 $qty
             );
+
+            InventoryMovement::create([
+                'material_id'    => $material->id,
+                'movement_type'  => 'request',
+                'quantity'       => $qty,
+                'previous_stock' => $material->quantity + $qty,
+                'new_stock'      => $material->quantity,
+                'remarks'        => 'Walk-In Issue #' . $walkin->reference_no,
+                'performed_by'   => auth()->id(),
+            ]);
 
             MaterialLog::create([
                 'material_id' => $material->id,

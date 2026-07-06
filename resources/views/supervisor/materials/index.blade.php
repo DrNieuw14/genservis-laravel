@@ -336,10 +336,11 @@
                                 @method('DELETE')
 
                                 <button
-                                    onclick="return confirm('Delete this material?')"
-                                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm">
+                                    type="button"
+                                    class="delete-material-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm">
 
                                     🗑 Delete
+
                                 </button>
 
                             </form>
@@ -372,3 +373,42 @@
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('.delete-material-btn').forEach(button => {
+
+        button.addEventListener('click', function () {
+
+            const form = this.closest('form');
+
+            console.log('Delete button clicked');
+
+            Swal.fire({
+                title: 'Delete Material?',
+                text: "This action cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, Delete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+
+                console.log(result);
+
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+
+            });
+
+        });
+
+    });
+
+});
+</script>
+@endpush

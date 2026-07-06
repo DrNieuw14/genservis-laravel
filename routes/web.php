@@ -462,8 +462,8 @@ Route::middleware('role:supervisor')->group(function () {
     Route::put('/materials/{id}', [MaterialController::class, 'update'])
         ->name('materials.update');
 
-    Route::delete('/materials/{id}', [MaterialController::class, 'destroy'])
-        ->name('materials.destroy');
+    Route::delete('/materials/{material}', [MaterialController::class, 'destroy'])
+    ->name('materials.destroy');
 
     // ✅ Restock Materials
     Route::get('/materials/{id}/restock', [MaterialController::class, 'restockForm'])

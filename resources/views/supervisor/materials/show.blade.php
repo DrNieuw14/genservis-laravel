@@ -9,11 +9,11 @@
 
         <div>
 
-            <h1 class="text-3xl font-bold text-gray-800">
+            <h1 class="text-3xl font-bold text-white flex items-center gap-2">
                 📦 Material Details
             </h1>
 
-            <p class="text-gray-500 mt-1">
+            <p class="text-gray-200 mt-1">
                 Complete inventory profile and audit history
             </p>
 
@@ -142,46 +142,65 @@
 
                 </thead>
 
-                <tbody>
+                <tbody class="divide-y divide-gray-200">
 
-                    @forelse($movements as $movement)
+                    @forelse($distributions as $distribution)
 
-                        <tr class="border-t">
+                    <tr class="hover:bg-gray-50">
 
-                            <td class="p-3">
-                                {{ $movement->created_at->format('M d, Y h:i A') }}
-                            </td>
+                        <td class="px-4 py-3">
+                            {{ $distribution->source }}
+                        </td>
 
-                            <td class="p-3">
-                                {{ ucfirst(str_replace('_', ' ', $movement->movement_type)) }}
-                            </td>
+                        <td class="px-4 py-3">
+                            {{ $distribution->reference }}
+                        </td>
 
-                            <td class="p-3 font-bold">
-                                {{ $movement->quantity }}
-                            </td>
+                        <td class="px-4 py-3">
+                            {{ $distribution->recipient }}
+                        </td>
 
-                            <td class="p-3">
-                                {{ $movement->previous_stock }}
-                            </td>
+                        <td class="px-4 py-3">
+                            {{ $distribution->department }}
+                        </td>
 
-                            <td class="p-3">
-                                {{ $movement->new_stock }}
-                            </td>
+                        <td class="px-4 py-3 text-center">
+                            {{ number_format($distribution->quantity) }}
+                        </td>
 
-                        </tr>
+                        <td class="px-4 py-3">
+                            @if($distribution->status == 'Approved')
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                                    {{ $distribution->status }}
+                                </span>
+                            @elseif($distribution->status == 'Released')
+                                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
+                                    {{ $distribution->status }}
+                                </span>
+                            @else
+                                <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">
+                                    {{ $distribution->status }}
+                                </span>
+                            @endif
+                        </td>
+
+                        <td class="px-4 py-3">
+                            {{ $distribution->date->format('M d, Y h:i A') }}
+                        </td>
+
+                    </tr>
 
                     @empty
 
-                        <tr>
+                    <tr>
 
-                            <td colspan="5"
-                                class="p-4 text-center text-gray-500">
+                        <td colspan="7" class="text-center text-gray-500 py-6">
 
-                                No movement records found.
+                            No distribution history found.
 
-                            </td>
+                        </td>
 
-                        </tr>
+                    </tr>
 
                     @endforelse
 
@@ -475,17 +494,17 @@
                     <tr class="border-t">
 
                         <td class="p-3 font-semibold text-blue-700">
-                            {{ $distribution->request->request_number ?? 'N/A' }}
+                            {{ $distribution->reference ?? 'N/A' }}
                         </td>
 
                         <td class="p-3">
-                            {{ $distribution->request->user->fullname
-                                ?? $distribution->request->user->username
+                            {{ $distribution->recipient->fullname
+                                ?? $distribution->recipient->username
                                 ?? 'N/A' }}
                         </td>
 
                         <td class="p-3">
-                            {{ $distribution->request->department->department_name ?? 'N/A' }}
+                            {{ $distribution->department->department_name ?? 'N/A' }}
                         </td>
 
                         <td class="p-3 font-bold">
@@ -494,13 +513,13 @@
 
                         <td class="p-3">
 
-                            @if($distribution->request->status == 'approved')
+                            @if($distribution->status == 'approved')
 
                                 <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
                                     ✅ Approved
                                 </span>
 
-                            @elseif($distribution->request->status == 'pending')
+                            @elseif($distribution->status == 'pending')
 
                                 <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
                                     ⏳ Pending
@@ -517,7 +536,7 @@
                         </td>
 
                         <td class="p-3">
-                            {{ $distribution->created_at->format('M d, Y') }}
+                            {{ $distribution->date->format('M d, Y h:i A') }}
                         </td>
 
                     </tr>

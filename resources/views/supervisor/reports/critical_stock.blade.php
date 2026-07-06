@@ -8,6 +8,10 @@
 Materials currently at critical inventory levels.
 @endsection
 
+@section('print-route')
+{{ route('inventory.critical.print') }}
+@endsection
+
 
 {{-- =========================================
     KPI CARDS

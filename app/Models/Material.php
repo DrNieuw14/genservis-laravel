@@ -13,6 +13,7 @@ class Material extends Model
     'category_id',
     'department_id',
     'unit_id',
+    'classification_id',
     'created_by'
     ];
 
@@ -31,6 +32,14 @@ class Material extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function classification()
+    {
+        return $this->belongsTo(
+            ProcurementClassification::class,
+            'classification_id'
+        );
     }
 
     // 📜 Material Logs
@@ -55,4 +64,6 @@ class Material extends Model
     {
         return $this->hasMany(WalkinRequestItem::class);
     }
+
+   
 }
