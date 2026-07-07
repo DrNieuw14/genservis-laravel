@@ -136,6 +136,22 @@ class UserApprovalController extends Controller
         ]);
     }
 
+    public function getPositions($employmentTypeId)
+    {
+        $employmentType = EmploymentType::findOrFail($employmentTypeId);
+
+        return response()->json(
+            $employmentType->positions()
+                ->where('is_active', 1)
+                ->orderBy('position_name')
+                ->get([
+                    'positions.id',
+                    'positions.position_name'
+                ])
+                ->makeHidden('pivot')
+        );
+    }
+
     public function approve($id)
     {
         $user = User::findOrFail($id);

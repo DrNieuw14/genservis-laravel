@@ -131,12 +131,11 @@
                         </label>
 
                         <input
-                            id="employee_id"
-                            type="text"
-                            name="employee_id"
-                            readonly
-                            placeholder="Auto-generated"
-                            class="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3">
+                        id="employee_id"
+                        type="text"
+                        readonly
+                        placeholder="Auto-generated"
+                        class="w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3">
                     </div>
 
     {{-- Department --}}
@@ -145,8 +144,9 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
 
                         <select
-                            class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            id="department_id"
                             name="department_id"
+                            class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
                             required>
 
                             <option selected disabled>Select Department</option>
@@ -165,17 +165,14 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Position</label>
 
                         <select
+                            id="position_id"
                             name="position_id"
                             class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
                             required>
 
-                            <option selected disabled>Select Position</option>
-
-                            @foreach($positions as $position)
-                                <option value="{{ $position->id }}">
-                                    {{ $position->position_name }}
-                                </option>
-                            @endforeach
+                            <option value="">
+                                Select Employment Type First
+                            </option>
 
                         </select>
 
@@ -210,19 +207,53 @@
 
     </div>
 
-    @push('scripts')
+  @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
     const employmentType = document.getElementById('employment_type_id');
     const employeeId = document.getElementById('employee_id');
+    const position = document.getElementById('position_id');
 
     employmentType.addEventListener('change', function () {
 
-        fetch(`/admin/users/generate-employee-id/${this.value}`)
+        const employmentTypeId = this.value;
+
+        // Generate Employee ID
+        fetch(`/admin/users/generate-employee-id/${employmentTypeId}`)
             .then(response => response.json())
             .then(data => {
                 employeeId.value = data.employee_id;
+            })
+            .catch(error => {
+                console.error(error);
+                employeeId.value = '';
+            });
+
+        // Load Positions
+        fetch(`/admin/users/employment-type/${employmentTypeId}/positions`)
+            .then(response => response.json())
+            .then(data => {
+
+                position.innerHTML =
+                    '<option value="">Select Position</option>';
+
+                data.forEach(item => {
+
+                    position.innerHTML += `
+                        <option value="${item.id}">
+                            ${item.position_name}
+                        </option>
+                    `;
+
+                });
+
+            })
+            .catch(error => {
+                console.error(error);
+
+                position.innerHTML =
+                    '<option value="">Unable to load positions</option>';
             });
 
     });

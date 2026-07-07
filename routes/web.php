@@ -490,6 +490,11 @@ Route::middleware('role:supervisor')->group(function () {
     [UserApprovalController::class, 'getEmployeeId']
     )->name('admin.users.generate-employee-id');
 
+    Route::get(
+        '/admin/users/employment-type/{employmentType}/positions',
+        [UserApprovalController::class, 'getPositions']
+    )->name('admin.users.positions');
+
     Route::post('admin/users/{id}/approve', [UserApprovalController::class, 'approve'])
         ->name('admin.users.approve');
 

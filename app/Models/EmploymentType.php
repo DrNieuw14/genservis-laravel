@@ -13,4 +13,12 @@ class EmploymentType extends Model
         'employee_prefix',
         'is_active',
     ];
+
+    public function positions()
+    {
+        return $this->belongsToMany(
+            Position::class,
+            'employment_type_position'
+        );
+    }
 }
