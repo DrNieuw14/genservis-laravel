@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Jun 29, 2026 at 07:30 AM
+-- Generation Time: Jul 06, 2026 at 11:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -129,7 +129,11 @@ INSERT INTO `departments` (`id`, `department_name`, `department_code`, `descript
 (3, 'Central Stockroom', 'SR-Main', 'Stock Room in the main building', '2026-05-24 23:22:47', '2026-05-24 23:22:47'),
 (6, 'General Inventory', 'GEN', 'Auto-created by inventory import', '2026-06-02 22:33:01', '2026-06-02 22:33:01'),
 (7, 'Department of Art and Sciences', 'DAS', 'Art and Sciences', '2026-06-03 23:40:49', '2026-06-04 00:13:58'),
-(8, 'Department of Teacher Education', 'DTE', 'English, Math, and Science', '2026-06-03 23:42:32', '2026-06-03 23:42:32');
+(8, 'Department of Teacher Education', 'DTE', 'English, Math, and Science', '2026-06-03 23:42:32', '2026-06-03 23:42:32'),
+(9, 'Department of Hotel Management', 'DHM', NULL, '2026-06-29 22:29:04', '2026-06-29 22:29:04'),
+(10, 'Library', 'LIB', NULL, '2026-06-29 22:29:32', '2026-06-29 22:29:32'),
+(11, 'Registrar', 'Reg', NULL, '2026-06-29 22:29:45', '2026-06-29 22:29:45'),
+(12, 'Medical Health', 'CLINIC', NULL, '2026-06-29 22:30:07', '2026-06-29 22:30:07');
 
 -- --------------------------------------------------------
 
@@ -165,7 +169,10 @@ INSERT INTO `department_materials` (`id`, `department_id`, `material_id`, `quant
 (10, 8, 373, 1, 16, 3, '2026-06-24 00:09:19', '2026-06-24 00:09:19', '2026-06-24 00:09:19'),
 (11, 8, 326, 1, 16, 3, '2026-06-24 00:09:19', '2026-06-24 00:09:19', '2026-06-24 00:09:19'),
 (12, 1, 326, 2, 17, 3, '2026-06-24 19:05:26', '2026-06-24 19:05:26', '2026-06-24 19:05:26'),
-(13, 1, 358, 1, 17, 3, '2026-06-24 19:05:26', '2026-06-24 19:05:26', '2026-06-24 19:05:26');
+(13, 1, 358, 1, 17, 3, '2026-06-24 19:05:26', '2026-06-24 19:05:26', '2026-06-24 19:05:26'),
+(14, 10, 454, 2, 18, 3, '2026-07-05 23:09:00', '2026-07-05 23:09:00', '2026-07-05 23:09:00'),
+(15, 12, 454, 1, 19, 3, '2026-07-05 23:15:08', '2026-07-05 23:15:08', '2026-07-05 23:15:08'),
+(16, 11, 455, 5, 20, 3, '2026-07-05 23:23:21', '2026-07-05 23:23:21', '2026-07-05 23:23:21');
 
 -- --------------------------------------------------------
 
@@ -192,7 +199,7 @@ CREATE TABLE `failed_jobs` (
 CREATE TABLE `inventory_movements` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `material_id` bigint(20) UNSIGNED NOT NULL,
-  `movement_type` enum('restock','request','damage','transfer','adjustment') NOT NULL,
+  `movement_type` varchar(50) NOT NULL,
   `quantity` int(11) NOT NULL,
   `previous_stock` int(11) NOT NULL,
   `new_stock` int(11) NOT NULL,
@@ -393,7 +400,12 @@ INSERT INTO `inventory_movements` (`id`, `material_id`, `movement_type`, `quanti
 (450, 328, 'request', 2, 5, 3, 'Request #: MR-2026-0036 | Requested by: aldrin', 3, '2026-06-08 00:41:30', '2026-06-08 00:41:30'),
 (451, 337, 'request', 1, 5, 4, 'Request #: MR-2026-0036 | Requested by: aldrin', 3, '2026-06-08 00:41:31', '2026-06-08 00:41:31'),
 (452, 373, 'request', 20, 106, 86, 'Request #: MR-2026-0037 | Requested by: aldrin', 3, '2026-06-08 23:46:28', '2026-06-08 23:46:28'),
-(453, 328, 'request', 1, 3, 2, 'Request #: MR-2026-0037 | Requested by: aldrin', 3, '2026-06-08 23:46:28', '2026-06-08 23:46:28');
+(453, 328, 'request', 1, 3, 2, 'Request #: MR-2026-0037 | Requested by: aldrin', 3, '2026-06-08 23:46:28', '2026-06-08 23:46:28'),
+(454, 447, 'restock', 2, 13, 15, 'testing', 3, '2026-07-05 21:30:35', '2026-07-05 21:30:35'),
+(455, 325, 'restock', 4, 61, 65, 'white', 3, '2026-07-05 21:32:18', '2026-07-05 21:32:18'),
+(463, 454, 'initial_stock', 5, 0, 5, 'Initial stock added', 3, '2026-07-05 23:08:29', '2026-07-05 23:08:29'),
+(464, 455, 'initial_stock', 10, 0, 10, 'Initial stock added', 3, '2026-07-05 23:22:59', '2026-07-05 23:22:59'),
+(465, 455, 'request', 5, 10, 5, 'Walk-In Issue #WI-20260706072321', 3, '2026-07-05 23:23:21', '2026-07-05 23:23:21');
 
 -- --------------------------------------------------------
 
@@ -540,7 +552,7 @@ INSERT INTO `materials` (`id`, `name`, `quantity`, `category_id`, `department_id
 (322, 'KING Legal Size L-Type Folder (pack)', 9, 16, 3, 6, 3, '2026-06-03 00:12:35', '2026-06-03 00:12:35', 5),
 (323, 'LUCKY File Bag', 9, 16, 3, 6, 3, '2026-06-03 00:12:35', '2026-06-03 00:12:35', 5),
 (324, 'WORX 8.5x13 Specialty Paper (pack)', 18, 16, 3, 6, 3, '2026-06-03 00:12:35', '2026-06-03 00:12:35', 5),
-(325, 'WORX A4 90gsm Specialty Paper (pack)', 61, 16, 3, 5, 3, '2026-06-03 00:12:35', '2026-06-23 23:00:46', 5),
+(325, 'WORX A4 90gsm Specialty Paper', 65, 16, 3, 5, 3, '2026-06-03 00:12:35', '2026-07-05 21:32:18', 5),
 (326, 'A4 200gsm Specialty Paper WORX', 169, 6, 3, 5, 3, '2026-06-03 00:12:35', '2026-06-24 19:05:26', 5),
 (327, 'JOJO Photopaper 180g/m2 (pack)', 4, 16, 3, 6, 3, '2026-06-03 00:12:35', '2026-06-03 00:12:35', 5),
 (328, 'A4 Document Frame', 2, 16, 3, 6, 3, '2026-06-03 00:12:35', '2026-06-08 23:46:28', 5),
@@ -662,7 +674,9 @@ INSERT INTO `materials` (`id`, `name`, `quantity`, `category_id`, `department_id
 (444, 'Kix Taekwondo Kick Shield', 3, 16, 3, 6, 3, '2026-06-03 00:12:35', '2026-06-03 00:12:35', 5),
 (445, 'Molten B64500 Basketball', 1, 18, 3, 6, 3, '2026-06-03 00:12:35', '2026-06-23 22:57:24', 5),
 (446, 'Accel 7500 Voleyballl', 1, 16, 3, 6, 3, '2026-06-03 00:12:35', '2026-06-03 00:12:35', 5),
-(447, 'A4 COPY ONE', 13, 6, 3, 3, 3, '2026-06-23 23:02:54', '2026-06-24 00:06:07', 5);
+(447, 'A4 COPY ONE', 15, 6, 3, 3, 3, '2026-06-23 23:02:54', '2026-07-05 21:30:35', 5),
+(454, 'test', 2, 1, 3, 1, 3, '2026-07-05 23:08:29', '2026-07-05 23:15:08', 5),
+(455, 'test 2', 5, 6, 3, 1, 3, '2026-07-05 23:22:59', '2026-07-05 23:23:21', 5);
 
 -- --------------------------------------------------------
 
@@ -885,7 +899,14 @@ INSERT INTO `material_logs` (`id`, `material_id`, `user_id`, `action`, `quantity
 (479, 373, 3, 'DEDUCTED', 1, 'Walk-In Issue #WI-20260624080919', '2026-06-24 00:09:19', '2026-06-24 00:09:19'),
 (480, 326, 3, 'DEDUCTED', 1, 'Walk-In Issue #WI-20260624080919', '2026-06-24 00:09:19', '2026-06-24 00:09:19'),
 (481, 326, 3, 'DEDUCTED', 2, 'Walk-In Issue #WI-20260625030526', '2026-06-24 19:05:26', '2026-06-24 19:05:26'),
-(482, 358, 3, 'DEDUCTED', 1, 'Walk-In Issue #WI-20260625030526', '2026-06-24 19:05:26', '2026-06-24 19:05:26');
+(482, 358, 3, 'DEDUCTED', 1, 'Walk-In Issue #WI-20260625030526', '2026-06-24 19:05:26', '2026-06-24 19:05:26'),
+(483, 447, 3, 'restock', 2, 'Material restocked', '2026-07-05 21:30:35', '2026-07-05 21:30:35'),
+(484, 325, 3, 'restock', 4, 'Material restocked', '2026-07-05 21:32:18', '2026-07-05 21:32:18'),
+(492, 454, 3, 'stock_in', 5, 'Initial stock added', '2026-07-05 23:08:29', '2026-07-05 23:08:29'),
+(493, 454, 3, 'DEDUCTED', 2, 'Walk-In Issue #WI-20260706070900', '2026-07-05 23:09:00', '2026-07-05 23:09:00'),
+(494, 454, 3, 'DEDUCTED', 1, 'Walk-In Issue #WI-20260706071508', '2026-07-05 23:15:08', '2026-07-05 23:15:08'),
+(495, 455, 3, 'stock_in', 10, 'Initial stock added', '2026-07-05 23:22:59', '2026-07-05 23:22:59'),
+(496, 455, 3, 'DEDUCTED', 5, 'Walk-In Issue #WI-20260706072321', '2026-07-05 23:23:21', '2026-07-05 23:23:21');
 
 -- --------------------------------------------------------
 
@@ -1001,6 +1022,14 @@ CREATE TABLE `material_restock_logs` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `material_restock_logs`
+--
+
+INSERT INTO `material_restock_logs` (`id`, `material_id`, `batch_no`, `previous_stock`, `added_stock`, `quantity_remaining`, `new_stock`, `supplier`, `invoice_no`, `has_expiration`, `expiration_date`, `remarks`, `restocked_by`, `created_at`, `updated_at`) VALUES
+(8, 447, 'RST-2026-0001', 13, 2, 2, 15, NULL, NULL, 0, NULL, 'testing', 3, '2026-07-05 21:30:35', '2026-07-05 21:30:35'),
+(9, 325, 'RST-2026-0009', 61, 4, 4, 65, NULL, NULL, 0, NULL, 'white', 3, '2026-07-05 21:32:18', '2026-07-05 21:32:18');
+
 -- --------------------------------------------------------
 
 --
@@ -1045,7 +1074,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (25, '2026_06_04_035514_add_release_fields_to_material_requests_table', 11),
 (26, '2026_06_04_043528_create_department_materials_table', 12),
 (27, '2026_06_13_032753_create_walkin_requests_table', 13),
-(28, '2026_06_13_032758_create_walkin_request_items_table', 13);
+(28, '2026_06_13_032758_create_walkin_request_items_table', 13),
+(29, '2026_06_30_020343_create_procurement_plans_table', 14),
+(30, '2026_06_30_020350_create_procurement_plan_items_table', 14),
+(31, '2026_07_06_034146_create_procurement_classifications_table', 15),
+(32, '2026_07_06_041143_add_classification_id_to_materials_table', 16),
+(33, '2026_07_06_060106_update_inventory_movement_type_enum', 17),
+(34, '2026_07_06_061113_change_inventory_movement_type_to_string', 17);
 
 -- --------------------------------------------------------
 
@@ -1166,6 +1201,96 @@ INSERT INTO `personnel` (`id`, `employee_id`, `fullname`, `position`, `departmen
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `procurement_classifications`
+--
+
+CREATE TABLE `procurement_classifications` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `part` varchar(100) NOT NULL,
+  `main_category` varchar(150) NOT NULL,
+  `sub_category_a` varchar(255) NOT NULL,
+  `sub_category_b` varchar(255) NOT NULL,
+  `sub_category_c` varchar(255) NOT NULL,
+  `code` varchar(100) NOT NULL,
+  `uacs_code` varchar(50) NOT NULL,
+  `description` text DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `procurement_plans`
+--
+
+CREATE TABLE `procurement_plans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `plan_number` varchar(255) NOT NULL,
+  `year` year(4) NOT NULL,
+  `department_id` bigint(20) UNSIGNED NOT NULL,
+  `allocated_budget` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `approved_budget` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `remaining_budget` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `status` enum('Draft','Submitted','Reviewed','Approved','Rejected','Archived') NOT NULL DEFAULT 'Draft',
+  `prepared_by` bigint(20) UNSIGNED NOT NULL,
+  `reviewed_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `approved_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `procurement_plans`
+--
+
+INSERT INTO `procurement_plans` (`id`, `plan_number`, `year`, `department_id`, `allocated_budget`, `approved_budget`, `remaining_budget`, `status`, `prepared_by`, `reviewed_by`, `approved_by`, `remarks`, `submitted_at`, `approved_at`, `created_at`, `updated_at`) VALUES
+(1, 'PPMP-2027-0001', '2027', 7, 75000.00, 0.00, 75000.00, 'Draft', 3, NULL, NULL, 'Allotted amount for office supplies', NULL, NULL, '2026-06-29 22:31:30', '2026-06-29 22:31:30'),
+(2, 'PPMP-2027-0002', '2027', 1, 75000.00, 0.00, 75000.00, 'Draft', 3, NULL, NULL, 'ALLOTED AMOUNT FOR OFFICE SUPPLIES', NULL, NULL, '2026-06-29 22:33:22', '2026-06-29 22:33:22');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `procurement_plan_items`
+--
+
+CREATE TABLE `procurement_plan_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `plan_id` bigint(20) UNSIGNED NOT NULL,
+  `material_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `material_name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `unit_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `estimated_unit_cost` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `q1` int(11) NOT NULL DEFAULT 0,
+  `q2` int(11) NOT NULL DEFAULT 0,
+  `q3` int(11) NOT NULL DEFAULT 0,
+  `q4` int(11) NOT NULL DEFAULT 0,
+  `annual_quantity` int(11) NOT NULL DEFAULT 0,
+  `annual_cost` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `priority` enum('Low','Medium','High','Critical') NOT NULL DEFAULT 'Medium',
+  `procurement_method` varchar(255) DEFAULT NULL,
+  `source_of_fund` varchar(255) DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `procurement_plan_items`
+--
+
+INSERT INTO `procurement_plan_items` (`id`, `plan_id`, `material_id`, `material_name`, `description`, `unit_id`, `estimated_unit_cost`, `q1`, `q2`, `q3`, `q4`, `annual_quantity`, `annual_cost`, `priority`, `procurement_method`, `source_of_fund`, `remarks`, `created_at`, `updated_at`) VALUES
+(1, 1, 447, 'A4 COPY ONE', NULL, 3, 200.00, 1, 2, 1, 1, 5, 1000.00, 'Medium', NULL, NULL, NULL, '2026-06-30 16:42:14', '2026-06-30 21:06:56'),
+(2, 1, 328, 'A4 Document Frame', NULL, 6, 50.00, 2, 2, 2, 2, 8, 400.00, 'Medium', NULL, NULL, NULL, '2026-06-30 16:46:47', '2026-06-30 16:46:47');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `units`
 --
 
@@ -1272,7 +1397,10 @@ INSERT INTO `walkin_requests` (`id`, `reference_no`, `requestor_name`, `personne
 (14, 'WI-20260624053241', 'Mark Anthony Abril', NULL, 7, 'Admin office', 'Printing', 'Normal', NULL, 3, 'Issued', '2026-06-23 21:32:41', NULL, NULL, '2026-06-23 21:32:41', '2026-06-23 21:32:41', 'WALK-IN ISSUE'),
 (15, 'WI-20260624080607', 'Mark Anthony Abril', NULL, 7, 'Admin office', 'Printing', 'Normal', NULL, 3, 'Issued', '2026-06-24 00:06:07', NULL, NULL, '2026-06-24 00:06:07', '2026-06-24 00:06:07', 'WALK-IN ISSUE'),
 (16, 'WI-20260624080919', 'Mark Anthony Abril', NULL, 8, 'Admin office', 'Printing', 'Normal', NULL, 3, 'Issued', '2026-06-24 00:09:19', NULL, NULL, '2026-06-24 00:09:19', '2026-06-24 00:09:19', 'WALK-IN ISSUE'),
-(17, 'WI-20260625030526', 'Cua', NULL, 1, 'Admin office', 'Printing', 'Normal', NULL, 3, 'Issued', '2026-06-24 19:05:26', NULL, NULL, '2026-06-24 19:05:26', '2026-06-24 19:05:26', 'WALK-IN ISSUE');
+(17, 'WI-20260625030526', 'Cua', NULL, 1, 'Admin office', 'Printing', 'Normal', NULL, 3, 'Issued', '2026-06-24 19:05:26', NULL, NULL, '2026-06-24 19:05:26', '2026-06-24 19:05:26', 'WALK-IN ISSUE'),
+(18, 'WI-20260706070900', 'Cua', NULL, 10, 'Admin office', 'Replace', 'Normal', NULL, 3, 'Issued', '2026-07-05 23:09:00', NULL, NULL, '2026-07-05 23:09:00', '2026-07-05 23:09:00', 'WALK-IN ISSUE'),
+(19, 'WI-20260706071508', 'Juls', NULL, 12, 'Admin office', 'Printing', 'Normal', NULL, 3, 'Issued', '2026-07-05 23:15:08', NULL, NULL, '2026-07-05 23:15:08', '2026-07-05 23:15:08', 'WALK-IN ISSUE'),
+(20, 'WI-20260706072321', 'Juls', NULL, 11, 'Admin office', 'Printing', 'Normal', NULL, 3, 'Issued', '2026-07-05 23:23:21', NULL, NULL, '2026-07-05 23:23:21', '2026-07-05 23:23:21', 'WALK-IN ISSUE');
 
 -- --------------------------------------------------------
 
@@ -1315,7 +1443,10 @@ INSERT INTO `walkin_request_items` (`id`, `walkin_request_id`, `material_id`, `q
 (15, 16, 373, 1.00, 'Bottle', NULL, 85.00, 84.00, '2026-06-24 00:09:19', '2026-06-24 00:09:19'),
 (16, 16, 326, 1.00, 'Pack', NULL, 172.00, 171.00, '2026-06-24 00:09:19', '2026-06-24 00:09:19'),
 (17, 17, 326, 2.00, 'Pack', NULL, 171.00, 169.00, '2026-06-24 19:05:26', '2026-06-24 19:05:26'),
-(18, 17, 358, 1.00, 'Bottle', NULL, 2.00, 1.00, '2026-06-24 19:05:26', '2026-06-24 19:05:26');
+(18, 17, 358, 1.00, 'Bottle', NULL, 2.00, 1.00, '2026-06-24 19:05:26', '2026-06-24 19:05:26'),
+(19, 18, 454, 2.00, 'Piece', NULL, 5.00, 3.00, '2026-07-05 23:09:00', '2026-07-05 23:09:00'),
+(20, 19, 454, 1.00, 'Piece', NULL, 3.00, 2.00, '2026-07-05 23:15:08', '2026-07-05 23:15:08'),
+(21, 20, 455, 5.00, 'Piece', NULL, 10.00, 5.00, '2026-07-05 23:23:21', '2026-07-05 23:23:21');
 
 --
 -- Indexes for dumped tables
@@ -1458,6 +1589,33 @@ ALTER TABLE `personnel`
   ADD KEY `personnel_user_id_foreign` (`user_id`);
 
 --
+-- Indexes for table `procurement_classifications`
+--
+ALTER TABLE `procurement_classifications`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `procurement_classification_unique` (`part`,`main_category`,`sub_category_a`,`sub_category_b`,`sub_category_c`,`code`,`uacs_code`) USING HASH,
+  ADD KEY `procurement_classifications_part_index` (`part`),
+  ADD KEY `procurement_classifications_main_category_index` (`main_category`),
+  ADD KEY `procurement_classifications_uacs_code_index` (`uacs_code`);
+
+--
+-- Indexes for table `procurement_plans`
+--
+ALTER TABLE `procurement_plans`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `procurement_plans_plan_number_unique` (`plan_number`),
+  ADD KEY `procurement_plans_department_id_foreign` (`department_id`),
+  ADD KEY `procurement_plans_prepared_by_foreign` (`prepared_by`),
+  ADD KEY `procurement_plans_reviewed_by_foreign` (`reviewed_by`),
+  ADD KEY `procurement_plans_approved_by_foreign` (`approved_by`);
+
+--
+-- Indexes for table `procurement_plan_items`
+--
+ALTER TABLE `procurement_plan_items`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `units`
 --
 ALTER TABLE `units`
@@ -1510,13 +1668,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `department_materials`
 --
 ALTER TABLE `department_materials`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -1528,7 +1686,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `inventory_movements`
 --
 ALTER TABLE `inventory_movements`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=454;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=466;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -1546,13 +1704,13 @@ ALTER TABLE `leave_requests`
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=448;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=456;
 
 --
 -- AUTO_INCREMENT for table `material_logs`
 --
 ALTER TABLE `material_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=483;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=497;
 
 --
 -- AUTO_INCREMENT for table `material_requests`
@@ -1570,13 +1728,13 @@ ALTER TABLE `material_request_items`
 -- AUTO_INCREMENT for table `material_restock_logs`
 --
 ALTER TABLE `material_restock_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -1589,6 +1747,24 @@ ALTER TABLE `notifications`
 --
 ALTER TABLE `personnel`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `procurement_classifications`
+--
+ALTER TABLE `procurement_classifications`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `procurement_plans`
+--
+ALTER TABLE `procurement_plans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `procurement_plan_items`
+--
+ALTER TABLE `procurement_plan_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `units`
@@ -1606,13 +1782,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `walkin_requests`
 --
 ALTER TABLE `walkin_requests`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `walkin_request_items`
 --
 ALTER TABLE `walkin_request_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables
@@ -1684,6 +1860,15 @@ ALTER TABLE `notifications`
 --
 ALTER TABLE `personnel`
   ADD CONSTRAINT `personnel_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `procurement_plans`
+--
+ALTER TABLE `procurement_plans`
+  ADD CONSTRAINT `procurement_plans_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `procurement_plans_department_id_foreign` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `procurement_plans_prepared_by_foreign` FOREIGN KEY (`prepared_by`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `procurement_plans_reviewed_by_foreign` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `walkin_requests`

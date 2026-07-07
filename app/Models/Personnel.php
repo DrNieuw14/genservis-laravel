@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\EmploymentType;
+use App\Models\Department;
+use App\Models\Position;
 
 class Personnel extends Model
 {
@@ -13,6 +16,13 @@ class Personnel extends Model
 
     protected $fillable = [
         'employee_id',
+
+        // New Employee Master fields
+        'employment_type_id',
+        'department_id',
+        'position_id',
+
+        // Existing fields
         'fullname',
         'position',
         'department',
@@ -35,6 +45,30 @@ class Personnel extends Model
     public function walkinRequests()
     {
         return $this->hasMany(WalkinRequest::class);
+    }
+
+    /**
+     * Employment Type
+     */
+    public function employmentType()
+    {
+        return $this->belongsTo(EmploymentType::class);
+    }
+
+    /**
+     * Department (Master Table)
+     */
+    public function departmentRecord()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    /**
+     * Position (Master Table)
+     */
+    public function positionRecord()
+    {
+        return $this->belongsTo(Position::class, 'position_id');
     }
 
 }

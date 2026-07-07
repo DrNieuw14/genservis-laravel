@@ -53,24 +53,6 @@ public function store(Request $request)
         'status' => 'pending',
     ]);
 
-    // ✅ Create Personnel (linked)
-
-
-    \App\Models\Personnel::create([
-        'employee_id' => 'EMP' . str_pad(
-            \App\Models\Personnel::count() + 1,
-            5,
-            '0',
-            STR_PAD_LEFT
-        ),
-
-        'fullname' => $user->name,
-        'position' => 'Staff',
-        'department' => 'Maintenance',
-        'user_id' => $user->id,
-        'status' => 'Active'
-    ]);
-
     $supervisor = User::where('role', 'supervisor')->first();
 
     if ($supervisor) {

@@ -474,9 +474,27 @@ Route::middleware('role:supervisor')->group(function () {
 
 
     // User approval
-    Route::get('admin/users/pending',      [UserApprovalController::class, 'index'])->name('admin.users.pending');
-    Route::post('admin/users/{id}/approve',[UserApprovalController::class, 'approve'])->name('admin.users.approve');
-    Route::post('admin/users/{id}/reject', [UserApprovalController::class, 'reject'])->name('admin.users.reject');
+    Route::get('admin/users/pending', [UserApprovalController::class, 'index'])
+        ->name('admin.users.pending');
+
+    // ✅ Employee Onboarding Page
+    Route::get('admin/users/{user}/onboarding',
+        [UserApprovalController::class, 'onboarding']
+    )->name('admin.users.onboarding');
+
+    Route::post('admin/users/{user}/complete-onboarding',
+        [UserApprovalController::class, 'completeOnboarding']
+    )->name('admin.users.complete-onboarding');
+
+    Route::get('/admin/users/generate-employee-id/{employmentType}',
+    [UserApprovalController::class, 'getEmployeeId']
+    )->name('admin.users.generate-employee-id');
+
+    Route::post('admin/users/{id}/approve', [UserApprovalController::class, 'approve'])
+        ->name('admin.users.approve');
+
+    Route::post('admin/users/{id}/reject', [UserApprovalController::class, 'reject'])
+        ->name('admin.users.reject');
 
     // Leave admin
     Route::get('leave-requests',       [LeaveController::class, 'adminIndex'])->name('leave.requests');

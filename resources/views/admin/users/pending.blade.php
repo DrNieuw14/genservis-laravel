@@ -111,13 +111,12 @@
                             action="{{ route('admin.users.approve', $user->id) }}">
                             @csrf
 
-                            <button type="button"
-                                onclick="confirmUserApprove({{ $user->id }})"
-                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow">
+                            <a href="{{ route('admin.users.onboarding', $user) }}"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow inline-flex items-center">
 
-                                ✅ Approve
+                                📝 Complete Onboarding
 
-                            </button>
+                            </a>
 
                         </form>
 
@@ -169,8 +168,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-function confirmUserApprove(id) {
-    Swal.fire({
+//--function confirmUserApprove(id) {
+/*    Swal.fire({
         title: 'Approve User?',
         text: "This will allow the user to access the system.",
         icon: 'question',
@@ -183,7 +182,7 @@ function confirmUserApprove(id) {
         }
     });
 }
-
+*/
 function confirmUserReject(id) {
     Swal.fire({
         title: 'Reject User?',

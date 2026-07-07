@@ -28,7 +28,9 @@
        {{-- Pending Users --}}
             <div class="bg-white rounded-xl shadow border border-gray-100 mb-8">
                 <div class="px-6 py-4 border-b flex items-center justify-between">
-                    <h3 class="font-semibold text-gray-700">Pending Registrations</h3>
+                    <h3 class="font-semibold text-gray-700">
+                        Pending Employee Onboarding
+                    </h3>
                     <a href="{{ route('admin.users.pending') }}"
                     class="text-sm text-blue-600 hover:underline">View all →</a>
                 </div>
@@ -53,14 +55,11 @@
                             <td class="px-6 py-4 text-gray-400">{{ $user->created_at?->diffForHumans() ?? '—' }}</td>
                             <td class="px-6 py-4">
                                 <div class="flex gap-2">
-                                    <form method="POST" action="{{ route('admin.users.approve', $user->id) }}">
-                                        @csrf
-                                        <button type="button"
-                                            onclick="openModal(this.closest('form'), 'Approve this user?')"
-                                            class="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700">
-                                            Approve
-                                        </button>
-                                    </form>
+
+                                    <a href="{{ route('admin.users.onboarding', $user) }}"
+                                    class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 inline-flex items-center">
+                                        📝 Complete Onboarding
+                                    </a>
 
                                     <form method="POST" action="{{ route('admin.users.reject', $user->id) }}">
                                         @csrf
@@ -76,7 +75,7 @@
                         @empty
                         <tr>
                             <td colspan="5" class="px-6 py-10 text-center text-gray-400">
-                                No pending registrations.
+                                No employees awaiting onboarding.
                             </td>
                         </tr>
                         @endforelse
