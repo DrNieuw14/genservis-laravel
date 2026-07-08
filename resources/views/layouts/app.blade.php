@@ -299,6 +299,86 @@
             </a>
 
         @endif
+
+        <!-- ===================================================== -->
+        <!-- SYSTEM ADMINISTRATION -->
+        <!-- ===================================================== -->
+
+        <div class="mt-8 mb-2 px-3">
+            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">
+                System Administration
+            </p>
+        </div>
+
+        <a href="{{ route('roles.index') }}"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+        {{ request()->routeIs('roles.*') ? 'bg-green-100 text-green-700 font-semibold' : 'hover:bg-gray-100 text-gray-700' }}">
+
+            <span>🔐</span>
+            <span>Role Management</span>
+
+        </a>
+
+        <a href="{{ route('employees.index') }}"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+        {{ request()->routeIs('employees.*')
+            ? 'bg-green-100 text-green-700 font-semibold'
+            : 'hover:bg-gray-100 text-gray-700' }}">
+
+            <span>👥</span>
+            <span>Employee Master</span>
+
+        </a>
+
+        <a href="#"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+
+            <span>👥</span>
+            <span>User Access</span>
+
+            <span class="ml-auto text-xs">
+                Soon
+            </span>
+
+        </a>
+
+        <a href="#"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+
+            <span>🛡</span>
+            <span>Permission Management</span>
+
+            <span class="ml-auto text-xs">
+                Soon
+            </span>
+
+        </a>
+
+        <a href="#"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+
+            <span>📜</span>
+            <span>Activity Logs</span>
+
+            <span class="ml-auto text-xs">
+                Soon
+            </span>
+
+        </a>
+
+        <a href="#"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+
+            <span>⚙️</span>
+            <span>System Settings</span>
+
+            <span class="ml-auto text-xs">
+                Soon
+            </span>
+
+        </a>
+
+
                 <!-- PERSONNEL -->
                 @if(Auth::user()->role === 'personnel')
 

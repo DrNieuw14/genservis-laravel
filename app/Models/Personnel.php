@@ -9,7 +9,7 @@ use App\Models\Position;
 
 class Personnel extends Model
 {
-    protected $table = 'personnel';
+     protected $table = 'personnel';
 
     public $timestamps = false;
     const CREATED_AT = 'created_at';
@@ -69,6 +69,19 @@ class Personnel extends Model
     public function positionRecord()
     {
         return $this->belongsTo(Position::class, 'position_id');
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(
+            EmployeeProfile::class,
+            'personnel_id'
+        );
+    }
+
+    public function contact()
+    {
+        return $this->hasOne(EmployeeContact::class);
     }
 
 }

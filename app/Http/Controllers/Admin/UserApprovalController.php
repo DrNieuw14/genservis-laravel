@@ -11,14 +11,13 @@ use App\Models\Personnel;
 use App\Models\EmploymentType;
 use App\Models\Department;
 use App\Models\Position;
+use App\Models\Role;
 
 
 
 class UserApprovalController extends Controller
 {
-
-    
-
+   
     public function index()
     {
         $users = User::where('status', 'pending')
@@ -53,6 +52,11 @@ class UserApprovalController extends Controller
         ]);
     }
 
+    protected function getDefaultRole()
+    {
+        return Role::where('name', 'Employee')->first();
+    }
+
     public function completeOnboarding(Request $request, User $user)
     {
         $validated = $request->validate([
@@ -85,14 +89,26 @@ class UserApprovalController extends Controller
             'status'             => 'Active',
         ]);
 
+        $defaultRole = $this->getDefaultRole();
+
+        if (! $defaultRole) {
+            return back()->with(
+                'error',
+                'Default Employee role was not found. Please contact the system administrator.'
+            );
+        }
+
         $user->update([
-            'status' => 'approved',
+            'role_id' => $defaultRole->id,
+            'status'  => 'approved',
         ]);
 
         ActivityLogger::log(
             'Users',
             'Completed Employee Onboarding',
-            'Completed onboarding for ' . $user->name
+            'Completed onboarding for '
+                . $user->name
+                . ' and assigned the default Employee system role.'
         );
 
         return redirect()

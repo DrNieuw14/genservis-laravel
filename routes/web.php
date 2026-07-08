@@ -20,6 +20,10 @@ use App\Http\Controllers\Supervisor\ReportController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementDashboardController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanItemController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\EmployeeProfileController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeContactController;
 
 
 Route::get('/zip-test', function () {
@@ -161,9 +165,72 @@ Route::middleware('role:supervisor')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | EMPLOYEE MASTER
+    |--------------------------------------------------------------------------
+    */
+
+    Route::resource('employees', EmployeeController::class)
+    ->only([
+        'index',
+        'show',
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | EMPLOYEE PROFILE
+    |--------------------------------------------------------------------------
+    */
+   
+    Route::get(
+        '/employees/{employee}/profile/create',
+        [EmployeeProfileController::class, 'create']
+    )->name('employees.profile.create');
+
+    Route::post(
+        '/employees/{employee}/profile',
+        [EmployeeProfileController::class, 'store']
+    )->name('employees.profile.store');
+
+    Route::get(
+        '/employees/{employee}/profile/edit',
+        [EmployeeProfileController::class, 'edit']
+    )->name('employees.profile.edit');
+
+    Route::put(
+        '/employees/{employee}/profile',
+        [EmployeeProfileController::class, 'update']
+    )->name('employees.profile.update');
+
+    Route::patch('/roles/{role}/toggle-status', [RoleController::class, 'toggleStatus'])
+        ->name('roles.toggle-status');  
+
+    Route::resource('roles', RoleController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Employee Contact Information
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/employees/{employee}/contact/create', [EmployeeContactController::class, 'create'])
+        ->name('employees.contact.create');
+
+    Route::post('/employees/{employee}/contact', [EmployeeContactController::class, 'store'])
+        ->name('employees.contact.store');
+
+    Route::get('/employees/{employee}/contact/edit', [EmployeeContactController::class, 'edit'])
+        ->name('employees.contact.edit');
+
+    Route::put('/employees/{employee}/contact', [EmployeeContactController::class, 'update'])
+        ->name('employees.contact.update');
+
+
+    /*
+    |--------------------------------------------------------------------------
     | PROCUREMENT PLANNING
     |--------------------------------------------------------------------------
     */
+    
 
     Route::prefix('procurement')
         ->name('procurement.')

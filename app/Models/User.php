@@ -19,6 +19,7 @@ class User extends Authenticatable
         'birth_month',
         'age',
         'role',
+        'role_id',
         'status',
     ];
 
@@ -29,10 +30,13 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password'          => 'hashed',
-        'age'               => 'integer',
+        'password' => 'hashed',
+        'age' => 'integer',
     ];
 
+    /**
+     * Legacy role check
+     */
     public function isSupervisor(): bool
     {
         return $this->role === 'supervisor';
@@ -43,11 +47,25 @@ class User extends Authenticatable
         return $this->status === 'approved';
     }
 
-        public function personnel()
+    /**
+     * RBAC System Role
+     */
+    public function systemRole()
     {
-        return $this->belongsTo(Personnel::class, 'personnel_id');
+        return $this->belongsTo(Role::class, 'role_id');
     }
-    
+
+    /**
+     * Employee Record
+     */
+    public function personnel()
+    {
+        return $this->hasOne(Personnel::class, 'user_id');
+    }
+
+    /**
+     * Walk-in Issuance
+     */
     public function issuedWalkinRequests()
     {
         return $this->hasMany(
