@@ -73,4 +73,17 @@ class User extends Authenticatable
             'issued_by'
         );
     }
+
+    public function hasPermission(string $permission): bool
+    {
+        if (!$this->systemRole) {
+            return false;
+        }
+
+        return $this->systemRole
+            ->permissions()
+            ->where('slug', $permission)
+            ->where('status', true)
+            ->exists();
+    }
 }

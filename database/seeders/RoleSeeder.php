@@ -13,8 +13,14 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         $roles = [
+
             [
-                'name' => 'Administrator',
+                'name' => 'Super Administrator',
+                'description' => 'Full system administration'
+            ],
+
+            [
+                'name' => 'System Administrator',
                 'description' => 'Administrative access'
             ],
 
@@ -61,10 +67,14 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-            Role::firstOrCreate(
+            Role::updateOrCreate(
                 ['name' => $role['name']],
                 $role
             );
         }
+
+
+
+
     }
 }

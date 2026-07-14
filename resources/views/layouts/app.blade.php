@@ -70,13 +70,17 @@
 
             <!-- Materials Inventory -->
 
-            <a href="{{ route('materials.index') }}"
-            class="block px-3 py-2 rounded 
-            {{ request()->is('materials') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('view-materials'))
 
-                📦 Materials Inventory
+                <a href="{{ route('materials.index') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('materials') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
 
-            </a>
+                    📦 Materials Inventory
+
+                </a>
+
+            @endif
 
             <!-- Material Requests -->
 
@@ -157,13 +161,19 @@
 
             <!-- Categories -->
 
-            <a href="{{ route('categories.index') }}"
-            class="block px-3 py-2 rounded 
-            {{ request()->is('categories*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('view-categories'))
 
-                🗂️ Categories
+                <a href="{{ route('categories.index') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('categories*')
+                    ? 'bg-green-200 font-semibold'
+                    : 'hover:bg-green-100' }}">
 
-            </a>
+                    🗂️ Categories
+
+                </a>
+
+            @endif
 
             <!-- Units -->
 
@@ -216,13 +226,19 @@
 
             <!-- Annual PPMP -->
 
-            <a href="{{ route('procurement.plans.index') }}"
-            class="block px-3 py-2 rounded
-            {{ request()->routeIs('procurement.plans.*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('view-ppmp'))
 
-                📄 Annual PPMP
+                <a href="{{ route('procurement.plans.index') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->routeIs('procurement.plans.*')
+                    ? 'bg-green-200 font-semibold'
+                    : 'hover:bg-green-100' }}">
 
-            </a>
+                    📄 Annual PPMP
+
+                </a>
+
+            @endif
 
             <!-- Budget Monitoring -->
 
@@ -290,13 +306,19 @@
                 Reports
             </div>
 
-            <a href="{{ route('reports.index') }}"
-            class="block px-3 py-2 rounded
-            {{ request()->is('reports*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('view-reports'))
 
-                📊 Reports Center
+                <a href="{{ route('reports.index') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('reports*')
+                    ? 'bg-green-200 font-semibold'
+                    : 'hover:bg-green-100' }}">
 
-            </a>
+                    📊 Reports Center
+
+                </a>
+
+            @endif
 
         @endif
 
@@ -319,16 +341,20 @@
 
         </a>
 
-        <a href="{{ route('employees.index') }}"
-        class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-        {{ request()->routeIs('employees.*')
-            ? 'bg-green-100 text-green-700 font-semibold'
-            : 'hover:bg-gray-100 text-gray-700' }}">
+        @if(auth()->user()->hasPermission('view-employees'))
 
-            <span>👥</span>
-            <span>Employee Master</span>
+            <a href="{{ route('employees.index') }}"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+            {{ request()->routeIs('employees.*')
+                ? 'bg-green-100 text-green-700 font-semibold'
+                : 'hover:bg-gray-100 text-gray-700' }}">
 
-        </a>
+                <span>👥</span>
+                <span>Employee Master</span>
+
+            </a>
+
+        @endif
 
         <a href="#"
         class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">

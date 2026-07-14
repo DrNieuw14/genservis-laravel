@@ -34,14 +34,39 @@ class EmployeeController extends Controller
     public function show(Personnel $employee)
     {
         $employee->load([
+
+            /*
+            |--------------------------------------------------------------------------
+            | User & Employment
+            |--------------------------------------------------------------------------
+            */
             'user.systemRole',
             'employmentType',
             'departmentRecord',
             'positionRecord',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Employee Information
+            |--------------------------------------------------------------------------
+            */
             'profile',
             'contact',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Employee 201 File
+            |--------------------------------------------------------------------------
+            */
+            'educations',
+
         ]);
 
         return view('employees.show', compact('employee'));
+    }
+
+    public function create(Personnel $employee)
+    {
+        return view('employees.education.create', compact('employee'));
     }
 }

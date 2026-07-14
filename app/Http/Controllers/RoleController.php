@@ -23,7 +23,7 @@ class RoleController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('roles.index', compact('roles', 'search'));
+        return view('admin.roles.index', compact('roles', 'search'));
     }
 
     /**
@@ -31,7 +31,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('roles.create');
+        return view('admin.roles.create');
     }
 
     /**
@@ -61,7 +61,7 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        return view('roles.edit', compact('role'));
+        return view('admin.roles.edit', compact('role'));
     }
 
     /**

@@ -68,12 +68,30 @@
             </h1>
 
             <!-- SUBTITLE -->
-            <p class="text-lg mb-8 text-gray-200">
-                Cavite State University – General Services Management System for Personnel, Scheduling, and Leave Monitoring
-            </p>
+                <p class="text-lg text-gray-200">
+                    Cavite State University 
+                <p class="text-base text-green-100 mt-1">
+                    Carmona Campus
+                </p>
 
-            <!-- BUTTONS -->
-            <div class="flex justify-center gap-4">
+                <!-- Divider -->
+                <div class="w-24 h-1 bg-yellow-400 rounded-full mx-auto my-6"></div>
+
+                <!-- ASCEND -->
+                <p class="text-white text-lg font-semibold">
+                    ASCEND
+                </p>
+
+                <p class="text-gray-200 leading-relaxed mt-2">
+                    Advancing Sustained Change and Excellence for National Development
+                </p>
+
+                <p class="italic text-yellow-300 font-medium mt-3 mb-8">
+                    "ASCEND with Truth, Integrity, Excellence, and Service."
+                </p>
+
+                <!-- BUTTONS -->
+                <div class="flex justify-center gap-4">
 
                 <a href="{{ route('login') }}"
                    class="px-6 py-3 bg-white text-green-700 font-semibold rounded-lg shadow hover:bg-gray-200 transition">

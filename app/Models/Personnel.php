@@ -84,4 +84,9 @@ class Personnel extends Model
         return $this->hasOne(EmployeeContact::class);
     }
 
+    public function educations()
+    {
+        return $this->hasMany(EmployeeEducation::class);
+    }
+
 }

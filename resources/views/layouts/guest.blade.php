@@ -32,11 +32,28 @@
 
             <img src="/images/logo.png" class="h-24 w-auto object-contain mb-6">
 
-            <h2 class="text-xl font-bold">Cavite State University</h2>
-            <p class="text-sm mt-2">GenServis System</p>
+            <h2 class="text-2xl font-bold">
+                Cavite State University
+            </h2>
 
-            <p class="text-xs mt-4 text-green-100">
-                Efficient service, scheduling, and leave management system.
+            <p class="text-lg font-semibold mt-2">
+                Carmona Campus
+            </p>
+
+            <p class="text-sm text-green-100">
+                General Services System (GenServis)
+            </p>
+
+            <div class="mt-10 border-t border-green-500 w-20"></div>
+
+            <p class="mt-10 text-sm leading-7 text-green-100">
+                <span class="font-semibold text-white">ASCEND</span> 
+                <strong>Advancing Sustained Change and Excellence for National Development.</strong>
+            </p>
+
+            <p class="mt-10 italic text-green-50 font-medium">
+                "ASCEND with Truth, Integrity,<br>
+                Excellence, and Service."
             </p>
 
         </div>

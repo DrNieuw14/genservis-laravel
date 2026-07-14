@@ -10,6 +10,8 @@
 
     @include('employees.partials.contact-information')
 
+     @include('employees.partials.educational-background')
+
 </div>
 
 @endsection

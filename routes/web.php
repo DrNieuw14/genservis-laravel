@@ -24,18 +24,10 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmployeeProfileController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeContactController;
+use App\Http\Controllers\EmployeeEducationController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RolePermissionController;
 
-
-Route::get('/zip-test', function () {
-
-    return [
-        'php_version' => PHP_VERSION,
-        'zip_loaded' => extension_loaded('zip'),
-        'zip_class' => class_exists('ZipArchive'),
-        'loaded_ini' => php_ini_loaded_file(),
-    ];
-
-});
 
 Route::get(
     '/materials/import',
@@ -165,46 +157,121 @@ Route::middleware('role:supervisor')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | ROLE PERMISSIONS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware('permission:manage-roles')->group(function () {
+
+        Route::get(
+            '/roles/{role}/permissions',
+            [RolePermissionController::class, 'index']
+        )->name('roles.permissions');
+
+        Route::post(
+            '/roles/{role}/permissions',
+            [RolePermissionController::class, 'update']
+        )->name('roles.permissions.update');
+
+    });
+
+
+    Route::middleware('permission:manage-permissions')->group(function () {
+
+    Route::resource('permissions', PermissionController::class);
+
+});
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Employee Educational Background
+    |--------------------------------------------------------------------------
+    */
+
+   Route::middleware('permission:edit-employee-profile')->group(function () {
+
+        Route::get(
+            '/employees/{employee}/education/create',
+            [EmployeeEducationController::class, 'create']
+        )->name('employees.education.create');
+
+        Route::post(
+            '/employees/{employee}/education',
+            [EmployeeEducationController::class, 'store']
+        )->name('employees.education.store');
+
+        Route::get(
+            '/employees/{employee}/education/{education}/edit',
+            [EmployeeEducationController::class, 'edit']
+        )->name('employees.education.edit');
+
+        Route::put(
+            '/employees/{employee}/education/{education}',
+            [EmployeeEducationController::class, 'update']
+        )->name('employees.education.update');
+
+        Route::delete(
+            '/employees/{employee}/education/{education}',
+            [EmployeeEducationController::class, 'destroy']
+        )->name('employees.education.destroy');
+
+    });
+    /*
+    |--------------------------------------------------------------------------
     | EMPLOYEE MASTER
     |--------------------------------------------------------------------------
     */
 
-    Route::resource('employees', EmployeeController::class)
-    ->only([
-        'index',
-        'show',
-    ]);
+    Route::middleware('permission:view-employees')->group(function () {
+
+        Route::resource('employees', EmployeeController::class)
+            ->only([
+                'index',
+                'show',
+            ]);
+
+    });
 
     /*
     |--------------------------------------------------------------------------
     | EMPLOYEE PROFILE
     |--------------------------------------------------------------------------
     */
-   
-    Route::get(
-        '/employees/{employee}/profile/create',
-        [EmployeeProfileController::class, 'create']
-    )->name('employees.profile.create');
 
-    Route::post(
-        '/employees/{employee}/profile',
-        [EmployeeProfileController::class, 'store']
-    )->name('employees.profile.store');
+    Route::middleware('permission:edit-employee-profile')->group(function () {
 
-    Route::get(
-        '/employees/{employee}/profile/edit',
-        [EmployeeProfileController::class, 'edit']
-    )->name('employees.profile.edit');
+        Route::get(
+            '/employees/{employee}/profile/create',
+            [EmployeeProfileController::class, 'create']
+        )->name('employees.profile.create');
 
-    Route::put(
-        '/employees/{employee}/profile',
-        [EmployeeProfileController::class, 'update']
-    )->name('employees.profile.update');
+        Route::post(
+            '/employees/{employee}/profile',
+            [EmployeeProfileController::class, 'store']
+        )->name('employees.profile.store');
 
-    Route::patch('/roles/{role}/toggle-status', [RoleController::class, 'toggleStatus'])
-        ->name('roles.toggle-status');  
+        Route::get(
+            '/employees/{employee}/profile/edit',
+            [EmployeeProfileController::class, 'edit']
+        )->name('employees.profile.edit');
+
+        Route::put(
+            '/employees/{employee}/profile',
+            [EmployeeProfileController::class, 'update']
+        )->name('employees.profile.update');
+
+    });
+
+    Route::middleware('permission:manage-roles')->group(function () {
 
     Route::resource('roles', RoleController::class);
+
+    Route::patch('/roles/{role}/toggle-status',
+        [RoleController::class, 'toggleStatus'])
+        ->name('roles.toggle-status');
+
+});
 
     /*
     |--------------------------------------------------------------------------
@@ -212,17 +279,25 @@ Route::middleware('role:supervisor')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/employees/{employee}/contact/create', [EmployeeContactController::class, 'create'])
-        ->name('employees.contact.create');
+    Route::middleware('permission:edit-employee-profile')->group(function () {
 
-    Route::post('/employees/{employee}/contact', [EmployeeContactController::class, 'store'])
-        ->name('employees.contact.store');
+        Route::get('/employees/{employee}/contact/create',
+            [EmployeeContactController::class, 'create'])
+            ->name('employees.contact.create');
 
-    Route::get('/employees/{employee}/contact/edit', [EmployeeContactController::class, 'edit'])
-        ->name('employees.contact.edit');
+        Route::post('/employees/{employee}/contact',
+            [EmployeeContactController::class, 'store'])
+            ->name('employees.contact.store');
 
-    Route::put('/employees/{employee}/contact', [EmployeeContactController::class, 'update'])
-        ->name('employees.contact.update');
+        Route::get('/employees/{employee}/contact/edit',
+            [EmployeeContactController::class, 'edit'])
+            ->name('employees.contact.edit');
+
+        Route::put('/employees/{employee}/contact',
+            [EmployeeContactController::class, 'update'])
+            ->name('employees.contact.update');
+
+    });
 
 
     /*
@@ -448,15 +523,6 @@ Route::middleware('role:supervisor')->group(function () {
     });
     
    
-    // ✅ RESTOCK MATERIAL
-    Route::get('/materials/{id}/restock',
-        [MaterialController::class, 'restockForm'])
-        ->name('materials.restock.form');
-
-    Route::post('/materials/{id}/restock',
-        [MaterialController::class, 'restock'])
-        ->name('materials.restock');
-
     // 📦 Material Requests
     Route::get('/supervisor/material-requests', [MaterialRequestController::class, 'index']);
 
@@ -489,55 +555,127 @@ Route::middleware('role:supervisor')->group(function () {
     Route::delete('/units/{id}', [UnitController::class, 'destroy'])
         ->name('units.destroy');
 
-    // ✅ Categories
-    Route::get('/categories', [CategoryController::class, 'index'])
-        ->name('categories.index');
+    /*
+    |--------------------------------------------------------------------------
+    | Categories
+    |--------------------------------------------------------------------------
+    */
 
-    Route::get('/categories/create', [CategoryController::class, 'create'])
-        ->name('categories.create');
+    Route::middleware('permission:view-categories')->group(function () {
 
-    Route::post('/categories/store', [CategoryController::class, 'store'])
-        ->name('categories.store');
+        Route::get(
+            '/categories',
+            [CategoryController::class, 'index']
+        )->name('categories.index');
 
-    Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])
-        ->name('categories.edit');
+    });
 
-    Route::put('/categories/{id}', [CategoryController::class, 'update'])
-        ->name('categories.update');
+    Route::middleware('permission:create-categories')->group(function () {
 
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])
-        ->name('categories.destroy');
+        Route::get(
+            '/categories/create',
+            [CategoryController::class, 'create']
+        )->name('categories.create');
 
-    Route::get('/materials/logs', [MaterialController::class, 'logs'])
-    ->name('materials.logs');
+        Route::post(
+            '/categories/store',
+            [CategoryController::class, 'store']
+        )->name('categories.store');
+
+    });
+
+    Route::middleware('permission:edit-categories')->group(function () {
+
+        Route::get(
+            '/categories/{id}/edit',
+            [CategoryController::class, 'edit']
+        )->name('categories.edit');
+
+        Route::put(
+            '/categories/{id}',
+            [CategoryController::class, 'update']
+        )->name('categories.update');
+
+    });
+
+    Route::middleware('permission:delete-categories')->group(function () {
+
+        Route::delete(
+            '/categories/{id}',
+            [CategoryController::class, 'destroy']
+        )->name('categories.destroy');
+
+    });
 
     
+    /*
+    |--------------------------------------------------------------------------
+    | MATERIALS
+    |--------------------------------------------------------------------------
+    */
 
-    // ✅ Inventory (Materials)
+    Route::middleware('permission:view-materials')->group(function () {
 
-    Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
-    Route::get('/materials/create', [MaterialController::class, 'create'])->name('materials.create');
-    Route::post('/materials/store', [MaterialController::class, 'store'])->name('materials.store');
+        Route::get('/materials', [MaterialController::class, 'index'])
+            ->name('materials.index');
+    });
 
-    Route::get('/materials/{id}',
-        [MaterialController::class, 'show'])
-        ->name('materials.show');
-        
-    Route::get('/materials/{id}/edit', [MaterialController::class, 'edit'])
-        ->name('materials.edit');
+    Route::middleware('permission:create-materials')->group(function () {
 
-    Route::put('/materials/{id}', [MaterialController::class, 'update'])
-        ->name('materials.update');
+        Route::get('/materials/create', [MaterialController::class, 'create'])
+            ->name('materials.create');
 
-    Route::delete('/materials/{material}', [MaterialController::class, 'destroy'])
-    ->name('materials.destroy');
+        Route::post('/materials/store', [MaterialController::class, 'store'])
+            ->name('materials.store');
+
+    });
+
+    Route::middleware('permission:edit-materials')->group(function () {
+
+        Route::get('/materials/{id}/edit', [MaterialController::class, 'edit'])
+            ->name('materials.edit');
+
+        Route::put('/materials/{id}', [MaterialController::class, 'update'])
+            ->name('materials.update');
+
+    });
+
+    Route::middleware('permission:delete-materials')->group(function () {
+
+        Route::delete('/materials/{material}', [MaterialController::class, 'destroy'])
+            ->name('materials.destroy');
+
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Material Logs
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware('permission:view-material-logs')->group(function () {
+
+        // Material Logs
+        Route::get('/materials/logs', [MaterialController::class, 'logs'])
+            ->name('materials.logs');
+
+        // Material Details
+        Route::get('/materials/{id}', [MaterialController::class, 'show'])
+            ->name('materials.show');
+
+    });
 
     // ✅ Restock Materials
-    Route::get('/materials/{id}/restock', [MaterialController::class, 'restockForm'])
-        ->name('materials.restock.form');
 
-    Route::post('/materials/{id}/restock', [MaterialController::class, 'restock'])
-        ->name('materials.restock');
+    Route::middleware('permission:restock-materials')->group(function () {
+
+        Route::get('/materials/{id}/restock', [MaterialController::class, 'restockForm'])
+            ->name('materials.restock.form');
+
+        Route::post('/materials/{id}/restock', [MaterialController::class, 'restock'])
+            ->name('materials.restock');
+
+    });
 
 
     // User approval
