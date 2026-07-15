@@ -128,12 +128,34 @@ class PermissionSeeder extends Seeder
 
                 'permissions' => [
 
+                    /*
+                    |--------------------------------------------------------------------------
+                    | User Access Dashboard
+                    |--------------------------------------------------------------------------
+                    */
+
+                    ['name' => 'View User Access', 'slug' => 'view-user-access'],
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | User Approval
+                    |--------------------------------------------------------------------------
+                    */
+
                     ['name' => 'Approve Users', 'slug' => 'approve-users'],
                     ['name' => 'Reject Users', 'slug' => 'reject-users'],
                     ['name' => 'Onboard Users', 'slug' => 'onboard-users'],
 
+                    /*
+                    |--------------------------------------------------------------------------
+                    | User Administration
+                    |--------------------------------------------------------------------------
+                    */
+
+                    ['name' => 'Assign Roles', 'slug' => 'assign-roles'],
                     ['name' => 'Manage Roles', 'slug' => 'manage-roles'],
                     ['name' => 'Manage Permissions', 'slug' => 'manage-permissions'],
+                    ['name' => 'Manage User Status', 'slug' => 'manage-user-status'],
 
                 ]
             ],

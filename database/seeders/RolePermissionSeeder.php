@@ -13,34 +13,20 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        /*
+       /*
         |--------------------------------------------------------------------------
-        | Super Administrator
+        | Administrator
         |--------------------------------------------------------------------------
-        | Give every permission.
+        |
+        | Give Administrator every permission.
+        |
         */
 
-        $superAdmin = Role::where('name', 'Super Administrator')->first();
+        $administrator = Role::where('name', 'Administrator')->first();
 
-        if ($superAdmin) {
+        if ($administrator) {
 
-            $superAdmin->permissions()->sync(
-                Permission::pluck('id')->toArray()
-            );
-
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | System Administrator
-        |--------------------------------------------------------------------------
-        */
-
-        $systemAdmin = Role::where('name', 'System Administrator')->first();
-
-        if ($systemAdmin) {
-
-            $systemAdmin->permissions()->sync(
+            $administrator->permissions()->sync(
                 Permission::pluck('id')->toArray()
             );
 

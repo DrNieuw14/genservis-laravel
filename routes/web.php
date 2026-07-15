@@ -27,6 +27,10 @@ use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeEducationController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\UserAccessController;
+
+
+
 
 
 Route::get(
@@ -155,6 +159,7 @@ Route::middleware(['auth'])->group(function () {
     // ── Supervisor / Admin routes ──
 Route::middleware('role:supervisor')->group(function () {
 
+    
     /*
     |--------------------------------------------------------------------------
     | ROLE PERMISSIONS
@@ -175,12 +180,187 @@ Route::middleware('role:supervisor')->group(function () {
 
     });
 
+    /*
+    |--------------------------------------------------------------------------
+    | USER ACCESS MANAGEMENT
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware('permission:view-user-access')->group(function () {
+
+        Route::get(
+            '/admin/user-access',
+            [UserAccessController::class, 'index']
+        )->name('admin.user-access.index');
+
+    });
 
     Route::middleware('permission:manage-permissions')->group(function () {
 
     Route::resource('permissions', PermissionController::class);
 
 });
+
+        /*
+        |--------------------------------------------------------------------------
+        | PROCUREMENT PLANNING
+        |--------------------------------------------------------------------------
+        */
+        
+
+        Route::prefix('procurement')
+            ->name('procurement.')
+            ->group(function () {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Dashboard
+                |--------------------------------------------------------------------------
+                */
+
+                Route::get(
+                    '/dashboard',
+                    [ProcurementDashboardController::class, 'index']
+                )->name('dashboard');
+
+                /*
+                |--------------------------------------------------------------------------
+                | Annual PPMP
+                |--------------------------------------------------------------------------
+                */
+
+                Route::resource(
+                    'plans',
+                    ProcurementPlanController::class
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | MATERIAL DETAILS (AJAX)
+                |--------------------------------------------------------------------------
+                */
+
+                Route::get(
+                    'materials/{material}/details',
+                    [MaterialController::class, 'details']
+                )->name('materials.details');
+
+                /*
+                |--------------------------------------------------------------------------
+                | PROCUREMENT PLAN ITEMS
+                |--------------------------------------------------------------------------
+                */
+
+                Route::get(
+                    'plans/{plan}/items/create',
+                    [ProcurementPlanItemController::class, 'create']
+                )->name('plans.items.create');
+
+                Route::post(
+                    'plans/{plan}/items',
+                    [ProcurementPlanItemController::class, 'store']
+                )->name('plans.items.store');
+
+                Route::get(
+                    'plans/items/{item}',
+                    [ProcurementPlanItemController::class, 'show']
+                )->name('plans.items.show');
+
+                Route::put(
+                    'plans/items/{item}',
+                    [ProcurementPlanItemController::class, 'update']
+                )->name('plans.items.update');
+
+                Route::delete(
+                    'plans/items/{item}',
+                    [ProcurementPlanItemController::class, 'destroy']
+                )->name('plans.items.destroy');
+
+            });
+
+/*
+    |--------------------------------------------------------------------------
+    | INVENTORY 
+    |--------------------------------------------------------------------------
+    */
+    Route::get(
+        '/department-inventory',
+        [\App\Http\Controllers\Supervisor\DepartmentInventoryController::class, 'index']
+    )->name('department.inventory');
+    
+    Route::get('/reports', [ReportController::class, 'index'])
+    ->name('reports.index');
+
+    Route::get('/reports/inventory', [ReportController::class, 'inventory'])
+    ->name('reports.inventory');
+
+    Route::get(
+        '/department-inventory-balance',
+        [DepartmentInventoryController::class, 'balance']
+    )->name('department.inventory.balance');
+    
+    Route::get(
+        '/department-inventory-balance/{department}',
+        [DepartmentInventoryController::class, 'details']
+    )->name('department.inventory.details');
+
+    /*
+    |--------------------------------------------------------------------------
+    | INVENTORY REPORTS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/inventory/reports/summary',
+        [MaterialController::class, 'inventorySummary']
+    )->name('inventory.summary');
+
+    Route::get(
+        '/inventory/reports/summary/print',
+        [MaterialController::class, 'inventorySummaryPrint']
+    )->name('inventory.summary.print');
+
+    Route::get(
+        '/inventory/reports/executive-summary',
+        [MaterialController::class, 'executiveSummary']
+    )->name('inventory.executive');
+
+    Route::get(
+        '/inventory/reports/executive-summary/print',
+        [MaterialController::class, 'executiveSummaryPrint']
+    )->name('inventory.executive.print');
+
+    /*
+    |--------------------------------------------------------------------------
+    | INDIVIDUAL INVENTORY REPORTS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/inventory/reports/critical-stock', [MaterialController::class, 'criticalReport'])
+    ->name('inventory.critical');
+
+    Route::get('/inventory/reports/critical-stock/print', [MaterialController::class, 'criticalReportPrint'])
+        ->name('inventory.critical.print');
+
+    Route::get(
+        '/inventory/reports/low-stock',
+        [MaterialController::class, 'lowStockReport']
+    )->name('inventory.low');
+
+    Route::get(
+        '/inventory/reports/out-of-stock',
+        [MaterialController::class, 'outOfStockReport']
+    )->name('inventory.out');
+
+    Route::get(
+        '/inventory/reports/expiration',
+        [MaterialController::class, 'expirationReport']
+    )->name('inventory.expiration');
+
+    Route::get(
+        '/inventory/reports/department-summary',
+        [MaterialController::class, 'departmentSummaryReport'
+    ])->name('inventory.department');
 
 
     /*
@@ -300,162 +480,7 @@ Route::middleware('role:supervisor')->group(function () {
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | PROCUREMENT PLANNING
-    |--------------------------------------------------------------------------
-    */
     
-
-    Route::prefix('procurement')
-        ->name('procurement.')
-        ->group(function () {
-
-            /*
-            |--------------------------------------------------------------------------
-            | Dashboard
-            |--------------------------------------------------------------------------
-            */
-
-            Route::get(
-                '/dashboard',
-                [ProcurementDashboardController::class, 'index']
-            )->name('dashboard');
-
-            /*
-            |--------------------------------------------------------------------------
-            | Annual PPMP
-            |--------------------------------------------------------------------------
-            */
-
-            Route::resource(
-                'plans',
-                ProcurementPlanController::class
-            );
-
-            /*
-            |--------------------------------------------------------------------------
-            | MATERIAL DETAILS (AJAX)
-            |--------------------------------------------------------------------------
-            */
-
-            Route::get(
-                'materials/{material}/details',
-                [MaterialController::class, 'details']
-            )->name('materials.details');
-
-            /*
-            |--------------------------------------------------------------------------
-            | PROCUREMENT PLAN ITEMS
-            |--------------------------------------------------------------------------
-            */
-
-            Route::get(
-                'plans/{plan}/items/create',
-                [ProcurementPlanItemController::class, 'create']
-            )->name('plans.items.create');
-
-            Route::post(
-                'plans/{plan}/items',
-                [ProcurementPlanItemController::class, 'store']
-            )->name('plans.items.store');
-
-            Route::get(
-                'plans/items/{item}',
-                [ProcurementPlanItemController::class, 'show']
-            )->name('plans.items.show');
-
-            Route::put(
-                'plans/items/{item}',
-                [ProcurementPlanItemController::class, 'update']
-            )->name('plans.items.update');
-
-            Route::delete(
-                'plans/items/{item}',
-                [ProcurementPlanItemController::class, 'destroy']
-            )->name('plans.items.destroy');
-
-        });
-
-    Route::get(
-        '/department-inventory',
-        [\App\Http\Controllers\Supervisor\DepartmentInventoryController::class, 'index']
-    )->name('department.inventory');
-    
-    Route::get('/reports', [ReportController::class, 'index'])
-    ->name('reports.index');
-
-    Route::get('/reports/inventory', [ReportController::class, 'inventory'])
-    ->name('reports.inventory');
-
-    Route::get(
-        '/department-inventory-balance',
-        [DepartmentInventoryController::class, 'balance']
-    )->name('department.inventory.balance');
-    
-    Route::get(
-        '/department-inventory-balance/{department}',
-        [DepartmentInventoryController::class, 'details']
-    )->name('department.inventory.details');
-
-    /*
-    |--------------------------------------------------------------------------
-    | INVENTORY REPORTS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get(
-        '/inventory/reports/summary',
-        [MaterialController::class, 'inventorySummary']
-    )->name('inventory.summary');
-
-    Route::get(
-        '/inventory/reports/summary/print',
-        [MaterialController::class, 'inventorySummaryPrint']
-    )->name('inventory.summary.print');
-
-    Route::get(
-        '/inventory/reports/executive-summary',
-        [MaterialController::class, 'executiveSummary']
-    )->name('inventory.executive');
-
-    Route::get(
-        '/inventory/reports/executive-summary/print',
-        [MaterialController::class, 'executiveSummaryPrint']
-    )->name('inventory.executive.print');
-
-    /*
-    |--------------------------------------------------------------------------
-    | INDIVIDUAL INVENTORY REPORTS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/inventory/reports/critical-stock', [MaterialController::class, 'criticalReport'])
-    ->name('inventory.critical');
-
-    Route::get('/inventory/reports/critical-stock/print', [MaterialController::class, 'criticalReportPrint'])
-        ->name('inventory.critical.print');
-
-    Route::get(
-        '/inventory/reports/low-stock',
-        [MaterialController::class, 'lowStockReport']
-    )->name('inventory.low');
-
-    Route::get(
-        '/inventory/reports/out-of-stock',
-        [MaterialController::class, 'outOfStockReport']
-    )->name('inventory.out');
-
-    Route::get(
-        '/inventory/reports/expiration',
-        [MaterialController::class, 'expirationReport']
-    )->name('inventory.expiration');
-
-    Route::get(
-        '/inventory/reports/department-summary',
-        [MaterialController::class, 'departmentSummaryReport'
-    ])->name('inventory.department');
-
     /*
     |--------------------------------------------------------------------------
     | WALK-IN MATERIAL ISSUANCE
@@ -614,12 +639,14 @@ Route::middleware('role:supervisor')->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    // Material Logs FIRST
     Route::middleware('permission:view-materials')->group(function () {
 
         Route::get('/materials', [MaterialController::class, 'index'])
             ->name('materials.index');
     });
 
+    // View Materials
     Route::middleware('permission:create-materials')->group(function () {
 
         Route::get('/materials/create', [MaterialController::class, 'create'])

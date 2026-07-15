@@ -332,6 +332,8 @@
             </p>
         </div>
 
+        @if(auth()->user()->hasPermission('manage-roles'))
+
         <a href="{{ route('roles.index') }}"
         class="flex items-center gap-3 px-3 py-2 rounded-lg transition
         {{ request()->routeIs('roles.*') ? 'bg-green-100 text-green-700 font-semibold' : 'hover:bg-gray-100 text-gray-700' }}">
@@ -340,6 +342,8 @@
             <span>Role Management</span>
 
         </a>
+
+        @endif
 
         @if(auth()->user()->hasPermission('view-employees'))
 
@@ -356,29 +360,36 @@
 
         @endif
 
-        <a href="#"
-        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+        @if(auth()->user()->hasPermission('view-user-access'))
 
-            <span>👥</span>
+        <a href="{{ route('admin.user-access.index') }}"
+
+        class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+        {{ request()->routeIs('admin.user-access.*')
+            ? 'bg-green-100 text-green-700 font-semibold'
+            : 'hover:bg-gray-100 text-gray-700' }}">
+
+            <span>👤</span>
             <span>User Access</span>
 
-            <span class="ml-auto text-xs">
-                Soon
-            </span>
-
         </a>
 
-        <a href="#"
-        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+        @endif
 
-            <span>🛡</span>
+        @if(auth()->user()->hasPermission('manage-permissions'))
+
+        <a href="{{ route('permissions.index') }}"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+        {{ request()->routeIs('permissions.*')
+            ? 'bg-green-100 text-green-700 font-semibold'
+            : 'hover:bg-gray-100 text-gray-700' }}">
+
+            <span>🛡️</span>
             <span>Permission Management</span>
 
-            <span class="ml-auto text-xs">
-                Soon
-            </span>
-
         </a>
+
+        @endif
 
         <a href="#"
         class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
