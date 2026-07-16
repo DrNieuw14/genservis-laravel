@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
 
     <title>
-        Critical Stock Report
+        Expiration Report
     </title>
 
     <script>
@@ -57,19 +57,7 @@
 
         }
 
-        .text-right{
-
-            text-align:right;
-
-        }
-
         .header-table td{
-
-            border:none;
-
-        }
-
-        .no-border{
 
             border:none;
 
@@ -159,13 +147,13 @@ GENERAL SERVICES OFFICE
 
 <h2 class="text-center">
 
-CRITICAL STOCK REPORT
+EXPIRATION REPORT
 
 </h2>
 
 <p class="text-center">
 
-Materials Currently at Critical Inventory Level
+Expiring and Expired Inventory Batches
 
 </p>
 
@@ -181,7 +169,7 @@ Materials Currently at Critical Inventory Level
 
 <td>
 
-CSR-{{ now()->format('YmdHis') }}
+EXP-{{ now()->format('YmdHis') }}
 
 </td>
 
@@ -237,9 +225,9 @@ Executive Summary
 
 <p>
 
-This report identifies inventory materials that have reached
-their critical threshold and require immediate procurement
-to avoid interruption of operations.
+This report identifies inventory batches expiring within 30 days
+and batches that have already expired, so departments can
+prioritize consumption and disposal accordingly.
 
 </p>
 
@@ -247,9 +235,9 @@ to avoid interruption of operations.
 
 <tr>
 
-<th>Total Critical Items</th>
+<th>Expiring Within 30 Days</th>
 
-<th>Critical Percentage</th>
+<th>Expired Batches</th>
 
 <th>Departments Affected</th>
 
@@ -259,13 +247,13 @@ to avoid interruption of operations.
 
 <td class="text-center">
 
-{{ $criticalCount }}
+{{ $expiringCount }}
 
 </td>
 
 <td class="text-center">
 
-{{ number_format($criticalPercentage,2) }}%
+{{ $expiredCount }}
 
 </td>
 
@@ -281,7 +269,7 @@ to avoid interruption of operations.
 
 <h3 class="section">
 
-Detailed Critical Inventory
+Expiring Within 30 Days
 
 </h3>
 
@@ -291,47 +279,19 @@ Detailed Critical Inventory
 
 <tr>
 
-<th width="40">
+<th width="40">#</th>
 
-#
+<th>Material</th>
 
-</th>
+<th>Department</th>
 
-<th>
+<th>Batch No.</th>
 
-Material
+<th>Remaining</th>
 
-</th>
+<th>Expiration Date</th>
 
-<th>
-
-Department
-
-</th>
-
-<th>
-
-Category
-
-</th>
-
-<th>
-
-Quantity
-
-</th>
-
-<th>
-
-Threshold
-
-</th>
-
-<th>
-
-Recommendation
-
-</th>
+<th>Days Left</th>
 
 </tr>
 
@@ -339,51 +299,23 @@ Recommendation
 
 <tbody>
 
-@forelse($criticalMaterials as $material)
+@forelse($expiringMaterials as $batch)
 
 <tr>
 
-<td class="text-center">
+<td class="text-center">{{ $loop->iteration }}</td>
 
-{{ $loop->iteration }}
+<td>{{ $batch->material->name }}</td>
 
-</td>
+<td>{{ $batch->material->department->department_name ?? '-' }}</td>
 
-<td>
+<td class="text-center">{{ $batch->batch_no }}</td>
 
-{{ $material->name }}
+<td class="text-center">{{ $batch->quantity_remaining }}</td>
 
-</td>
+<td class="text-center">{{ \Carbon\Carbon::parse($batch->expiration_date)->format('M d, Y') }}</td>
 
-<td>
-
-{{ $material->department->department_name ?? '-' }}
-
-</td>
-
-<td>
-
-{{ $material->category->name ?? '-' }}
-
-</td>
-
-<td class="text-center">
-
-{{ $material->quantity }}
-
-</td>
-
-<td class="text-center">
-
-{{ $material->threshold }}
-
-</td>
-
-<td>
-
-Immediate Procurement
-
-</td>
+<td class="text-center">{{ now()->diffInDays($batch->expiration_date) }} days</td>
 
 </tr>
 
@@ -391,11 +323,73 @@ Immediate Procurement
 
 <tr>
 
-<td colspan="7" class="text-center">
+<td colspan="7" class="text-center">No materials expiring within 30 days.</td>
 
-No critical materials found.
+</tr>
 
-</td>
+@endforelse
+
+</tbody>
+
+</table>
+
+<h3 class="section">
+
+Already Expired
+
+</h3>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th width="40">#</th>
+
+<th>Material</th>
+
+<th>Department</th>
+
+<th>Batch No.</th>
+
+<th>Remaining</th>
+
+<th>Expiration Date</th>
+
+<th>Days Expired</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+@forelse($expiredMaterials as $batch)
+
+<tr>
+
+<td class="text-center">{{ $loop->iteration }}</td>
+
+<td>{{ $batch->material->name }}</td>
+
+<td>{{ $batch->material->department->department_name ?? '-' }}</td>
+
+<td class="text-center">{{ $batch->batch_no }}</td>
+
+<td class="text-center">{{ $batch->quantity_remaining }}</td>
+
+<td class="text-center">{{ \Carbon\Carbon::parse($batch->expiration_date)->format('M d, Y') }}</td>
+
+<td class="text-center">{{ \Carbon\Carbon::parse($batch->expiration_date)->diffInDays(now()) }} days</td>
+
+</tr>
+
+@empty
+
+<tr>
+
+<td colspan="7" class="text-center">No expired inventory batches.</td>
 
 </tr>
 
@@ -413,7 +407,7 @@ Recommendation
 
 <p>
 
-Immediate procurement should be initiated for all materials listed in this report. Departments should continuously monitor inventory levels and review reorder thresholds to prevent stock depletion.
+Expired batches should be removed from usable stock immediately and logged for disposal. Batches expiring within 30 days should be prioritized for consumption ahead of longer-dated stock.
 
 </p>
 

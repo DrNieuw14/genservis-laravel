@@ -323,7 +323,11 @@ Critical Inventory Overview
 
         <th>Department</th>
 
+        <th>Category</th>
+
         <th>Current Quantity</th>
+
+        <th>Threshold</th>
 
         <th>Status</th>
 
@@ -357,7 +361,7 @@ Critical Inventory Overview
 
 <td>
 
-{{ $material->category->category_name ?? '-' }}
+{{ $material->category->name ?? '-' }}
 
 </td>
 
@@ -375,23 +379,7 @@ Critical Inventory Overview
 
 <td class="text-center">
 
-    @if($material->quantity <= 0)
-
-    Out of Stock
-
-    @elseif($material->quantity <= 5)
-
-    Critical
-
-    @elseif($material->quantity <= $material->threshold)
-
-    Low Stock
-
-    @else
-
-    Available
-
-    @endif
+Critical
 
 </td>
 
@@ -414,6 +402,195 @@ No critical materials found.
 </tbody>
 
 </table>
+
+<h3 class="section">
+
+Complete Inventory Listing
+
+</h3>
+
+<p>
+
+All {{ $allMaterials->count() }} materials currently on record.
+
+</p>
+
+<table>
+
+<thead>
+
+    <tr>
+
+        <th>#</th>
+
+        <th>Material</th>
+
+        <th>Category</th>
+
+        <th>Department</th>
+
+        <th>Unit</th>
+
+        <th>Quantity</th>
+
+        <th>Threshold</th>
+
+        <th>Status</th>
+
+    </tr>
+
+</thead>
+
+<tbody>
+
+@php
+    $statusLabels = [
+        'out_of_stock' => 'Out of Stock',
+        'critical' => 'Critical',
+        'low' => 'Low Stock',
+        'available' => 'Available',
+    ];
+@endphp
+
+@forelse($allMaterials as $material)
+
+<tr>
+
+<td class="text-center">
+
+{{ $loop->iteration }}
+
+</td>
+
+<td>
+
+{{ $material->name }}
+
+</td>
+
+<td>
+
+{{ $material->category->name ?? '-' }}
+
+</td>
+
+<td>
+
+{{ $material->department->department_name ?? '-' }}
+
+</td>
+
+<td class="text-center">
+
+{{ $material->unit->name ?? '-' }}
+
+</td>
+
+<td class="text-center">
+
+{{ $material->quantity }}
+
+</td>
+
+<td class="text-center">
+
+{{ $material->threshold }}
+
+</td>
+
+<td class="text-center">
+
+{{ $statusLabels[$material->stock_status] }}
+
+</td>
+
+</tr>
+
+@empty
+
+<tr>
+
+<td colspan="8" class="text-center">
+
+No materials found.
+
+</td>
+
+</tr>
+
+@endforelse
+
+</tbody>
+
+</table>
+
+<h3 class="section" style="page-break-before: always;">
+
+Department Inventory Breakdown
+
+</h3>
+
+@foreach($materialsByDepartment as $departmentName => $departmentMaterials)
+
+<h4 style="margin-top:15px;">
+
+{{ $departmentName }} ({{ $departmentMaterials->count() }} materials)
+
+</h4>
+
+<table>
+
+<thead>
+
+    <tr>
+
+        <th>#</th>
+
+        <th>Material</th>
+
+        <th>Category</th>
+
+        <th>Unit</th>
+
+        <th>Quantity</th>
+
+        <th>Threshold</th>
+
+        <th>Status</th>
+
+    </tr>
+
+</thead>
+
+<tbody>
+
+@foreach($departmentMaterials as $material)
+
+<tr>
+
+<td class="text-center">{{ $loop->iteration }}</td>
+
+<td>{{ $material->name }}</td>
+
+<td>{{ $material->category->name ?? '-' }}</td>
+
+<td class="text-center">{{ $material->unit->name ?? '-' }}</td>
+
+<td class="text-center">{{ $material->quantity }}</td>
+
+<td class="text-center">{{ $material->threshold }}</td>
+
+<td class="text-center">{{ $statusLabels[$material->stock_status] }}</td>
+
+</tr>
+
+@endforeach
+
+</tbody>
+
+</table>
+
+@endforeach
 
 <h3 class="section">
 

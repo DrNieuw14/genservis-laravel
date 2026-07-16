@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
 
     <title>
-        Critical Stock Report
+        Out of Stock Report
     </title>
 
     <script>
@@ -57,19 +57,7 @@
 
         }
 
-        .text-right{
-
-            text-align:right;
-
-        }
-
         .header-table td{
-
-            border:none;
-
-        }
-
-        .no-border{
 
             border:none;
 
@@ -159,13 +147,13 @@ GENERAL SERVICES OFFICE
 
 <h2 class="text-center">
 
-CRITICAL STOCK REPORT
+OUT OF STOCK REPORT
 
 </h2>
 
 <p class="text-center">
 
-Materials Currently at Critical Inventory Level
+Materials With Zero Available Stock
 
 </p>
 
@@ -181,7 +169,7 @@ Materials Currently at Critical Inventory Level
 
 <td>
 
-CSR-{{ now()->format('YmdHis') }}
+OSR-{{ now()->format('YmdHis') }}
 
 </td>
 
@@ -238,8 +226,8 @@ Executive Summary
 <p>
 
 This report identifies inventory materials that have reached
-their critical threshold and require immediate procurement
-to avoid interruption of operations.
+zero available stock and require emergency procurement to
+restore operational capability.
 
 </p>
 
@@ -247,9 +235,9 @@ to avoid interruption of operations.
 
 <tr>
 
-<th>Total Critical Items</th>
+<th>Total Out of Stock Items</th>
 
-<th>Critical Percentage</th>
+<th>Out of Stock Percentage</th>
 
 <th>Departments Affected</th>
 
@@ -259,13 +247,13 @@ to avoid interruption of operations.
 
 <td class="text-center">
 
-{{ $criticalCount }}
+{{ $outOfStockCount }}
 
 </td>
 
 <td class="text-center">
 
-{{ number_format($criticalPercentage,2) }}%
+{{ number_format($outOfStockPercentage,2) }}%
 
 </td>
 
@@ -281,7 +269,7 @@ to avoid interruption of operations.
 
 <h3 class="section">
 
-Detailed Critical Inventory
+Detailed Out of Stock Inventory
 
 </h3>
 
@@ -339,7 +327,7 @@ Recommendation
 
 <tbody>
 
-@forelse($criticalMaterials as $material)
+@forelse($outOfStockMaterials as $material)
 
 <tr>
 
@@ -381,7 +369,7 @@ Recommendation
 
 <td>
 
-Immediate Procurement
+Emergency Procurement
 
 </td>
 
@@ -393,7 +381,7 @@ Immediate Procurement
 
 <td colspan="7" class="text-center">
 
-No critical materials found.
+No out of stock materials found.
 
 </td>
 
@@ -413,7 +401,7 @@ Recommendation
 
 <p>
 
-Immediate procurement should be initiated for all materials listed in this report. Departments should continuously monitor inventory levels and review reorder thresholds to prevent stock depletion.
+Emergency procurement should be initiated for all materials listed in this report. Affected departments should be notified of the stock-out and given an expected restock date.
 
 </p>
 

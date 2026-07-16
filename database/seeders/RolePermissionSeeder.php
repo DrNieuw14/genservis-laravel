@@ -149,6 +149,7 @@ class RolePermissionSeeder extends Seeder
                     */
 
                     'view-reports',
+                    'print-reports',
 
                 ])->pluck('id')->toArray()
 

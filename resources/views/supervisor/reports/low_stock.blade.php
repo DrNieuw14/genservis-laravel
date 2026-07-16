@@ -1,15 +1,15 @@
 @extends('supervisor.reports.layouts.report')
 
 @section('report-title')
-🚨 Critical Stock Report
+⚠️ Low Stock Report
 @endsection
 
 @section('report-description')
-Materials currently at critical inventory levels.
+Materials approaching their reorder threshold.
 @endsection
 
 @section('print-route')
-{{ route('inventory.critical.print') }}
+{{ route('inventory.low.print') }}
 @endsection
 
 
@@ -21,25 +21,25 @@ Materials currently at critical inventory levels.
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
 
-    {{-- Critical Items --}}
-    <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl shadow-lg text-white p-6">
+    {{-- Low Stock Items --}}
+    <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-2xl shadow-lg text-white p-6">
 
         <div class="flex justify-between items-center">
 
             <div>
 
-                <p class="uppercase tracking-wider text-sm text-red-100">
-                    Critical Items
+                <p class="uppercase tracking-wider text-sm text-yellow-100">
+                    Low Stock Items
                 </p>
 
                 <h2 class="text-5xl font-extrabold mt-3">
-                    {{ $criticalCount }}
+                    {{ $lowStockCount }}
                 </h2>
 
             </div>
 
             <div class="text-5xl opacity-70">
-                🚨
+                ⚠️
             </div>
 
         </div>
@@ -47,7 +47,7 @@ Materials currently at critical inventory levels.
     </div>
 
 
-    {{-- Critical Percentage --}}
+    {{-- Low Stock Percentage --}}
     <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-lg text-white p-6">
 
         <div class="flex justify-between items-center">
@@ -55,11 +55,11 @@ Materials currently at critical inventory levels.
             <div>
 
                 <p class="uppercase tracking-wider text-sm text-orange-100">
-                    Critical Percentage
+                    Low Stock Percentage
                 </p>
 
                 <h2 class="text-5xl font-extrabold mt-3">
-                    {{ number_format($criticalPercentage,1) }}%
+                    {{ number_format($lowStockPercentage,1) }}%
                 </h2>
 
             </div>
@@ -111,7 +111,7 @@ Materials currently at critical inventory levels.
                 </p>
 
                 <h2 class="text-2xl font-bold mt-4">
-                    🔴 CRITICAL
+                    🟡 LOW STOCK
                 </h2>
 
             </div>
@@ -138,13 +138,13 @@ Materials currently at critical inventory levels.
 <p class="text-lg">
 
 This report identifies
-<strong>{{ $criticalCount }}</strong>
-critical inventory materials affecting
+<strong>{{ $lowStockCount }}</strong>
+low stock inventory materials affecting
 <strong>{{ $departmentsAffected }}</strong>
 department(s).
 
-Immediate procurement is recommended to
-prevent operational disruption.
+Procurement should be scheduled soon to
+prevent these items from becoming critical.
 
 </p>
 
@@ -157,7 +157,7 @@ prevent operational disruption.
 
 @section('table-title')
 
-Detailed Critical Inventory
+Detailed Low Stock Inventory
 
 @endsection
 
@@ -170,7 +170,7 @@ Detailed Critical Inventory
 
 <table class="w-full">
 
-    <thead class="bg-red-100">
+    <thead class="bg-yellow-100">
 
         <tr>
 
@@ -218,7 +218,7 @@ Detailed Critical Inventory
 
     <tbody>
 
-    @forelse($criticalMaterials as $material)
+    @forelse($lowStockMaterials as $material)
 
         <tr class="border-t">
 
@@ -246,7 +246,7 @@ Detailed Critical Inventory
 
             </td>
 
-            <td class="text-center font-bold text-red-600">
+            <td class="text-center font-bold text-yellow-600">
 
                 {{ $material->quantity }}
 
@@ -260,7 +260,7 @@ Detailed Critical Inventory
 
             <td class="text-center">
 
-                Immediate Procurement
+                Schedule Procurement
 
             </td>
 
@@ -272,7 +272,7 @@ Detailed Critical Inventory
 
             <td colspan="7" class="text-center p-8">
 
-                🎉 No critical stock materials found.
+                🎉 No low stock materials found.
 
             </td>
 
@@ -297,8 +297,8 @@ Detailed Critical Inventory
 
     <li>
 
-        Prioritize procurement of materials
-        with the lowest available quantity.
+        Schedule procurement for materials
+        before they drop into critical range.
 
     </li>
 
@@ -310,8 +310,8 @@ Detailed Critical Inventory
 
     <li>
 
-        Monitor inventory daily until
-        replenishment is completed.
+        Monitor inventory weekly to catch
+        items trending toward critical.
 
     </li>
 

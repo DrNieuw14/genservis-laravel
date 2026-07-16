@@ -79,9 +79,10 @@
                 Materials approaching reorder level.
             </p>
 
-            <span class="inline-block mt-5 bg-yellow-600 text-white px-5 py-2 rounded">
-                Coming Soon
-            </span>
+            <a href="{{ route('inventory.low') }}"
+            class="inline-block mt-5 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold px-5 py-2 rounded transition">
+                📄 Open Report
+            </a>
 
         </div>
 
@@ -96,9 +97,10 @@
                 Materials with zero available stock.
             </p>
 
-            <span class="inline-block mt-5 bg-gray-700 text-white px-5 py-2 rounded">
-                Coming Soon
-            </span>
+            <a href="{{ route('inventory.out') }}"
+            class="inline-block mt-5 bg-gray-700 hover:bg-gray-800 text-white font-semibold px-5 py-2 rounded transition">
+                📄 Open Report
+            </a>
 
         </div>
 
@@ -113,9 +115,10 @@
                 Expiring and expired inventory batches.
             </p>
 
-            <span class="inline-block mt-5 bg-purple-600 text-white px-5 py-2 rounded">
-                Coming Soon
-            </span>
+            <a href="{{ route('inventory.expiration') }}"
+            class="inline-block mt-5 bg-purple-600 hover:bg-purple-700 text-white font-semibold px-5 py-2 rounded transition">
+                📄 Open Report
+            </a>
 
         </div>
 
@@ -130,9 +133,10 @@
                 Inventory distribution by department.
             </p>
 
-            <span class="inline-block mt-5 bg-indigo-600 text-white px-5 py-2 rounded">
-                Coming Soon
-            </span>
+            <a href="{{ route('inventory.department') }}"
+            class="inline-block mt-5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2 rounded transition">
+                📄 Open Report
+            </a>
 
         </div>
 

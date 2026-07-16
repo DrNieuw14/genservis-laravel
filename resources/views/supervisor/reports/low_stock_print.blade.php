@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
 
     <title>
-        Critical Stock Report
+        Low Stock Report
     </title>
 
     <script>
@@ -159,13 +159,13 @@ GENERAL SERVICES OFFICE
 
 <h2 class="text-center">
 
-CRITICAL STOCK REPORT
+LOW STOCK REPORT
 
 </h2>
 
 <p class="text-center">
 
-Materials Currently at Critical Inventory Level
+Materials Approaching Their Reorder Threshold
 
 </p>
 
@@ -181,7 +181,7 @@ Materials Currently at Critical Inventory Level
 
 <td>
 
-CSR-{{ now()->format('YmdHis') }}
+LSR-{{ now()->format('YmdHis') }}
 
 </td>
 
@@ -237,9 +237,9 @@ Executive Summary
 
 <p>
 
-This report identifies inventory materials that have reached
-their critical threshold and require immediate procurement
-to avoid interruption of operations.
+This report identifies inventory materials that have dropped
+below their reorder threshold and should be scheduled for
+procurement before reaching critical levels.
 
 </p>
 
@@ -247,9 +247,9 @@ to avoid interruption of operations.
 
 <tr>
 
-<th>Total Critical Items</th>
+<th>Total Low Stock Items</th>
 
-<th>Critical Percentage</th>
+<th>Low Stock Percentage</th>
 
 <th>Departments Affected</th>
 
@@ -259,13 +259,13 @@ to avoid interruption of operations.
 
 <td class="text-center">
 
-{{ $criticalCount }}
+{{ $lowStockCount }}
 
 </td>
 
 <td class="text-center">
 
-{{ number_format($criticalPercentage,2) }}%
+{{ number_format($lowStockPercentage,2) }}%
 
 </td>
 
@@ -281,7 +281,7 @@ to avoid interruption of operations.
 
 <h3 class="section">
 
-Detailed Critical Inventory
+Detailed Low Stock Inventory
 
 </h3>
 
@@ -339,7 +339,7 @@ Recommendation
 
 <tbody>
 
-@forelse($criticalMaterials as $material)
+@forelse($lowStockMaterials as $material)
 
 <tr>
 
@@ -381,7 +381,7 @@ Recommendation
 
 <td>
 
-Immediate Procurement
+Schedule Procurement
 
 </td>
 
@@ -393,7 +393,7 @@ Immediate Procurement
 
 <td colspan="7" class="text-center">
 
-No critical materials found.
+No low stock materials found.
 
 </td>
 
@@ -413,7 +413,7 @@ Recommendation
 
 <p>
 
-Immediate procurement should be initiated for all materials listed in this report. Departments should continuously monitor inventory levels and review reorder thresholds to prevent stock depletion.
+Procurement should be scheduled for all materials listed in this report before they drop into critical range. Departments should continuously monitor inventory levels and review reorder thresholds to prevent stock depletion.
 
 </p>
 

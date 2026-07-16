@@ -1,15 +1,15 @@
 @extends('supervisor.reports.layouts.report')
 
 @section('report-title')
-🚨 Critical Stock Report
+❌ Out of Stock Report
 @endsection
 
 @section('report-description')
-Materials currently at critical inventory levels.
+Materials with zero available stock.
 @endsection
 
 @section('print-route')
-{{ route('inventory.critical.print') }}
+{{ route('inventory.out.print') }}
 @endsection
 
 
@@ -21,25 +21,25 @@ Materials currently at critical inventory levels.
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
 
-    {{-- Critical Items --}}
-    <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl shadow-lg text-white p-6">
+    {{-- Out of Stock Items --}}
+    <div class="bg-gradient-to-r from-gray-800 to-black rounded-2xl shadow-lg text-white p-6">
 
         <div class="flex justify-between items-center">
 
             <div>
 
-                <p class="uppercase tracking-wider text-sm text-red-100">
-                    Critical Items
+                <p class="uppercase tracking-wider text-sm text-gray-300">
+                    Out of Stock Items
                 </p>
 
                 <h2 class="text-5xl font-extrabold mt-3">
-                    {{ $criticalCount }}
+                    {{ $outOfStockCount }}
                 </h2>
 
             </div>
 
             <div class="text-5xl opacity-70">
-                🚨
+                ❌
             </div>
 
         </div>
@@ -47,19 +47,19 @@ Materials currently at critical inventory levels.
     </div>
 
 
-    {{-- Critical Percentage --}}
-    <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-lg text-white p-6">
+    {{-- Percentage --}}
+    <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl shadow-lg text-white p-6">
 
         <div class="flex justify-between items-center">
 
             <div>
 
-                <p class="uppercase tracking-wider text-sm text-orange-100">
-                    Critical Percentage
+                <p class="uppercase tracking-wider text-sm text-red-100">
+                    Out of Stock Percentage
                 </p>
 
                 <h2 class="text-5xl font-extrabold mt-3">
-                    {{ number_format($criticalPercentage,1) }}%
+                    {{ number_format($outOfStockPercentage,1) }}%
                 </h2>
 
             </div>
@@ -111,7 +111,7 @@ Materials currently at critical inventory levels.
                 </p>
 
                 <h2 class="text-2xl font-bold mt-4">
-                    🔴 CRITICAL
+                    ⛔ OUT OF STOCK
                 </h2>
 
             </div>
@@ -138,13 +138,13 @@ Materials currently at critical inventory levels.
 <p class="text-lg">
 
 This report identifies
-<strong>{{ $criticalCount }}</strong>
-critical inventory materials affecting
+<strong>{{ $outOfStockCount }}</strong>
+materials with zero available stock, affecting
 <strong>{{ $departmentsAffected }}</strong>
 department(s).
 
-Immediate procurement is recommended to
-prevent operational disruption.
+Emergency procurement is recommended to
+restore operational capability.
 
 </p>
 
@@ -157,7 +157,7 @@ prevent operational disruption.
 
 @section('table-title')
 
-Detailed Critical Inventory
+Detailed Out of Stock Inventory
 
 @endsection
 
@@ -170,7 +170,7 @@ Detailed Critical Inventory
 
 <table class="w-full">
 
-    <thead class="bg-red-100">
+    <thead class="bg-gray-200">
 
         <tr>
 
@@ -218,7 +218,7 @@ Detailed Critical Inventory
 
     <tbody>
 
-    @forelse($criticalMaterials as $material)
+    @forelse($outOfStockMaterials as $material)
 
         <tr class="border-t">
 
@@ -260,7 +260,7 @@ Detailed Critical Inventory
 
             <td class="text-center">
 
-                Immediate Procurement
+                Emergency Procurement
 
             </td>
 
@@ -272,7 +272,7 @@ Detailed Critical Inventory
 
             <td colspan="7" class="text-center p-8">
 
-                🎉 No critical stock materials found.
+                🎉 No out of stock materials found.
 
             </td>
 
@@ -297,21 +297,22 @@ Detailed Critical Inventory
 
     <li>
 
-        Prioritize procurement of materials
-        with the lowest available quantity.
+        Initiate emergency procurement for
+        all zero-stock materials immediately.
 
     </li>
 
     <li>
 
-        Review reorder thresholds regularly.
+        Notify affected departments of the
+        stock-out and expected restock date.
 
     </li>
 
     <li>
 
-        Monitor inventory daily until
-        replenishment is completed.
+        Review reorder thresholds to prevent
+        materials from reaching zero stock again.
 
     </li>
 

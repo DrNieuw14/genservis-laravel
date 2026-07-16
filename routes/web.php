@@ -400,6 +400,18 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/inventory/reports/critical-stock/print', [MaterialController::class, 'criticalReportPrint'])
             ->name('inventory.critical.print');
 
+        Route::get('/inventory/reports/low-stock/print', [MaterialController::class, 'lowStockReportPrint'])
+            ->name('inventory.low.print');
+
+        Route::get('/inventory/reports/out-of-stock/print', [MaterialController::class, 'outOfStockReportPrint'])
+            ->name('inventory.out.print');
+
+        Route::get('/inventory/reports/expiration/print', [MaterialController::class, 'expirationReportPrint'])
+            ->name('inventory.expiration.print');
+
+        Route::get('/inventory/reports/department-summary/print', [MaterialController::class, 'departmentSummaryReportPrint'])
+            ->name('inventory.department.print');
+
     });
 
 
@@ -581,7 +593,7 @@ Route::middleware(['auth'])->group(function () {
         ->group(function () {
 
             Route::middleware('permission:view-departments')->group(function () {
-                Route::resource('departments', DepartmentController::class)->only(['index', 'show']);
+                Route::resource('departments', DepartmentController::class)->only(['index']);
             });
 
             Route::middleware('permission:create-departments')->group(function () {

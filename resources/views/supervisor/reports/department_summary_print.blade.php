@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
 
     <title>
-        Critical Stock Report
+        Department Summary Report
     </title>
 
     <script>
@@ -57,19 +57,7 @@
 
         }
 
-        .text-right{
-
-            text-align:right;
-
-        }
-
         .header-table td{
-
-            border:none;
-
-        }
-
-        .no-border{
 
             border:none;
 
@@ -159,13 +147,13 @@ GENERAL SERVICES OFFICE
 
 <h2 class="text-center">
 
-CRITICAL STOCK REPORT
+DEPARTMENT SUMMARY REPORT
 
 </h2>
 
 <p class="text-center">
 
-Materials Currently at Critical Inventory Level
+Inventory Distribution by Department
 
 </p>
 
@@ -181,7 +169,7 @@ Materials Currently at Critical Inventory Level
 
 <td>
 
-CSR-{{ now()->format('YmdHis') }}
+DSR-{{ now()->format('YmdHis') }}
 
 </td>
 
@@ -237,9 +225,7 @@ Executive Summary
 
 <p>
 
-This report identifies inventory materials that have reached
-their critical threshold and require immediate procurement
-to avoid interruption of operations.
+This report distributes {{ $totalMaterials }} materials across {{ $totalDepartments }} department(s), totaling {{ number_format($totalQuantity) }} units on hand. {{ $departmentsWithIssues }} department(s) currently have materials at critical, low, or out-of-stock levels.
 
 </p>
 
@@ -247,33 +233,25 @@ to avoid interruption of operations.
 
 <tr>
 
-<th>Total Critical Items</th>
+<th>Total Departments</th>
 
-<th>Critical Percentage</th>
+<th>Total Materials</th>
 
-<th>Departments Affected</th>
+<th>Total Quantity</th>
+
+<th>Needing Attention</th>
 
 </tr>
 
 <tr>
 
-<td class="text-center">
+<td class="text-center">{{ $totalDepartments }}</td>
 
-{{ $criticalCount }}
+<td class="text-center">{{ $totalMaterials }}</td>
 
-</td>
+<td class="text-center">{{ number_format($totalQuantity) }}</td>
 
-<td class="text-center">
-
-{{ number_format($criticalPercentage,2) }}%
-
-</td>
-
-<td class="text-center">
-
-{{ $departmentsAffected }}
-
-</td>
+<td class="text-center">{{ $departmentsWithIssues }}</td>
 
 </tr>
 
@@ -281,7 +259,7 @@ to avoid interruption of operations.
 
 <h3 class="section">
 
-Detailed Critical Inventory
+Department Inventory Distribution
 
 </h3>
 
@@ -291,47 +269,19 @@ Detailed Critical Inventory
 
 <tr>
 
-<th width="40">
+<th>Department</th>
 
-#
+<th>Materials</th>
 
-</th>
+<th>Total Quantity</th>
 
-<th>
+<th>Critical</th>
 
-Material
+<th>Low Stock</th>
 
-</th>
+<th>Out of Stock</th>
 
-<th>
-
-Department
-
-</th>
-
-<th>
-
-Category
-
-</th>
-
-<th>
-
-Quantity
-
-</th>
-
-<th>
-
-Threshold
-
-</th>
-
-<th>
-
-Recommendation
-
-</th>
+<th>Status</th>
 
 </tr>
 
@@ -339,51 +289,27 @@ Recommendation
 
 <tbody>
 
-@forelse($criticalMaterials as $material)
+@forelse($departmentRows as $row)
+
+@php
+    $hasIssues = ($row->critical_count + $row->low_count + $row->out_of_stock_count) > 0;
+@endphp
 
 <tr>
 
-<td class="text-center">
+<td>{{ $row->department_name }}</td>
 
-{{ $loop->iteration }}
+<td class="text-center">{{ $row->total_materials }}</td>
 
-</td>
+<td class="text-center">{{ number_format($row->total_quantity) }}</td>
 
-<td>
+<td class="text-center">{{ $row->critical_count }}</td>
 
-{{ $material->name }}
+<td class="text-center">{{ $row->low_count }}</td>
 
-</td>
+<td class="text-center">{{ $row->out_of_stock_count }}</td>
 
-<td>
-
-{{ $material->department->department_name ?? '-' }}
-
-</td>
-
-<td>
-
-{{ $material->category->name ?? '-' }}
-
-</td>
-
-<td class="text-center">
-
-{{ $material->quantity }}
-
-</td>
-
-<td class="text-center">
-
-{{ $material->threshold }}
-
-</td>
-
-<td>
-
-Immediate Procurement
-
-</td>
+<td class="text-center">{{ $hasIssues ? 'Needs Attention' : 'Healthy' }}</td>
 
 </tr>
 
@@ -391,11 +317,7 @@ Immediate Procurement
 
 <tr>
 
-<td colspan="7" class="text-center">
-
-No critical materials found.
-
-</td>
+<td colspan="7" class="text-center">No department data available.</td>
 
 </tr>
 
@@ -413,7 +335,7 @@ Recommendation
 
 <p>
 
-Immediate procurement should be initiated for all materials listed in this report. Departments should continuously monitor inventory levels and review reorder thresholds to prevent stock depletion.
+Departments flagged "Needs Attention" should be prioritized for procurement follow-up. Coordinate with department heads on upcoming material needs to keep stock distribution balanced.
 
 </p>
 

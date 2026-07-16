@@ -22,6 +22,112 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class MaterialController extends Controller
 {
+    /**
+     * "Critical" is only meaningful relative to an item's own reorder point —
+     * a single durable tool (threshold 8) isn't critical the way a nearly-out
+     * consumable (threshold 15) is. This is the fraction of an item's
+     * threshold at/below which it counts as critical instead of merely low.
+     */
+    private const CRITICAL_THRESHOLD_RATIO = 0.3;
+
+    /**
+     * Every material, eager-loaded with department/category/unit, annotated
+     * with a `stock_status` (out_of_stock/critical/low/available) computed
+     * relative to each item's own threshold — the single source of truth
+     * every inventory report should classify materials against, instead of
+     * each report re-deriving its own (and drifting out of sync).
+     */
+    private function allMaterialsWithStatus()
+    {
+        return Material::with(['department', 'category', 'unit'])
+            ->get()
+            ->map(function ($material) {
+                $criticalCutoff = (int) ceil($material->threshold * self::CRITICAL_THRESHOLD_RATIO);
+
+                $material->stock_status = match (true) {
+                    $material->quantity <= 0 => 'out_of_stock',
+                    $material->quantity <= $criticalCutoff => 'critical',
+                    $material->quantity <= $material->threshold => 'low',
+                    default => 'available',
+                };
+
+                return $material;
+            })
+            ->sortBy([
+                fn ($m) => $m->category->name ?? '',
+                fn ($m) => $m->name,
+            ])
+            ->values();
+    }
+
+    /**
+     * Bucket every material into out-of-stock / critical / low / available,
+     * using each item's own threshold rather than a flat quantity cutoff.
+     */
+    private function inventoryStockBuckets(): array
+    {
+        $counts = $this->allMaterialsWithStatus()->countBy('stock_status');
+
+        return [
+            'outOfStock' => $counts->get('out_of_stock', 0),
+            'criticalStock' => $counts->get('critical', 0),
+            'lowStock' => $counts->get('low', 0),
+            'availableMaterials' => $counts->get('available', 0),
+        ];
+    }
+
+    /**
+     * The materials furthest below their own threshold, not just the ones
+     * with the lowest raw quantity — otherwise naturally single-unit durable
+     * items (a jigsaw, a chess timer) crowd out genuinely low consumables.
+     */
+    private function topCriticalMaterials(?int $limit = 10)
+    {
+        $critical = $this->allMaterialsWithStatus()
+            ->where('stock_status', 'critical')
+            ->sortBy(fn ($m) => $m->threshold > 0 ? $m->quantity / $m->threshold : 0);
+
+        if ($limit !== null) {
+            $critical = $critical->take($limit);
+        }
+
+        return $critical->values();
+    }
+
+    /**
+     * Materials below their reorder threshold but not yet critical, closest
+     * to the danger zone first.
+     */
+    private function allLowStockMaterials()
+    {
+        return $this->allMaterialsWithStatus()
+            ->where('stock_status', 'low')
+            ->sortBy(fn ($m) => $m->threshold > 0 ? $m->quantity / $m->threshold : 0)
+            ->values();
+    }
+
+    /**
+     * Materials with zero quantity on hand.
+     */
+    private function allOutOfStockMaterials()
+    {
+        return $this->allMaterialsWithStatus()
+            ->where('stock_status', 'out_of_stock')
+            ->sortBy('name')
+            ->values();
+    }
+
+    /**
+     * Group an already-fetched materials collection by the department that
+     * currently holds each item, so a report can show what each department
+     * actually has on hand instead of just an aggregate count.
+     */
+    private function groupMaterialsByDepartment($materials)
+    {
+        return $materials
+            ->groupBy(fn ($m) => $m->department->department_name ?? 'Unassigned')
+            ->sortKeys();
+    }
 
     // 📋 List Materials
     public function index(Request $request)
@@ -743,21 +849,14 @@ class MaterialController extends Controller
     {
         $totalMaterials = Material::count();
 
-        $criticalStock = Material::where('quantity', '>', 0)
-            ->where('quantity', '<=', 5)
-            ->count();
+        $allMaterials = $this->allMaterialsWithStatus();
+        $statusCounts = $allMaterials->countBy('stock_status');
 
-        $lowStock = Material::where('quantity', '>', 5)
-            ->whereColumn('quantity', '<=', 'threshold')
-            ->count();
+        $outOfStock = $statusCounts->get('out_of_stock', 0);
+        $criticalStock = $statusCounts->get('critical', 0);
+        $lowStock = $statusCounts->get('low', 0);
+        $availableMaterials = $statusCounts->get('available', 0);
 
-        $outOfStock = Material::where('quantity', '<=', 0)
-            ->count();
-
-        $availableMaterials = Material::where('quantity', '>', 0)
-            ->where('quantity', '>', DB::raw('threshold'))
-            ->count(); 
-            
             $healthyMaterials = $availableMaterials;
 
             $inventoryHealth = $totalMaterials > 0
@@ -821,22 +920,20 @@ class MaterialController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $criticalMaterials = Material::with('department')
-            ->where('quantity', '>', 0)
-            ->where('quantity', '<=', 5)
-            ->orderBy('quantity')
-            ->get();
+        $criticalMaterials = $allMaterials
+            ->where('stock_status', 'critical')
+            ->sortBy('quantity')
+            ->values();
 
-        $lowStockMaterials = Material::with('department')
-            ->where('quantity', '>', 5)
-            ->whereColumn('quantity', '<=', 'threshold')
-            ->orderBy('quantity')
-            ->get();
+        $lowStockMaterials = $allMaterials
+            ->where('stock_status', 'low')
+            ->sortBy('quantity')
+            ->values();
 
-        $outOfStockMaterials = Material::with('department')
-            ->where('quantity', '<=', 0)
-            ->orderBy('name')
-            ->get();
+        $outOfStockMaterials = $allMaterials
+            ->where('stock_status', 'out_of_stock')
+            ->sortBy('name')
+            ->values();
 
         $expiringMaterials = MaterialRestockLog::with([
             'material.department'
@@ -887,6 +984,8 @@ class MaterialController extends Controller
             ->orderBy('departments.department_name')
             ->get();
 
+        $materialsByDepartment = $this->groupMaterialsByDepartment($allMaterials);
+
         return view(
             'supervisor.reports.inventory_summary',
         compact(
@@ -894,6 +993,8 @@ class MaterialController extends Controller
             'availableMaterials',
             'inventoryHealth',
             'healthStatus',
+            'statusColor',
+            'recommendation',
             'criticalStock',
             'lowStock',
             'outOfStock',
@@ -905,6 +1006,8 @@ class MaterialController extends Controller
             'expiringMaterials',
             'expiredMaterials',
             'departmentSummary',
+            'allMaterials',
+            'materialsByDepartment',
         )
         );
     }
@@ -913,33 +1016,20 @@ class MaterialController extends Controller
     {
         $totalMaterials = Material::count();
 
-        $availableMaterials = Material::whereColumn(
-            'quantity',
-            '>',
-            'threshold'
-        )->count();
+        $allMaterials = $this->allMaterialsWithStatus();
+        $statusCounts = $allMaterials->countBy('stock_status');
 
-        $criticalMaterials = Material::where('quantity', '<=', 5)
-            ->where('quantity', '>', 0)
-            ->with(['department', 'category'])
-            ->get();
-
+        $outOfStock = $statusCounts->get('out_of_stock', 0);
+        $criticalMaterials = $allMaterials->where('stock_status', 'critical')->sortBy('quantity')->values();
         $criticalCount = $criticalMaterials->count();
-
-        $lowStock = Material::whereColumn(
-            'quantity',
-            '<=',
-            'threshold'
-        )
-        ->where('quantity', '>', 5)
-        ->count();
-
-        $outOfStock = Material::where('quantity', '<=', 0)
-            ->count();
+        $lowStock = $statusCounts->get('low', 0);
+        $availableMaterials = $statusCounts->get('available', 0);
 
         $health = $totalMaterials > 0
             ? round(($availableMaterials / $totalMaterials) * 100)
             : 0;
+
+        $materialsByDepartment = $this->groupMaterialsByDepartment($allMaterials);
 
         return view(
             'supervisor.reports.inventory_summary_print',
@@ -950,7 +1040,9 @@ class MaterialController extends Controller
                 'criticalCount',
                 'lowStock',
                 'outOfStock',
-                'health'
+                'health',
+                'allMaterials',
+                'materialsByDepartment'
             )
         );
     }
@@ -959,20 +1051,12 @@ class MaterialController extends Controller
     {
         $totalMaterials = Material::count();
 
-        $criticalStock = Material::where('quantity', '>', 0)
-            ->where('quantity', '<=', 5)
-            ->count();
-
-        $lowStock = Material::where('quantity', '>', 5)
-            ->whereColumn('quantity', '<=', 'threshold')
-            ->count();
-
-        $outOfStock = Material::where('quantity', '<=', 0)
-            ->count();
-
-        $availableMaterials = Material::where('quantity', '>', 0)
-            ->where('quantity', '>', DB::raw('threshold'))
-            ->count();
+        [
+            'outOfStock' => $outOfStock,
+            'criticalStock' => $criticalStock,
+            'lowStock' => $lowStock,
+            'availableMaterials' => $availableMaterials,
+        ] = $this->inventoryStockBuckets();
 
         $expiringSoon = MaterialRestockLog::where('has_expiration',1)
             ->where('quantity_remaining','>',0)
@@ -1058,12 +1142,7 @@ class MaterialController extends Controller
             ->groupBy('department_id')
             ->get();
 
-        $topCritical = Material::with('department')
-            ->where('quantity','>',0)
-            ->where('quantity','<=',5)
-            ->orderBy('quantity')
-            ->take(10)
-            ->get();
+        $topCritical = $this->topCriticalMaterials(10);
 
         return view(
             'supervisor.reports.executive_summary',
@@ -1094,17 +1173,12 @@ class MaterialController extends Controller
     {
         $totalMaterials = Material::count();
 
-        $availableMaterials = Material::whereColumn('quantity', '>', 'threshold')->count();
-
-        $criticalStock = Material::where('quantity', '<=', 5)
-            ->where('quantity', '>', 0)
-            ->count();
-
-        $lowStock = Material::whereColumn('quantity', '<=', 'threshold')
-            ->where('quantity', '>', 5)
-            ->count();
-
-        $outOfStock = Material::where('quantity', '<=', 0)->count();
+        [
+            'outOfStock' => $outOfStock,
+            'criticalStock' => $criticalStock,
+            'lowStock' => $lowStock,
+            'availableMaterials' => $availableMaterials,
+        ] = $this->inventoryStockBuckets();
 
         $expiringSoon = 0;
 
@@ -1122,12 +1196,7 @@ class MaterialController extends Controller
             $healthStatus = 'Poor';
         }
 
-        $topCritical = Material::with('department')
-            ->where('quantity', '>', 0)
-            ->where('quantity', '<=', 5)
-            ->orderBy('quantity')
-            ->take(10)
-            ->get();
+        $topCritical = $this->topCriticalMaterials(10);
 
         // =========================================
         // Inventory Distribution Percentages
@@ -1204,17 +1273,8 @@ class MaterialController extends Controller
 
     public function criticalReport()
     {
-        // Critical stock materials (quantity > 0 and <= threshold)
-        $criticalMaterials = Material::with([
-            'category',
-            'department',
-            'unit'
-        ])
-        ->where('quantity', '>', 0)
-        ->where('quantity', '<=', 5)
-        ->orderBy('quantity')
-        ->orderBy('name')
-        ->get();
+        // Critical stock materials — at or below 30% of each item's own reorder threshold
+        $criticalMaterials = $this->topCriticalMaterials(null);
 
         // Overall inventory count
         $totalMaterials = Material::count();
@@ -1251,16 +1311,7 @@ class MaterialController extends Controller
 
     public function criticalReportPrint()
     {
-        $criticalMaterials = Material::with([
-            'category',
-            'department',
-            'unit'
-        ])
-        ->where('quantity', '>', 0)
-        ->where('quantity', '<=', 5)
-        ->orderBy('quantity')
-        ->orderBy('name')
-        ->get();
+        $criticalMaterials = $this->topCriticalMaterials(null);
 
         $totalMaterials = Material::count();
 
@@ -1289,22 +1340,204 @@ class MaterialController extends Controller
 
     public function lowStockReport()
     {
-        return view('supervisor.reports.low_stock');
+        $lowStockMaterials = $this->allLowStockMaterials();
+
+        $totalMaterials = Material::count();
+        $lowStockCount = $lowStockMaterials->count();
+
+        $lowStockPercentage = $totalMaterials > 0
+            ? round(($lowStockCount / $totalMaterials) * 100, 2)
+            : 0;
+
+        $departmentsAffected = $lowStockMaterials
+            ->pluck('department.department_name')
+            ->filter()
+            ->unique()
+            ->count();
+
+        return view('supervisor.reports.low_stock', [
+
+            'lowStockMaterials'   => $lowStockMaterials,
+
+            'lowStockCount'       => $lowStockCount,
+
+            'lowStockPercentage'  => $lowStockPercentage,
+
+            'departmentsAffected' => $departmentsAffected,
+
+        ]);
+    }
+
+    public function lowStockReportPrint()
+    {
+        $lowStockMaterials = $this->allLowStockMaterials();
+
+        $totalMaterials = Material::count();
+        $lowStockCount = $lowStockMaterials->count();
+
+        $lowStockPercentage = $totalMaterials > 0
+            ? round(($lowStockCount / $totalMaterials) * 100, 2)
+            : 0;
+
+        $departmentsAffected = $lowStockMaterials
+            ->pluck('department.department_name')
+            ->filter()
+            ->unique()
+            ->count();
+
+        return view(
+            'supervisor.reports.low_stock_print',
+            compact(
+                'lowStockMaterials',
+                'lowStockCount',
+                'lowStockPercentage',
+                'departmentsAffected'
+            )
+        );
     }
 
     public function outOfStockReport()
     {
-        return view('supervisor.reports.out_of_stock');
+        return view(
+            'supervisor.reports.out_of_stock',
+            $this->outOfStockReportData()
+        );
+    }
+
+    public function outOfStockReportPrint()
+    {
+        return view(
+            'supervisor.reports.out_of_stock_print',
+            $this->outOfStockReportData()
+        );
+    }
+
+    private function outOfStockReportData(): array
+    {
+        $outOfStockMaterials = $this->allOutOfStockMaterials();
+
+        $totalMaterials = Material::count();
+        $outOfStockCount = $outOfStockMaterials->count();
+
+        $outOfStockPercentage = $totalMaterials > 0
+            ? round(($outOfStockCount / $totalMaterials) * 100, 2)
+            : 0;
+
+        $departmentsAffected = $outOfStockMaterials
+            ->pluck('department.department_name')
+            ->filter()
+            ->unique()
+            ->count();
+
+        return compact(
+            'outOfStockMaterials',
+            'outOfStockCount',
+            'outOfStockPercentage',
+            'departmentsAffected'
+        );
     }
 
     public function expirationReport()
     {
-        return view('supervisor.reports.expiration_report');
+        return view(
+            'supervisor.reports.expiration_report',
+            $this->expirationReportData()
+        );
+    }
+
+    public function expirationReportPrint()
+    {
+        return view(
+            'supervisor.reports.expiration_report_print',
+            $this->expirationReportData()
+        );
+    }
+
+    private function expirationReportData(): array
+    {
+        $expiringMaterials = MaterialRestockLog::with(['material.department', 'material.category'])
+            ->where('has_expiration', 1)
+            ->where('quantity_remaining', '>', 0)
+            ->whereDate('expiration_date', '<=', now()->addDays(30))
+            ->whereDate('expiration_date', '>=', now())
+            ->orderBy('expiration_date')
+            ->get();
+
+        $expiredMaterials = MaterialRestockLog::with(['material.department', 'material.category'])
+            ->where('has_expiration', 1)
+            ->where('quantity_remaining', '>', 0)
+            ->whereDate('expiration_date', '<', now())
+            ->orderBy('expiration_date')
+            ->get();
+
+        $expiringCount = $expiringMaterials->count();
+        $expiredCount = $expiredMaterials->count();
+
+        $departmentsAffected = $expiringMaterials
+            ->merge($expiredMaterials)
+            ->pluck('material.department.department_name')
+            ->filter()
+            ->unique()
+            ->count();
+
+        return compact(
+            'expiringMaterials',
+            'expiredMaterials',
+            'expiringCount',
+            'expiredCount',
+            'departmentsAffected'
+        );
     }
 
     public function departmentSummaryReport()
     {
-        return view('supervisor.reports.department_summary');
+        return view(
+            'supervisor.reports.department_summary',
+            $this->departmentSummaryReportData()
+        );
+    }
+
+    public function departmentSummaryReportPrint()
+    {
+        return view(
+            'supervisor.reports.department_summary_print',
+            $this->departmentSummaryReportData()
+        );
+    }
+
+    private function departmentSummaryReportData(): array
+    {
+        $allMaterials = $this->allMaterialsWithStatus();
+        $materialsByDepartment = $this->groupMaterialsByDepartment($allMaterials);
+
+        $departmentRows = $materialsByDepartment->map(function ($materials, $departmentName) {
+            $statusCounts = $materials->countBy('stock_status');
+
+            return (object) [
+                'department_name'  => $departmentName,
+                'total_materials'  => $materials->count(),
+                'total_quantity'   => $materials->sum('quantity'),
+                'critical_count'   => $statusCounts->get('critical', 0),
+                'low_count'        => $statusCounts->get('low', 0),
+                'out_of_stock_count' => $statusCounts->get('out_of_stock', 0),
+            ];
+        })->values();
+
+        $totalMaterials = $allMaterials->count();
+        $totalDepartments = $departmentRows->count();
+        $totalQuantity = $allMaterials->sum('quantity');
+
+        $departmentsWithIssues = $departmentRows
+            ->filter(fn ($row) => $row->critical_count + $row->low_count + $row->out_of_stock_count > 0)
+            ->count();
+
+        return compact(
+            'departmentRows',
+            'totalMaterials',
+            'totalDepartments',
+            'totalQuantity',
+            'departmentsWithIssues'
+        );
     }
 
     public function details(Material $material)
