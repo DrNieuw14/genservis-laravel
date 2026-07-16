@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Jul 06, 2026 at 11:32 AM
+-- Generation Time: Jul 15, 2026 at 08:46 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,12 +44,18 @@ CREATE TABLE `activity_logs` (
 
 INSERT INTO `activity_logs` (`id`, `user_id`, `module`, `action`, `description`, `ip_address`, `created_at`, `updated_at`) VALUES
 (1, 3, 'Users', 'Approved User', 'Approved user: Marnel KuyaBunso', '127.0.0.1', '2026-06-01 00:22:15', '2026-06-01 00:22:15'),
-(2, 4, 'Leave', 'Submitted Leave', 'Submitted leave request from aldrin', '127.0.0.1', '2026-06-01 01:31:46', '2026-06-01 01:31:46'),
+(2, NULL, 'Leave', 'Submitted Leave', 'Submitted leave request from aldrin', '127.0.0.1', '2026-06-01 01:31:46', '2026-06-01 01:31:46'),
 (3, 3, 'Leave', 'Approved Leave', 'Approved leave request of aldrin', '127.0.0.1', '2026-06-01 01:37:06', '2026-06-01 01:37:06'),
-(4, 4, 'Leave', 'Submitted Leave', 'Submitted leave request from aldrin', '127.0.0.1', '2026-06-01 01:42:41', '2026-06-01 01:42:41'),
+(4, NULL, 'Leave', 'Submitted Leave', 'Submitted leave request from aldrin', '127.0.0.1', '2026-06-01 01:42:41', '2026-06-01 01:42:41'),
 (5, 3, 'Leave', 'Rejected Leave', 'Rejected leave request of aldrin', '127.0.0.1', '2026-06-01 01:49:43', '2026-06-01 01:49:43'),
-(6, 4, 'Leave', 'Submitted Leave', 'Submitted leave request from aldrin', '127.0.0.1', '2026-06-01 17:25:26', '2026-06-01 17:25:26'),
-(7, 3, 'Leave', 'Approved Leave', 'Approved leave request of aldrin', '127.0.0.1', '2026-06-01 17:26:19', '2026-06-01 17:26:19');
+(6, NULL, 'Leave', 'Submitted Leave', 'Submitted leave request from aldrin', '127.0.0.1', '2026-06-01 17:25:26', '2026-06-01 17:25:26'),
+(7, 3, 'Leave', 'Approved Leave', 'Approved leave request of aldrin', '127.0.0.1', '2026-06-01 17:26:19', '2026-06-01 17:26:19'),
+(8, 3, 'Users', 'Completed Employee Onboarding', 'Completed onboarding for test3', '127.0.0.1', '2026-07-07 01:25:01', '2026-07-07 01:25:01'),
+(9, 3, 'Users', 'Completed Employee Onboarding', 'Completed onboarding for Mark Anthony Abril', '127.0.0.1', '2026-07-07 15:22:20', '2026-07-07 15:22:20'),
+(10, 3, 'Users', 'Rejected User', 'Rejected user: test22', '127.0.0.1', '2026-07-07 15:22:24', '2026-07-07 15:22:24'),
+(11, 3, 'Users', 'Completed Employee Onboarding', 'Completed onboarding for Mary Ann and assigned the default Employee system role.', '127.0.0.1', '2026-07-07 19:50:03', '2026-07-07 19:50:03'),
+(12, 3, 'Employee Master', 'Created Personal Information', 'Added personal information for Mark Anthony Abril', '127.0.0.1', '2026-07-08 01:44:43', '2026-07-08 01:44:43'),
+(13, 3, 'Users', 'Completed Employee Onboarding', 'Completed onboarding for Raymond T. Uminga and assigned the default Employee system role.', '127.0.0.1', '2026-07-13 22:34:23', '2026-07-13 22:34:23');
 
 -- --------------------------------------------------------
 
@@ -173,6 +179,182 @@ INSERT INTO `department_materials` (`id`, `department_id`, `material_id`, `quant
 (14, 10, 454, 2, 18, 3, '2026-07-05 23:09:00', '2026-07-05 23:09:00', '2026-07-05 23:09:00'),
 (15, 12, 454, 1, 19, 3, '2026-07-05 23:15:08', '2026-07-05 23:15:08', '2026-07-05 23:15:08'),
 (16, 11, 455, 5, 20, 3, '2026-07-05 23:23:21', '2026-07-05 23:23:21', '2026-07-05 23:23:21');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee_contacts`
+--
+
+CREATE TABLE `employee_contacts` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `personnel_id` bigint(20) UNSIGNED NOT NULL,
+  `primary_email` varchar(255) NOT NULL,
+  `alternate_email` varchar(255) DEFAULT NULL,
+  `mobile_number` varchar(20) NOT NULL,
+  `telephone_number` varchar(20) DEFAULT NULL,
+  `emergency_contact_person` varchar(255) NOT NULL,
+  `emergency_contact_number` varchar(20) NOT NULL,
+  `emergency_relationship` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee_contacts`
+--
+
+INSERT INTO `employee_contacts` (`id`, `personnel_id`, `primary_email`, `alternate_email`, `mobile_number`, `telephone_number`, `emergency_contact_person`, `emergency_contact_number`, `emergency_relationship`, `created_at`, `updated_at`) VALUES
+(1, 9, 'markanthony.abril@cvsu.edu.ph', 'markanthonyrabril@gmail.com', '09123456789', '(046)1234567', 'Ronemie', '09987654321', 'Spouse', '2026-07-08 01:48:35', '2026-07-08 01:50:37');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee_educations`
+--
+
+CREATE TABLE `employee_educations` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `personnel_id` bigint(20) UNSIGNED NOT NULL,
+  `education_level` enum('Elementary','Secondary','Vocational','College','Graduate Studies') NOT NULL,
+  `school_name` varchar(255) NOT NULL,
+  `degree_course` varchar(255) DEFAULT NULL,
+  `highest_level` varchar(255) DEFAULT NULL,
+  `year_graduated` year(4) DEFAULT NULL,
+  `from_year` year(4) DEFAULT NULL,
+  `to_year` year(4) DEFAULT NULL,
+  `honors` varchar(255) DEFAULT NULL,
+  `units_earned` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee_profiles`
+--
+
+CREATE TABLE `employee_profiles` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `personnel_id` bigint(20) UNSIGNED NOT NULL,
+  `birthdate` date DEFAULT NULL,
+  `gender` enum('Male','Female') DEFAULT NULL,
+  `civil_status` varchar(255) DEFAULT NULL,
+  `nationality` varchar(255) DEFAULT NULL,
+  `religion` varchar(255) DEFAULT NULL,
+  `blood_type` varchar(255) DEFAULT NULL,
+  `photo` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee_profiles`
+--
+
+INSERT INTO `employee_profiles` (`id`, `personnel_id`, `birthdate`, `gender`, `civil_status`, `nationality`, `religion`, `blood_type`, `photo`, `created_at`, `updated_at`) VALUES
+(1, 9, '1987-09-09', 'Male', 'Married', 'Filipino', 'Roman Catholic', 'O+', NULL, '2026-07-08 01:44:43', '2026-07-08 01:44:43');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employment_types`
+--
+
+CREATE TABLE `employment_types` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `employee_prefix` varchar(15) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employment_types`
+--
+
+INSERT INTO `employment_types` (`id`, `name`, `employee_prefix`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'Regular Faculty', 'REGF', 1, NULL, NULL),
+(2, 'COS Faculty', 'COSF', 1, NULL, NULL),
+(3, 'Administrative Personnel', 'ADMP', 1, NULL, NULL),
+(4, 'Non-Teaching Personnel', 'NTP', 1, NULL, NULL),
+(5, 'Utility Personnel', 'UTIL', 1, NULL, NULL),
+(6, 'Job Order', 'JO', 1, NULL, NULL),
+(7, 'Contractual Personnel', 'CONT', 1, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employment_type_position`
+--
+
+CREATE TABLE `employment_type_position` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `employment_type_id` bigint(20) UNSIGNED NOT NULL,
+  `position_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employment_type_position`
+--
+
+INSERT INTO `employment_type_position` (`id`, `employment_type_id`, `position_id`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, NULL, NULL),
+(2, 1, 2, NULL, NULL),
+(3, 1, 3, NULL, NULL),
+(4, 1, 4, NULL, NULL),
+(5, 1, 5, NULL, NULL),
+(6, 1, 6, NULL, NULL),
+(7, 1, 7, NULL, NULL),
+(8, 1, 8, NULL, NULL),
+(9, 1, 9, NULL, NULL),
+(10, 1, 10, NULL, NULL),
+(11, 1, 11, NULL, NULL),
+(12, 1, 12, NULL, NULL),
+(13, 2, 1, NULL, NULL),
+(14, 2, 2, NULL, NULL),
+(15, 2, 3, NULL, NULL),
+(16, 2, 4, NULL, NULL),
+(17, 2, 5, NULL, NULL),
+(18, 2, 6, NULL, NULL),
+(19, 2, 7, NULL, NULL),
+(20, 2, 8, NULL, NULL),
+(21, 2, 9, NULL, NULL),
+(22, 2, 10, NULL, NULL),
+(23, 2, 11, NULL, NULL),
+(24, 2, 12, NULL, NULL),
+(25, 2, 13, NULL, NULL),
+(26, 2, 14, NULL, NULL),
+(27, 2, 15, NULL, NULL),
+(28, 3, 16, NULL, NULL),
+(29, 3, 17, NULL, NULL),
+(30, 3, 18, NULL, NULL),
+(31, 3, 19, NULL, NULL),
+(32, 3, 20, NULL, NULL),
+(33, 3, 21, NULL, NULL),
+(34, 3, 22, NULL, NULL),
+(35, 3, 23, NULL, NULL),
+(36, 3, 24, NULL, NULL),
+(37, 4, 25, NULL, NULL),
+(38, 4, 26, NULL, NULL),
+(39, 4, 27, NULL, NULL),
+(40, 4, 28, NULL, NULL),
+(41, 4, 29, NULL, NULL),
+(42, 5, 30, NULL, NULL),
+(43, 5, 31, NULL, NULL),
+(44, 5, 32, NULL, NULL),
+(45, 6, 33, NULL, NULL),
+(46, 6, 34, NULL, NULL),
+(47, 6, 35, NULL, NULL),
+(48, 6, 36, NULL, NULL),
+(49, 7, 37, NULL, NULL),
+(50, 7, 38, NULL, NULL),
+(51, 7, 39, NULL, NULL),
+(52, 7, 33, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -675,8 +857,8 @@ INSERT INTO `materials` (`id`, `name`, `quantity`, `category_id`, `department_id
 (445, 'Molten B64500 Basketball', 1, 18, 3, 6, 3, '2026-06-03 00:12:35', '2026-06-23 22:57:24', 5),
 (446, 'Accel 7500 Voleyballl', 1, 16, 3, 6, 3, '2026-06-03 00:12:35', '2026-06-03 00:12:35', 5),
 (447, 'A4 COPY ONE', 15, 6, 3, 3, 3, '2026-06-23 23:02:54', '2026-07-05 21:30:35', 5),
-(454, 'test', 2, 1, 3, 1, 3, '2026-07-05 23:08:29', '2026-07-05 23:15:08', 5),
-(455, 'test 2', 5, 6, 3, 1, 3, '2026-07-05 23:22:59', '2026-07-05 23:23:21', 5);
+(454, 'Short Bond Paper 90gsm White Paper', 2, 1, 3, 1, 3, '2026-07-05 23:08:29', '2026-07-08 19:41:51', 5),
+(455, 'A4 190 GSM White Paper', 5, 6, 3, 1, 3, '2026-07-05 23:22:59', '2026-07-08 19:41:24', 5);
 
 -- --------------------------------------------------------
 
@@ -928,49 +1110,6 @@ CREATE TABLE `material_requests` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `material_requests`
---
-
-INSERT INTO `material_requests` (`id`, `request_number`, `user_id`, `department_id`, `status`, `purpose`, `remarks`, `released_by`, `released_at`, `created_at`, `updated_at`) VALUES
-(1, 'MR-2026-0001', 4, NULL, 'approved', 'Dean', NULL, NULL, NULL, '2026-05-18 22:50:30', '2026-05-18 22:50:52'),
-(2, 'MR-2026-0002', 4, NULL, 'rejected', 'Printing ID', NULL, NULL, NULL, '2026-05-24 19:02:17', '2026-05-24 19:21:02'),
-(3, 'MR-2026-0003', 4, NULL, 'rejected', 'For exam', NULL, NULL, NULL, '2026-05-24 19:21:29', '2026-05-24 19:36:14'),
-(4, 'MR-2026-0004', 4, NULL, 'rejected', 'DM', NULL, NULL, NULL, '2026-05-24 19:22:49', '2026-05-24 19:36:12'),
-(5, 'MR-2026-0005', 4, 1, 'approved', 'Exam 2', NULL, NULL, NULL, '2026-05-24 19:29:50', '2026-05-24 19:36:10'),
-(6, 'MR-2026-0006', 4, 2, 'rejected', 'wee', NULL, NULL, NULL, '2026-05-24 19:45:36', '2026-05-24 19:55:09'),
-(7, 'MR-2026-0007', 4, 1, 'rejected', 'wee', NULL, NULL, NULL, '2026-05-24 19:56:28', '2026-05-24 22:16:39'),
-(8, 'MR-2026-0008', 4, 1, 'rejected', 'wee', NULL, NULL, NULL, '2026-05-24 19:59:23', '2026-05-24 22:16:38'),
-(9, 'MR-2026-0009', 4, 2, 'rejected', 'weee', NULL, NULL, NULL, '2026-05-24 21:48:52', '2026-05-24 22:16:38'),
-(10, 'MR-2026-0010', 4, 2, 'rejected', 'wee', NULL, NULL, NULL, '2026-05-24 21:52:17', '2026-05-24 22:16:36'),
-(11, 'MR-2026-0011', 7, 1, 'rejected', '1', NULL, NULL, NULL, '2026-05-24 21:57:32', '2026-05-24 22:16:35'),
-(12, 'MR-2026-0012', 7, 2, 'rejected', 'weee', NULL, NULL, NULL, '2026-05-24 22:01:21', '2026-05-24 22:16:34'),
-(13, 'MR-2026-0013', 4, 1, 'rejected', 'weee', NULL, NULL, NULL, '2026-05-24 22:03:29', '2026-05-24 22:16:33'),
-(14, 'MR-2026-0014', 4, 1, 'rejected', 'weee', NULL, NULL, NULL, '2026-05-24 22:16:11', '2026-05-24 22:16:32'),
-(15, 'MR-2026-0015', 4, 1, 'approved', 'wee', NULL, NULL, NULL, '2026-05-24 22:41:03', '2026-05-24 23:20:15'),
-(16, 'MR-2026-0016', 4, 2, 'rejected', 'wee DM', NULL, NULL, NULL, '2026-05-24 22:43:26', '2026-05-24 23:20:11'),
-(17, 'MR-2026-0017', 4, 1, 'rejected', 'weee na', NULL, NULL, NULL, '2026-05-24 22:53:09', '2026-05-24 23:20:10'),
-(18, 'MR-2026-0018', 4, 1, 'rejected', 'weee', NULL, NULL, NULL, '2026-05-24 23:09:31', '2026-05-24 23:20:09'),
-(19, 'MR-2026-0019', 4, 1, 'rejected', 'wqeee', NULL, NULL, NULL, '2026-05-24 23:19:38', '2026-05-24 23:20:06'),
-(20, 'MR-2026-0020', 4, 1, 'approved', 'weee', NULL, NULL, NULL, '2026-05-27 17:53:52', '2026-05-27 17:54:12'),
-(21, 'MR-2026-0021', 4, 1, 'approved', 'for ID', NULL, NULL, NULL, '2026-05-27 19:09:33', '2026-05-27 19:09:58'),
-(22, 'MR-2026-0022', 4, 1, 'rejected', 'for event', NULL, NULL, NULL, '2026-05-28 00:01:40', '2026-05-28 00:03:04'),
-(23, 'MR-2026-0023', 4, 1, 'rejected', 'for classroom', NULL, NULL, NULL, '2026-05-28 00:03:51', '2026-05-28 00:13:22'),
-(24, 'MR-2026-0024', 4, 1, 'rejected', 'for DIIT', NULL, NULL, NULL, '2026-05-28 00:13:01', '2026-05-28 00:22:01'),
-(25, 'MR-2026-0025', 4, 1, 'approved', 'wee', NULL, NULL, NULL, '2026-05-28 00:21:40', '2026-05-28 00:22:03'),
-(26, 'MR-2026-0026', 4, 1, 'rejected', 'wee', NULL, NULL, NULL, '2026-05-28 00:35:37', '2026-05-28 00:57:53'),
-(27, 'MR-2026-0027', 4, 2, 'rejected', 'wee', NULL, NULL, NULL, '2026-05-28 00:48:43', '2026-05-28 00:57:51'),
-(28, 'MR-2026-0028', 4, 2, 'pending', 'weee', NULL, NULL, NULL, '2026-05-28 00:58:23', '2026-05-28 00:58:23'),
-(29, 'MR-2026-0029', 4, 1, 'pending', 'weee', NULL, NULL, NULL, '2026-05-28 01:33:35', '2026-05-28 01:33:35'),
-(30, 'MR-2026-0030', 4, 1, 'pending', 'weee', NULL, NULL, NULL, '2026-05-28 01:39:49', '2026-05-28 01:39:49'),
-(31, 'MR-2026-0031', 4, 1, 'pending', 'wee', NULL, NULL, NULL, '2026-05-31 21:16:47', '2026-05-31 21:16:47'),
-(32, 'MR-2026-0032', 4, 1, 'approved', 'qwwe', NULL, NULL, NULL, '2026-05-31 23:52:12', '2026-05-31 23:52:26'),
-(33, 'MR-2026-0033', 4, 1, 'approved', 'wee testing for batch', NULL, NULL, NULL, '2026-06-02 01:32:39', '2026-06-02 01:32:56'),
-(34, 'MR-2026-0034', 4, 1, 'released', 'weee', NULL, NULL, NULL, '2026-06-02 18:28:48', '2026-06-03 20:12:26'),
-(35, 'MR-2026-0035', 4, 2, 'released', 'for computer PC', NULL, NULL, NULL, '2026-06-03 21:00:10', '2026-06-03 21:00:39'),
-(36, 'MR-2026-0036', 4, 7, 'approved', 'weee', NULL, NULL, NULL, '2026-06-08 00:40:56', '2026-06-08 00:41:31'),
-(37, 'MR-2026-0037', 4, 1, 'released', 'weeee', NULL, NULL, NULL, '2026-06-08 23:45:55', '2026-06-08 23:46:41');
-
 -- --------------------------------------------------------
 
 --
@@ -986,17 +1125,6 @@ CREATE TABLE `material_request_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `material_request_items`
---
-
-INSERT INTO `material_request_items` (`id`, `request_id`, `material_id`, `quantity`, `purpose`, `created_at`, `updated_at`) VALUES
-(40, 36, 330, 1, NULL, '2026-06-08 00:40:56', '2026-06-08 00:40:56'),
-(41, 36, 328, 2, NULL, '2026-06-08 00:40:56', '2026-06-08 00:40:56'),
-(42, 36, 337, 1, NULL, '2026-06-08 00:40:56', '2026-06-08 00:40:56'),
-(43, 37, 373, 20, NULL, '2026-06-08 23:45:55', '2026-06-08 23:45:55'),
-(44, 37, 328, 1, NULL, '2026-06-08 23:45:55', '2026-06-08 23:45:55');
 
 -- --------------------------------------------------------
 
@@ -1080,7 +1208,17 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (31, '2026_07_06_034146_create_procurement_classifications_table', 15),
 (32, '2026_07_06_041143_add_classification_id_to_materials_table', 16),
 (33, '2026_07_06_060106_update_inventory_movement_type_enum', 17),
-(34, '2026_07_06_061113_change_inventory_movement_type_to_string', 17);
+(34, '2026_07_06_061113_change_inventory_movement_type_to_string', 17),
+(35, '2026_07_07_001832_create_employment_types_table', 18),
+(36, '2026_07_07_014742_create_positions_table', 19),
+(37, '2026_07_07_023111_add_employee_master_fields_to_personnel_table', 20),
+(38, '2026_07_08_003100_create_roles_table', 21),
+(39, '2026_07_08_003244_add_role_id_to_users_table', 21),
+(40, '2026_07_08_050831_create_employee_profiles_table', 22),
+(41, '2026_07_08_080214_create_employee_contacts_table', 23),
+(42, '2026_07_10_023802_create_employee_educations_table', 24),
+(43, '2026_07_14_004827_create_permissions_table', 25),
+(44, '2026_07_14_004837_create_permission_role_table', 25);
 
 -- --------------------------------------------------------
 
@@ -1108,28 +1246,15 @@ INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `is_re
 (1, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-24 22:53:09', '2026-05-24 22:53:20', '/supervisor/material-requests'),
 (2, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-24 23:09:31', '2026-05-24 23:10:23', '/supervisor/material-requests'),
 (3, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-24 23:19:38', '2026-05-24 23:19:49', '/supervisor/material-requests'),
-(4, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-24 23:20:06', '2026-05-28 01:56:25', '/material-request/history'),
-(5, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-24 23:20:09', '2026-05-28 01:52:14', '/material-request/history'),
-(6, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-24 23:20:10', '2026-05-28 01:48:42', '/material-request/history'),
-(7, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-24 23:20:11', '2026-05-24 23:21:35', '/material-request/history'),
-(8, 4, 'material', 'Request Approved', 'Your material request has been approved.', 1, '2026-05-24 23:20:15', '2026-05-24 23:20:26', '/material-request/history'),
 (9, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-27 17:53:52', '2026-05-28 00:35:14', '/supervisor/material-requests'),
-(10, 4, 'material', 'Request Approved', 'Your material request has been approved.', 1, '2026-05-27 17:54:12', '2026-05-28 01:45:30', '/material-request/history'),
 (11, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-27 19:09:33', '2026-05-28 00:35:10', '/supervisor/material-requests'),
-(12, 4, 'material', 'Request Approved', 'Your material request has been approved.', 1, '2026-05-27 19:09:58', '2026-05-28 01:39:25', '/material-request/history'),
 (13, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-28 00:01:40', '2026-05-28 00:02:53', '/supervisor/material-requests'),
-(14, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-28 00:03:04', '2026-05-28 00:59:33', '/material-request/history'),
 (15, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-28 00:03:51', '2026-05-28 00:11:38', '/supervisor/material-requests'),
 (16, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-28 00:13:01', '2026-05-28 00:13:14', '/supervisor/material-requests'),
-(17, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-28 00:13:22', '2026-05-28 01:30:49', '/material-request/history'),
 (18, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-28 00:21:41', '2026-05-28 00:25:58', '/supervisor/material-requests'),
-(19, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-28 00:22:01', '2026-05-28 01:02:16', '/material-request/history'),
 (20, 3, 'inventory', 'Critical Stock Alert', 'LED Bulbs stock is critically low (5 remaining).', 1, '2026-05-28 00:22:03', '2026-05-28 00:22:11', 'http://127.0.0.1:8000/materials'),
-(21, 4, 'material', 'Request Approved', 'Your material request has been approved.', 1, '2026-05-28 00:22:03', '2026-05-28 01:02:12', '/material-request/history'),
 (22, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-28 00:35:37', '2026-05-28 00:35:56', '/supervisor/material-requests'),
 (23, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-28 00:48:43', '2026-05-28 00:48:55', '/supervisor/material-requests'),
-(24, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-28 00:57:51', '2026-05-28 00:59:18', '/material-request/history'),
-(25, 4, 'material', 'Request Rejected', 'Your material request has been rejected.', 1, '2026-05-28 00:57:53', '2026-05-28 00:59:12', '/material-request/history'),
 (26, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-28 00:58:23', '2026-05-28 00:58:35', '/supervisor/material-requests'),
 (27, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-28 01:33:35', '2026-05-28 01:33:48', '/supervisor/material-requests'),
 (28, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-28 01:39:49', '2026-05-28 01:40:00', '/supervisor/material-requests'),
@@ -1139,34 +1264,188 @@ INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `is_re
 (32, 3, 'user_registration', 'New User Registration', 'Neri Cator registered and needs approval', 1, '2026-05-31 21:57:05', '2026-05-31 21:57:20', '/admin/users/pending'),
 (33, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-05-31 23:52:12', '2026-05-31 23:52:23', '/supervisor/material-requests'),
 (34, 3, 'inventory', 'Critical Stock Alert', 'HDMI Cable stock is critically low (3 remaining).', 1, '2026-05-31 23:52:25', '2026-06-01 17:26:03', 'http://127.0.0.1:8000/materials'),
-(35, 4, 'material', 'Request Approved', 'Your material request has been approved.', 1, '2026-05-31 23:52:26', '2026-05-31 23:52:39', '/material-request/history'),
 (36, 3, 'user_registration', 'New User Registration', 'Marnel KuyaBunso registered and needs approval', 1, '2026-06-01 00:22:02', '2026-06-01 17:26:01', '/admin/users/pending'),
 (37, 3, 'leave', 'New Leave Request', 'Aldrin Justimbaste submitted a leave request.', 1, '2026-06-01 01:31:46', '2026-06-01 01:32:00', '/leave-requests'),
-(38, 4, 'leave', 'Leave Submitted', 'Your leave request has been submitted.', 1, '2026-06-01 01:31:47', '2026-06-01 20:47:40', '/leave-requests'),
-(39, 4, 'leave', 'Leave Approved', 'Your leave request has been approved.', 1, '2026-06-01 01:37:06', '2026-06-01 01:37:57', '/leave/history'),
 (40, 3, 'leave', 'New Leave Request', 'Aldrin Justimbaste submitted a leave request.', 1, '2026-06-01 01:42:41', '2026-06-01 01:42:54', '/leave-requests'),
-(41, 4, 'leave', 'Leave Submitted', 'Your leave request has been submitted.', 1, '2026-06-01 01:42:41', '2026-06-01 17:13:43', '/leave-requests'),
-(42, 4, 'leave', 'Leave Rejected', 'Your leave request has been rejected.', 1, '2026-06-01 01:49:43', '2026-06-01 17:06:27', '/leave/history'),
 (43, 3, 'leave', 'New Leave Request', 'Aldrin Justimbaste submitted a leave request.', 1, '2026-06-01 17:25:26', '2026-06-01 17:25:40', '/leave-requests'),
-(44, 4, 'leave', 'Leave Submitted', 'Your leave request has been submitted.', 1, '2026-06-01 17:25:27', '2026-06-01 17:44:03', '/leave/history'),
-(45, 4, 'leave', 'Leave Approved', 'Your leave request has been approved.', 1, '2026-06-01 17:26:19', '2026-06-01 17:26:49', '/leave/history'),
 (46, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-06-02 01:32:39', '2026-06-02 01:32:52', '/supervisor/material-requests'),
-(47, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-06-02 01:32:56', '2026-06-02 01:32:56', '/material-request/history'),
 (48, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-06-02 18:28:48', '2026-06-02 18:29:06', '/supervisor/material-requests'),
-(49, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-06-02 18:29:14', '2026-06-02 18:29:14', '/material-request/history'),
-(50, 4, 'material', 'Materials Released', 'Your requested materials are ready for pickup.', 0, '2026-06-03 20:12:26', '2026-06-03 20:12:26', '/material-request/history'),
 (51, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-06-03 21:00:10', '2026-06-03 21:00:21', '/supervisor/material-requests'),
-(52, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-06-03 21:00:26', '2026-06-03 21:00:26', '/material-request/history'),
-(53, 4, 'material', 'Materials Released', 'Your requested materials are ready for pickup.', 1, '2026-06-03 21:00:39', '2026-06-08 01:16:11', '/material-request/history'),
 (54, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-06-08 00:40:56', '2026-06-08 00:41:21', '/supervisor/material-requests'),
 (55, 3, 'inventory', 'Critical Stock Alert', '8.50x11 Certificate Holder stock is critically low (2 remaining).', 0, '2026-06-08 00:41:29', '2026-06-08 00:41:29', 'http://127.0.0.1:8000/materials'),
 (56, 3, 'inventory', 'Critical Stock Alert', 'A4 Document Frame stock is critically low (3 remaining).', 0, '2026-06-08 00:41:30', '2026-06-08 00:41:30', 'http://127.0.0.1:8000/materials'),
 (57, 3, 'inventory', 'Critical Stock Alert', 'ADVENTURER BlueCard Case stock is critically low (4 remaining).', 1, '2026-06-08 00:41:31', '2026-06-08 01:15:53', 'http://127.0.0.1:8000/materials'),
-(58, 4, 'material', 'Request Approved', 'Your material request has been approved.', 1, '2026-06-08 00:41:31', '2026-06-08 00:41:46', '/material-request/history'),
 (59, 3, 'material', 'New Material Request', 'aldrin submitted a material request.', 1, '2026-06-08 23:45:55', '2026-06-08 23:46:12', '/supervisor/material-requests'),
 (60, 3, 'inventory', 'Critical Stock Alert', 'A4 Document Frame stock is critically low (2 remaining).', 0, '2026-06-08 23:46:28', '2026-06-08 23:46:28', 'http://127.0.0.1:8000/materials'),
-(61, 4, 'material', 'Request Approved', 'Your material request has been approved.', 0, '2026-06-08 23:46:29', '2026-06-08 23:46:29', '/material-request/history'),
-(62, 4, 'material', 'Materials Released', 'Your requested materials are ready for pickup.', 1, '2026-06-08 23:46:41', '2026-06-08 23:47:06', '/material-request/history');
+(63, 3, 'user_registration', 'New User Registration', 'test registered and needs approval', 0, '2026-07-06 21:54:09', '2026-07-06 21:54:09', '/admin/users/pending'),
+(64, 3, 'user_registration', 'New User Registration', 'test22 registered and needs approval', 0, '2026-07-06 22:36:33', '2026-07-06 22:36:33', '/admin/users/pending'),
+(65, 3, 'user_registration', 'New User Registration', 'test3 registered and needs approval', 0, '2026-07-06 22:41:05', '2026-07-06 22:41:05', '/admin/users/pending'),
+(66, 3, 'user_registration', 'New User Registration', 'Mark Anthony Abril registered and needs approval', 0, '2026-07-07 15:21:51', '2026-07-07 15:21:51', '/admin/users/pending'),
+(67, 3, 'user_registration', 'New User Registration', 'Mary Ann registered and needs approval', 0, '2026-07-07 19:48:42', '2026-07-07 19:48:42', '/admin/users/pending'),
+(68, 3, 'user_registration', 'New User Registration', 'Rochelle C. Malabayabas registered and needs approval', 0, '2026-07-08 19:33:32', '2026-07-08 19:33:32', '/admin/users/pending'),
+(69, 3, 'user_registration', 'New User Registration', 'Diana H. Cortez registered and needs approval', 0, '2026-07-08 19:35:03', '2026-07-08 19:35:03', '/admin/users/pending'),
+(70, 3, 'user_registration', 'New User Registration', 'Raymond T. Uminga registered and needs approval', 0, '2026-07-08 19:35:56', '2026-07-08 19:35:56', '/admin/users/pending'),
+(71, 3, 'user_registration', 'New User Registration', 'Arnold Balingit registered and needs approval', 0, '2026-07-08 19:36:40', '2026-07-08 19:36:40', '/admin/users/pending'),
+(72, 3, 'user_registration', 'New User Registration', 'Regene G. Hernandez registered and needs approval', 0, '2026-07-08 19:37:22', '2026-07-08 19:37:22', '/admin/users/pending');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permissions`
+--
+
+CREATE TABLE `permissions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `module` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `permissions`
+--
+
+INSERT INTO `permissions` (`id`, `module`, `name`, `slug`, `description`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Employee Management', 'View Employees', 'view-employees', 'Can view employee records', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(2, 'Employee Management', 'Create Employees', 'create-employees', 'Can create employee records', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(3, 'Employee Management', 'Edit Employees', 'edit-employees', 'Can edit employee records', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(4, 'Employee Management', 'Delete Employees', 'delete-employees', 'Can delete employee records', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(5, 'Employee 201', 'View Employee Profile', 'view-employee-profile', 'Can view employee profile', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(6, 'Employee 201', 'Edit Employee Profile', 'edit-employee-profile', 'Can edit employee profile', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(7, 'Inventory', 'View Materials', 'view-materials', 'Can view materials', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(8, 'Inventory', 'Create Materials', 'create-materials', 'Can create materials', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(9, 'Inventory', 'Edit Materials', 'edit-materials', 'Can edit materials', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(10, 'Inventory', 'Delete Materials', 'delete-materials', 'Can delete materials', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(11, 'Inventory', 'Restock Materials', 'restock-materials', 'Can restock inventory', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(12, 'Procurement', 'View PPMP', 'view-ppmp', 'Can view PPMP', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(13, 'Procurement', 'Create PPMP', 'create-ppmp', 'Can create PPMP', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(14, 'Procurement', 'Edit PPMP', 'edit-ppmp', 'Can edit PPMP', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(15, 'Reports', 'View Reports', 'view-reports', 'Can view reports', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(16, 'Reports', 'Export Reports', 'export-reports', 'Can export reports', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(17, 'User Management', 'Approve Users', 'approve-users', 'Can approve users', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(18, 'User Management', 'Assign Roles', 'assign-roles', 'Can assign user roles', 1, '2026-07-13 17:17:53', '2026-07-13 17:17:53'),
+(19, 'Inventory', 'View Categories', 'view-categories', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(20, 'Inventory', 'Create Categories', 'create-categories', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(21, 'Inventory', 'Edit Categories', 'edit-categories', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(22, 'Inventory', 'Delete Categories', 'delete-categories', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(23, 'Inventory', 'View Units', 'view-units', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(24, 'Inventory', 'Create Units', 'create-units', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(25, 'Inventory', 'Edit Units', 'edit-units', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(26, 'Inventory', 'Delete Units', 'delete-units', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(27, 'Inventory', 'View Departments', 'view-departments', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(28, 'Inventory', 'Create Departments', 'create-departments', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(29, 'Inventory', 'Edit Departments', 'edit-departments', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(30, 'Inventory', 'Delete Departments', 'delete-departments', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(31, 'Inventory', 'View Inventory Movements', 'view-inventory-movements', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(32, 'Inventory', 'View Department Inventory', 'view-department-inventory', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(33, 'Inventory', 'View Material Logs', 'view-material-logs', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(34, 'Procurement', 'Delete PPMP', 'delete-ppmp', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(35, 'Reports', 'Print Reports', 'print-reports', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(36, 'User Access', 'Reject Users', 'reject-users', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(37, 'User Access', 'Onboard Users', 'onboard-users', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(38, 'User Access', 'Manage Roles', 'manage-roles', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(39, 'User Access', 'Manage Permissions', 'manage-permissions', NULL, 1, '2026-07-13 22:36:27', '2026-07-13 22:36:27'),
+(40, 'User Access', 'View User Access', 'view-user-access', NULL, 1, '2026-07-14 22:00:16', '2026-07-14 22:00:16'),
+(41, 'User Access', 'Manage User Status', 'manage-user-status', NULL, 1, '2026-07-14 22:00:16', '2026-07-14 22:00:16');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permission_role`
+--
+
+CREATE TABLE `permission_role` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `role_id` bigint(20) UNSIGNED NOT NULL,
+  `permission_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `permission_role`
+--
+
+INSERT INTO `permission_role` (`id`, `role_id`, `permission_id`, `created_at`, `updated_at`) VALUES
+(1, 2, 2, NULL, NULL),
+(2, 2, 4, NULL, NULL),
+(3, 2, 6, NULL, NULL),
+(4, 2, 3, NULL, NULL),
+(5, 2, 16, NULL, NULL),
+(6, 2, 5, NULL, NULL),
+(7, 2, 1, NULL, NULL),
+(8, 2, 15, NULL, NULL),
+(9, 4, 8, NULL, NULL),
+(10, 4, 10, NULL, NULL),
+(11, 4, 9, NULL, NULL),
+(12, 4, 11, NULL, NULL),
+(13, 4, 7, NULL, NULL),
+(14, 4, 15, NULL, NULL),
+(15, 6, 13, NULL, NULL),
+(16, 6, 14, NULL, NULL),
+(17, 6, 12, NULL, NULL),
+(18, 6, 15, NULL, NULL),
+(19, 9, 5, NULL, NULL),
+(20, 4, 20, NULL, NULL),
+(21, 4, 28, NULL, NULL),
+(22, 4, 24, NULL, NULL),
+(23, 4, 22, NULL, NULL),
+(24, 4, 30, NULL, NULL),
+(25, 4, 26, NULL, NULL),
+(26, 4, 21, NULL, NULL),
+(27, 4, 29, NULL, NULL),
+(28, 4, 25, NULL, NULL),
+(29, 4, 19, NULL, NULL),
+(30, 4, 32, NULL, NULL),
+(31, 4, 27, NULL, NULL),
+(32, 4, 31, NULL, NULL),
+(33, 4, 33, NULL, NULL),
+(34, 4, 23, NULL, NULL),
+(35, 1, 17, NULL, NULL),
+(36, 1, 18, NULL, NULL),
+(37, 1, 20, NULL, NULL),
+(38, 1, 28, NULL, NULL),
+(39, 1, 2, NULL, NULL),
+(40, 1, 8, NULL, NULL),
+(41, 1, 13, NULL, NULL),
+(42, 1, 24, NULL, NULL),
+(43, 1, 22, NULL, NULL),
+(44, 1, 30, NULL, NULL),
+(45, 1, 4, NULL, NULL),
+(46, 1, 10, NULL, NULL),
+(47, 1, 34, NULL, NULL),
+(48, 1, 26, NULL, NULL),
+(49, 1, 21, NULL, NULL),
+(50, 1, 29, NULL, NULL),
+(51, 1, 6, NULL, NULL),
+(52, 1, 3, NULL, NULL),
+(53, 1, 9, NULL, NULL),
+(54, 1, 14, NULL, NULL),
+(55, 1, 25, NULL, NULL),
+(56, 1, 16, NULL, NULL),
+(57, 1, 39, NULL, NULL),
+(58, 1, 38, NULL, NULL),
+(59, 1, 37, NULL, NULL),
+(60, 1, 35, NULL, NULL),
+(61, 1, 36, NULL, NULL),
+(62, 1, 11, NULL, NULL),
+(63, 1, 19, NULL, NULL),
+(64, 1, 32, NULL, NULL),
+(65, 1, 27, NULL, NULL),
+(66, 1, 5, NULL, NULL),
+(67, 1, 1, NULL, NULL),
+(68, 1, 31, NULL, NULL),
+(69, 1, 33, NULL, NULL),
+(70, 1, 7, NULL, NULL),
+(71, 1, 12, NULL, NULL),
+(72, 1, 15, NULL, NULL),
+(73, 1, 23, NULL, NULL),
+(74, 1, 41, NULL, NULL),
+(75, 1, 40, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1177,6 +1456,9 @@ INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `is_re
 CREATE TABLE `personnel` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `employee_id` varchar(255) NOT NULL,
+  `employment_type_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `department_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `position_id` bigint(20) UNSIGNED DEFAULT NULL,
   `fullname` varchar(255) NOT NULL,
   `position` varchar(255) NOT NULL,
   `department` varchar(255) NOT NULL,
@@ -1190,13 +1472,72 @@ CREATE TABLE `personnel` (
 -- Dumping data for table `personnel`
 --
 
-INSERT INTO `personnel` (`id`, `employee_id`, `fullname`, `position`, `department`, `user_id`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'EMP-001', 'aldrin', 'Personnel', 'General Services', 4, 'Active', NULL, NULL),
-(3, 'EMP4650', 'Marilou Corrales', 'Staff', 'Maintenance', 7, 'Active', NULL, NULL),
-(4, 'EMP9059', 'Nerrisa Cator', 'Staff', 'Maintenance', 8, 'Active', NULL, NULL),
-(5, 'EMP9973', 'test', 'Staff', 'Maintenance', 9, 'Active', NULL, NULL),
-(6, 'EMP00005', 'Neri Cator', 'Staff', 'Maintenance', 10, 'Active', NULL, NULL),
-(7, 'EMP00006', 'Marnel KuyaBunso', 'Staff', 'Maintenance', 11, 'Active', NULL, NULL);
+INSERT INTO `personnel` (`id`, `employee_id`, `employment_type_id`, `department_id`, `position_id`, `fullname`, `position`, `department`, `user_id`, `status`, `created_at`, `updated_at`) VALUES
+(9, 'REGF001', 1, 1, 6, 'Mark Anthony Abril', 'Assistant Professor III', 'Department of Industrial and Information Technology', 15, 'Active', NULL, NULL),
+(10, 'ADMP001', 3, 2, 16, 'Mary Ann', 'Administrative Aide I', 'Department of Management', 16, 'Active', NULL, NULL),
+(11, 'ADMP002', 3, 6, 16, 'Raymond T. Uminga', 'Administrative Aide I', 'General Inventory', 19, 'Active', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `positions`
+--
+
+CREATE TABLE `positions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `position_name` varchar(255) NOT NULL,
+  `employment_type_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `position_code` varchar(30) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `positions`
+--
+
+INSERT INTO `positions` (`id`, `position_name`, `employment_type_id`, `position_code`, `description`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'Instructor I', NULL, 'INST1', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(2, 'Instructor II', NULL, 'INST2', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(3, 'Instructor III', NULL, 'INST3', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(4, 'Assistant Professor I', NULL, 'AP1', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(5, 'Assistant Professor II', NULL, 'AP2', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(6, 'Assistant Professor III', NULL, 'AP3', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(7, 'Associate Professor I', NULL, 'ASP1', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(8, 'Associate Professor II', NULL, 'ASP2', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(9, 'Associate Professor III', NULL, 'ASP3', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(10, 'Professor I', NULL, 'PROF1', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(11, 'Professor II', NULL, 'PROF2', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(12, 'Professor III', NULL, 'PROF3', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(13, 'Lecturer', NULL, 'LECT', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(14, 'Laboratory Instructor', NULL, 'LABINST', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(15, 'Part-time Instructor', NULL, 'PTINST', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(16, 'Administrative Aide I', NULL, 'AA1', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(17, 'Administrative Aide II', NULL, 'AA2', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(18, 'Administrative Assistant I', NULL, 'AAS1', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(19, 'Administrative Officer I', NULL, 'AO1', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(20, 'Administrative Officer II', NULL, 'AO2', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(21, 'HR Officer', NULL, 'HRO', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(22, 'Accountant', NULL, 'ACC', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(23, 'Cashier', NULL, 'CASH', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(24, 'Supply Officer', NULL, 'SUP', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(25, 'Registrar Staff', NULL, 'REG', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(26, 'Library Staff', NULL, 'LIB', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(27, 'Guidance Staff', NULL, 'GUIDE', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(28, 'IT Officer', NULL, 'IT', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(29, 'Research Assistant', NULL, 'RA', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(30, 'Utility Worker', NULL, 'UTIL', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(31, 'Groundskeeper', NULL, 'GROUND', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(32, 'Maintenance Worker', NULL, 'MAIN', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(33, 'Office Assistant', NULL, 'OA', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(34, 'Driver', NULL, 'DRV', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(35, 'Security Aide', NULL, 'SEC', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(36, 'Office Helper', NULL, 'HELP', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(37, 'Project Staff', NULL, 'PS', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(38, 'Technical Assistant', NULL, 'TA', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10'),
+(39, 'Laboratory Assistant', NULL, 'LABA', NULL, 1, '2026-07-07 00:58:10', '2026-07-07 00:58:10');
 
 -- --------------------------------------------------------
 
@@ -1291,6 +1632,37 @@ INSERT INTO `procurement_plan_items` (`id`, `plan_id`, `material_id`, `material_
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `roles`
+--
+
+CREATE TABLE `roles` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `roles`
+--
+
+INSERT INTO `roles` (`id`, `name`, `description`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Administrator', 'Administrative access', 1, '2026-07-07 17:12:34', '2026-07-07 17:12:34'),
+(2, 'HR Officer', 'Human Resource Management', 1, '2026-07-07 17:12:34', '2026-07-07 17:12:34'),
+(3, 'Secretary', 'Department Secretary', 1, '2026-07-07 17:12:34', '2026-07-07 17:12:34'),
+(4, 'Inventory Custodian', 'Inventory Management', 1, '2026-07-07 17:12:34', '2026-07-07 17:12:34'),
+(5, 'General Services Officer', 'General Services', 1, '2026-07-07 17:12:34', '2026-07-07 18:49:21'),
+(6, 'Procurement Officer', 'Procurement', 1, '2026-07-07 17:12:34', '2026-07-07 17:12:34'),
+(7, 'Research Coordinator', 'Research', 1, '2026-07-07 17:12:34', '2026-07-07 17:12:34'),
+(8, 'Extension Coordinator', 'Extension', 1, '2026-07-07 17:12:34', '2026-07-07 17:12:34'),
+(9, 'Employee', 'Standard employee access', 1, '2026-07-07 17:12:34', '2026-07-07 17:12:34'),
+(10, 'Property Custodian', 'Responsible for university property and assets.', 1, '2026-07-07 18:43:32', '2026-07-07 18:43:32');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `units`
 --
 
@@ -1330,6 +1702,7 @@ CREATE TABLE `users` (
   `birth_month` varchar(255) DEFAULT NULL,
   `age` int(11) DEFAULT NULL,
   `role` varchar(255) NOT NULL DEFAULT 'personnel',
+  `role_id` bigint(20) UNSIGNED DEFAULT NULL,
   `status` varchar(255) NOT NULL DEFAULT 'pending',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -1339,16 +1712,15 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `username`, `password`, `birthdate`, `birth_month`, `age`, `role`, `status`, `created_at`, `updated_at`) VALUES
-(3, 'Mark Anthony R. Abril', 'mark@mail.com', 'supervisor', '$2y$12$ZbYz9wJOW1UYVUij8n8G2OVvZ0mBpyrXn/5wy.M6F8VV9Zl29Kgji', '2011-02-16', 'February', 15, 'supervisor', 'approved', '2026-04-27 22:35:31', '2026-04-27 22:35:31'),
-(4, 'Aldrin Justimbaste', 'test@mail.com', 'aldrin', '$2y$12$tqU03vlacqclCWYmdJoDI.X9X78gboHV2.VNL6.n7UVqsB/e2voy2', '2009-04-17', 'April', 17, 'personnel', 'approved', '2026-04-27 22:38:13', '2026-04-27 22:38:36'),
-(5, 'Arnold Balingit', 'test1@mail.com', 'arnold', '$2y$12$.gtHwE1krpIvOsyQmzDep.dj/r36KFSBUg.zxOv9r1ePPg.n0/L5W', '2009-01-18', 'January', 17, 'personnel', 'approved', '2026-04-27 23:43:36', '2026-04-27 23:47:05'),
-(6, 'Aileen Estrada', 'test2@mail.com', 'aileen', '$2y$12$1mRP6RuoO6w.N7n0sABULe1BOHURY9iAk/uWct8IGeR/Nio5Gigve', '2008-02-16', 'February', 18, 'personnel', 'approved', '2026-04-27 23:59:49', '2026-05-24 21:50:03'),
-(7, 'Marilou Corrales', 'marilou@mail.com', 'marilou', '$2y$12$h8Senq0DO82Bnqr9Cl6WduF5LFY0EoFbVtRQhYX6dOX5w9KdFKOwq', '2009-02-18', 'February', 17, 'personnel', 'approved', '2026-05-24 21:56:49', '2026-05-24 21:57:08'),
-(8, 'Nerrisa Cator', 'Nerrisa@mail.com', 'nerri', '$2y$12$g26jUVEPt5hcu20nkwLbE.HwDFYe2oU5YT4IllJCsEYn39movt8F6', '2012-01-14', 'January', 14, 'personnel', 'rejected', '2026-05-31 21:18:05', '2026-05-31 21:56:35'),
-(9, 'test', 'testtest@mail.com', 'test', '$2y$12$YeAa4aTAcDKGbcNHzdl2iORpo153f4iy03pR74yXpXb1cR2Uz8FVW', '2010-01-19', 'January', 16, 'personnel', 'rejected', '2026-05-31 21:38:37', '2026-05-31 21:56:33'),
-(10, 'Neri Cator', 'Neri@mail.com', 'neri', '$2y$12$GShTppSWf8ad3OEgA65sWuDvopUiD27ytP0EkC26DosIMZYIvYXAK', '2010-02-18', 'February', 16, 'personnel', 'approved', '2026-05-31 21:57:05', '2026-05-31 21:57:23'),
-(11, 'Marnel KuyaBunso', 'marke@mail.com', 'marnell', '$2y$12$FrL.y64PZxkLxUX063AKGuYvy/htjisFsUBUYF/yXPlfkZHZJz82K', '2009-04-18', 'April', 17, 'personnel', 'approved', '2026-06-01 00:22:02', '2026-06-01 00:22:15');
+INSERT INTO `users` (`id`, `name`, `email`, `username`, `password`, `birthdate`, `birth_month`, `age`, `role`, `role_id`, `status`, `created_at`, `updated_at`) VALUES
+(3, 'Super Admin', 'admin@cvsu.edu.ph', 'superadmin', '$2y$12$ZbYz9wJOW1UYVUij8n8G2OVvZ0mBpyrXn/5wy.M6F8VV9Zl29Kgji', '2011-02-16', 'February', 15, 'supervisor', 1, 'approved', '2026-04-27 22:35:31', '2026-04-27 22:35:31'),
+(15, 'Mark Anthony Abril', 'markanthony.abril@cvsu.edu.ph', 'mark', '$2y$12$2hC1p2Szt.nKQEtK9AUJeeD62/.0XWdnyFhLpsQrj2bAHUj71vu/u', '1987-09-09', 'September', 38, 'personnel', NULL, 'approved', '2026-07-07 15:21:51', '2026-07-07 15:22:20'),
+(16, 'Mary Ann', 'mary@mail.com', 'mary', '$2y$12$H/OHkhxywu1mUagFYTWZRu.pd7a4ANPOL6QM8mVqCjqWgB981uHYS', '2009-02-19', 'February', 17, 'personnel', NULL, 'approved', '2026-07-07 19:48:42', '2026-07-07 19:50:03'),
+(17, 'Rochelle C. Malabayabas', 'rochelle.malabayabas@cvsu.edu.ph', 'rochelle', '$2y$12$8oNJV7ODLPiuqgkEDQNqYuZ36GBlSHSK/bDP90xiAky5LpyxzLlYW', '2008-04-19', 'April', 18, 'personnel', NULL, 'pending', '2026-07-08 19:33:31', '2026-07-08 19:33:31'),
+(18, 'Diana H. Cortez', 'diana.cortez@cvsu.edu.ph', 'diana', '$2y$12$YxhcJD7cTrNPMaw6Iiyb/eQy61.RKf7hDIkT9Lx9acy7hvbcpg9ae', '2009-04-18', 'April', 17, 'personnel', NULL, 'pending', '2026-07-08 19:35:03', '2026-07-08 19:35:03'),
+(19, 'Raymond T. Uminga', 'raymond.uminga@cvsu.edu.ph', 'raymond', '$2y$12$Mcz7Ro3AoVhJvz05BHJIT.d5MP05PBwPt5Ki5.JOy1DkxKLz5bTEK', '2009-03-17', 'March', 17, 'personnel', 9, 'approved', '2026-07-08 19:35:56', '2026-07-13 22:34:23'),
+(20, 'Arnold Balingit', 'arnold@mail.com', 'arnold', '$2y$12$b8Yv1SQs7zzMxTZ/ayjYU.o7EMnBj6Vkmt.Der4Wd3wKrz5GhaPc6', '2013-01-19', 'January', 13, 'personnel', NULL, 'pending', '2026-07-08 19:36:40', '2026-07-08 19:36:40'),
+(21, 'Regene G. Hernandez', 'regene.hernandez@cvsu.edu.ph', 'regene', '$2y$12$2cbiKv4dMinaboSXLUw9rubuM9XA6ORHKTq0XydMDcxq.ItK2.2JO', '2010-03-18', 'March', 16, 'personnel', NULL, 'pending', '2026-07-08 19:37:22', '2026-07-08 19:37:22');
 
 -- --------------------------------------------------------
 
@@ -1494,6 +1866,42 @@ ALTER TABLE `department_materials`
   ADD KEY `fk_department_materials_material` (`material_id`);
 
 --
+-- Indexes for table `employee_contacts`
+--
+ALTER TABLE `employee_contacts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `employee_contacts_personnel_id_foreign` (`personnel_id`);
+
+--
+-- Indexes for table `employee_educations`
+--
+ALTER TABLE `employee_educations`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `employee_educations_personnel_id_foreign` (`personnel_id`);
+
+--
+-- Indexes for table `employee_profiles`
+--
+ALTER TABLE `employee_profiles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `employee_profiles_personnel_id_unique` (`personnel_id`);
+
+--
+-- Indexes for table `employment_types`
+--
+ALTER TABLE `employment_types`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `employment_types_name_unique` (`name`);
+
+--
+-- Indexes for table `employment_type_position`
+--
+ALTER TABLE `employment_type_position`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_mapping` (`employment_type_id`,`position_id`),
+  ADD KEY `fk_etp_position` (`position_id`);
+
+--
 -- Indexes for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
@@ -1582,11 +1990,38 @@ ALTER TABLE `notifications`
   ADD KEY `notifications_user_id_foreign` (`user_id`);
 
 --
+-- Indexes for table `permissions`
+--
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `permissions_slug_unique` (`slug`);
+
+--
+-- Indexes for table `permission_role`
+--
+ALTER TABLE `permission_role`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `permission_role_role_id_permission_id_unique` (`role_id`,`permission_id`),
+  ADD KEY `permission_role_permission_id_foreign` (`permission_id`);
+
+--
 -- Indexes for table `personnel`
 --
 ALTER TABLE `personnel`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `personnel_user_id_foreign` (`user_id`);
+  ADD KEY `personnel_user_id_foreign` (`user_id`),
+  ADD KEY `personnel_employment_type_id_foreign` (`employment_type_id`),
+  ADD KEY `personnel_department_id_foreign` (`department_id`),
+  ADD KEY `personnel_position_id_foreign` (`position_id`);
+
+--
+-- Indexes for table `positions`
+--
+ALTER TABLE `positions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `positions_position_name_unique` (`position_name`),
+  ADD UNIQUE KEY `positions_position_code_unique` (`position_code`),
+  ADD KEY `fk_positions_employment_type` (`employment_type_id`);
 
 --
 -- Indexes for table `procurement_classifications`
@@ -1616,6 +2051,13 @@ ALTER TABLE `procurement_plan_items`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `roles_name_unique` (`name`);
+
+--
 -- Indexes for table `units`
 --
 ALTER TABLE `units`
@@ -1628,7 +2070,8 @@ ALTER TABLE `units`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `users_email_unique` (`email`),
-  ADD UNIQUE KEY `users_username_unique` (`username`);
+  ADD UNIQUE KEY `users_username_unique` (`username`),
+  ADD KEY `users_role_id_foreign` (`role_id`);
 
 --
 -- Indexes for table `walkin_requests`
@@ -1656,7 +2099,7 @@ ALTER TABLE `walkin_request_items`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -1677,6 +2120,36 @@ ALTER TABLE `department_materials`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
+-- AUTO_INCREMENT for table `employee_contacts`
+--
+ALTER TABLE `employee_contacts`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `employee_educations`
+--
+ALTER TABLE `employee_educations`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `employee_profiles`
+--
+ALTER TABLE `employee_profiles`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `employment_types`
+--
+ALTER TABLE `employment_types`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `employment_type_position`
+--
+ALTER TABLE `employment_type_position`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+
+--
 -- AUTO_INCREMENT for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
@@ -1686,7 +2159,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `inventory_movements`
 --
 ALTER TABLE `inventory_movements`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=466;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=467;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -1704,13 +2177,13 @@ ALTER TABLE `leave_requests`
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=456;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=457;
 
 --
 -- AUTO_INCREMENT for table `material_logs`
 --
 ALTER TABLE `material_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=497;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=498;
 
 --
 -- AUTO_INCREMENT for table `material_requests`
@@ -1734,19 +2207,37 @@ ALTER TABLE `material_restock_logs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+
+--
+-- AUTO_INCREMENT for table `permissions`
+--
+ALTER TABLE `permissions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+
+--
+-- AUTO_INCREMENT for table `permission_role`
+--
+ALTER TABLE `permission_role`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `personnel`
 --
 ALTER TABLE `personnel`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `positions`
+--
+ALTER TABLE `positions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `procurement_classifications`
@@ -1767,6 +2258,12 @@ ALTER TABLE `procurement_plan_items`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
 -- AUTO_INCREMENT for table `units`
 --
 ALTER TABLE `units`
@@ -1776,7 +2273,7 @@ ALTER TABLE `units`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `walkin_requests`
@@ -1805,6 +2302,31 @@ ALTER TABLE `activity_logs`
 --
 ALTER TABLE `department_materials`
   ADD CONSTRAINT `fk_department_materials_material` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`);
+
+--
+-- Constraints for table `employee_contacts`
+--
+ALTER TABLE `employee_contacts`
+  ADD CONSTRAINT `employee_contacts_personnel_id_foreign` FOREIGN KEY (`personnel_id`) REFERENCES `personnel` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `employee_educations`
+--
+ALTER TABLE `employee_educations`
+  ADD CONSTRAINT `employee_educations_personnel_id_foreign` FOREIGN KEY (`personnel_id`) REFERENCES `personnel` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `employee_profiles`
+--
+ALTER TABLE `employee_profiles`
+  ADD CONSTRAINT `employee_profiles_personnel_id_foreign` FOREIGN KEY (`personnel_id`) REFERENCES `personnel` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `employment_type_position`
+--
+ALTER TABLE `employment_type_position`
+  ADD CONSTRAINT `fk_etp_employment` FOREIGN KEY (`employment_type_id`) REFERENCES `employment_types` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_etp_position` FOREIGN KEY (`position_id`) REFERENCES `positions` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `inventory_movements`
@@ -1856,10 +2378,26 @@ ALTER TABLE `notifications`
   ADD CONSTRAINT `notifications_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `permission_role`
+--
+ALTER TABLE `permission_role`
+  ADD CONSTRAINT `permission_role_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `permission_role_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `personnel`
 --
 ALTER TABLE `personnel`
+  ADD CONSTRAINT `personnel_department_id_foreign` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `personnel_employment_type_id_foreign` FOREIGN KEY (`employment_type_id`) REFERENCES `employment_types` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `personnel_position_id_foreign` FOREIGN KEY (`position_id`) REFERENCES `positions` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `personnel_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `positions`
+--
+ALTER TABLE `positions`
+  ADD CONSTRAINT `fk_positions_employment_type` FOREIGN KEY (`employment_type_id`) REFERENCES `employment_types` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `procurement_plans`
@@ -1869,6 +2407,12 @@ ALTER TABLE `procurement_plans`
   ADD CONSTRAINT `procurement_plans_department_id_foreign` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `procurement_plans_prepared_by_foreign` FOREIGN KEY (`prepared_by`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `procurement_plans_reviewed_by_foreign` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `walkin_requests`

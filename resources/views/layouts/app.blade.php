@@ -40,24 +40,35 @@
 
             <!-- Dashboard -->
             <a href="/supervisor/dashboard"
-            class="block px-3 py-2 rounded 
+            class="block px-3 py-2 rounded
             {{ request()->is('supervisor/dashboard') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
                 🏠 Dashboard
             </a>
 
+            @endif
+
             <!-- User Approval -->
-            <a href="{{ route('admin.users.pending') }}"
-            class="block px-3 py-2 rounded 
-            {{ request()->is('admin/users/pending') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
-                👥 User Approval
-            </a>
+
+            @if(auth()->user()->hasPermission('approve-users'))
+
+                <a href="{{ route('admin.users.pending') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('admin/users/pending') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                    👥 User Approval
+                </a>
+
+            @endif
+
+            @if(Auth::user()->role === 'supervisor')
 
             <!-- Leave Requests -->
             <a href="{{ route('leave.requests') }}"
-            class="block px-3 py-2 rounded 
+            class="block px-3 py-2 rounded
             {{ request()->is('leave-requests') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
                 📄 Leave Requests
             </a>
+
+            @endif
 
             <!-- Divider -->
             <div class="border-t my-2"></div>
@@ -82,62 +93,82 @@
 
             @endif
 
+            @if(Auth::user()->role === 'supervisor')
+
             <!-- Material Requests -->
 
             <a href="/supervisor/material-requests"
-            class="block px-3 py-2 rounded 
+            class="block px-3 py-2 rounded
             {{ request()->is('supervisor/material-requests*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
 
                 📋 Material Requests
 
             </a>
 
+            @endif
+
             <!-- Walk-In Issuance -->
 
-            <a href="{{ route('walkin.create') }}"
-            class="block px-3 py-2 rounded
-            {{ request()->routeIs('walkin.create') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('create-walkin-requests'))
 
-                🚶 Walk-In Issuance
+                <a href="{{ route('walkin.create') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->routeIs('walkin.create') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
 
-            </a>
+                    🚶 Walk-In Issuance
 
-            <a href="{{ route('walkin.history') }}"
-            class="block px-3 py-2 rounded
-            {{ request()->routeIs('walkin.history') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                </a>
 
-                📋 Walk-In History
+            @endif
 
-            </a>
+            @if(auth()->user()->hasPermission('view-walkin-requests'))
+
+                <a href="{{ route('walkin.history') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->routeIs('walkin.history') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                    📋 Walk-In History
+
+                </a>
+
+            @endif
 
             <!-- Material Logs -->
 
-            <a href="{{ route('materials.logs') }}"
-            class="block px-3 py-2 rounded 
-            {{ request()->is('materials/logs*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('view-material-logs'))
 
-                📜 Material Logs
+                <a href="{{ route('materials.logs') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('materials/logs*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
 
-            </a>
+                    📜 Material Logs
+
+                </a>
+
+            @endif
 
             <!-- Department Inventory -->
 
-            <a href="{{ route('department.inventory') }}"
-            class="block px-3 py-2 rounded
-            {{ request()->is('department-inventory') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('view-department-inventory'))
 
-                🏢 Department Inventory
+                <a href="{{ route('department.inventory') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('department-inventory') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
 
-            </a>
+                    🏢 Department Inventory
 
-            
-            <a href="{{ route('department.inventory.balance') }}"
-            class="block px-3 py-2 rounded
-            {{ request()->is('department-inventory-balance') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                </a>
 
-                📦 Department Balance
 
-            </a>
+                <a href="{{ route('department.inventory.balance') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('department-inventory-balance') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                    📦 Department Balance
+
+                </a>
+
+            @endif
 
 
             <!-- Divider -->
@@ -151,13 +182,17 @@
 
             <!-- Add Material -->
 
-            <a href="{{ route('materials.create') }}"
-            class="block px-3 py-2 rounded 
-            {{ request()->is('materials/create') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('create-materials'))
 
-                ➕ Add Material
+                <a href="{{ route('materials.create') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('materials/create') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
 
-            </a>
+                    ➕ Add Material
+
+                </a>
+
+            @endif
 
             <!-- Categories -->
 
@@ -177,38 +212,52 @@
 
             <!-- Units -->
 
-            <a href="{{ route('units.index') }}"
-            class="block px-3 py-2 rounded 
-            {{ request()->is('units*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('view-units'))
 
-                📏 Units
+                <a href="{{ route('units.index') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('units*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
 
-            </a>
+                    📏 Units
+
+                </a>
+
+            @endif
 
             <!-- Departments -->
 
-            <a href="{{ route('supervisor.departments.index') }}"
-            class="block px-3 py-2 rounded 
-            {{ request()->is('supervisor/departments*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('view-departments'))
 
-                🏢 Departments
+                <a href="{{ route('supervisor.departments.index') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('supervisor/departments*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
 
-            </a>
+                    🏢 Departments
+
+                </a>
+
+            @endif
 
             <!-- Inventory Movements -->
 
-            <a href="{{ route('supervisor.inventory.movements.index') }}"
-            class="block px-3 py-2 rounded 
-            {{ request()->is('supervisor/inventory-movements*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            @if(auth()->user()->hasPermission('view-inventory-movements'))
 
-                🔄 Inventory Movements
+                <a href="{{ route('supervisor.inventory.movements.index') }}"
+                class="block px-3 py-2 rounded
+                {{ request()->is('supervisor/inventory-movements*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
 
-            </a>
+                    🔄 Inventory Movements
+
+                </a>
+
+            @endif
 
             <!-- Divider -->
             <div class="border-t my-2"></div>
 
             <!-- PROCUREMENT PLANNING -->
+
+            @if(auth()->user()->hasPermission('view-ppmp'))
 
             <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-6 mb-2">
                 Procurement Planning
@@ -226,87 +275,55 @@
 
             <!-- Annual PPMP -->
 
-            @if(auth()->user()->hasPermission('view-ppmp'))
+            <a href="{{ route('procurement.plans.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('procurement.plans.*')
+                ? 'bg-green-200 font-semibold'
+                : 'hover:bg-green-100' }}">
 
-                <a href="{{ route('procurement.plans.index') }}"
-                class="block px-3 py-2 rounded
-                {{ request()->routeIs('procurement.plans.*')
-                    ? 'bg-green-200 font-semibold'
-                    : 'hover:bg-green-100' }}">
+                📄 Annual PPMP
 
-                    📄 Annual PPMP
+            </a>
 
-                </a>
+            <!-- Budget Monitoring -->
+
+            <a href="#"
+            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+
+                💰 Budget Monitoring
+                <span class="text-xs">(Coming Soon)</span>
+
+            </a>
+
+            <!-- Purchase Forecast -->
+
+            <a href="#"
+            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+
+                📈 Purchase Forecast
+                <span class="text-xs">(Coming Soon)</span>
+
+            </a>
+
+            <!-- Procurement Calendar -->
+
+            <a href="#"
+            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+
+                📅 Procurement Calendar
+                <span class="text-xs">(Coming Soon)</span>
+
+            </a>
 
             @endif
 
-            <!-- Budget Monitoring -->
-
-            <a href="#"
-            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
-
-                💰 Budget Monitoring
-                <span class="text-xs">(Coming Soon)</span>
-
-            </a>
-
-            <!-- Purchase Forecast -->
-
-            <a href="#"
-            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
-
-                📈 Purchase Forecast
-                <span class="text-xs">(Coming Soon)</span>
-
-            </a>
-
-            <!-- Procurement Calendar -->
-
-            <a href="#"
-            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
-
-                📅 Procurement Calendar
-                <span class="text-xs">(Coming Soon)</span>
-
-            </a>
-
-            <!-- Budget Monitoring -->
-
-            <a href="#"
-            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
-
-                💰 Budget Monitoring
-                <span class="text-xs">(Coming Soon)</span>
-
-            </a>
-
-            <!-- Purchase Forecast -->
-
-            <a href="#"
-            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
-
-                📈 Purchase Forecast
-                <span class="text-xs">(Coming Soon)</span>
-
-            </a>
-
-            <!-- Procurement Calendar -->
-
-            <a href="#"
-            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
-
-                📅 Procurement Calendar
-                <span class="text-xs">(Coming Soon)</span>
-
-            </a>
-
             <!-- REPORTS -->
 
-            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-6 mb-2">
-                Reports
-            </div>
-
             @if(auth()->user()->hasPermission('view-reports'))
+
+                <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-6 mb-2">
+                    Reports
+                </div>
 
                 <a href="{{ route('reports.index') }}"
                 class="block px-3 py-2 rounded
@@ -319,8 +336,6 @@
                 </a>
 
             @endif
-
-        @endif
 
         <!-- ===================================================== -->
         <!-- SYSTEM ADMINISTRATION -->

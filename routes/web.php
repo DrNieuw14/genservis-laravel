@@ -157,9 +157,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // ── Supervisor / Admin routes ──
-Route::middleware('role:supervisor')->group(function () {
 
-    
     /*
     |--------------------------------------------------------------------------
     | ROLE PERMISSIONS
@@ -193,6 +191,34 @@ Route::middleware('role:supervisor')->group(function () {
             [UserAccessController::class, 'index']
         )->name('admin.user-access.index');
 
+        Route::get(
+            '/admin/user-access/{user}',
+            [UserAccessController::class, 'show']
+        )->name('admin.user-access.show');
+
+    });
+
+    Route::middleware('permission:assign-roles')->group(function () {
+
+        Route::get(
+            '/admin/user-access/{user}/edit',
+            [UserAccessController::class, 'edit']
+        )->name('admin.user-access.edit');
+
+        Route::put(
+            '/admin/user-access/{user}',
+            [UserAccessController::class, 'update']
+        )->name('admin.user-access.update');
+
+    });
+
+    Route::middleware('permission:manage-user-status')->group(function () {
+
+        Route::patch(
+            '/admin/user-access/{user}/status',
+            [UserAccessController::class, 'updateStatus']
+        )->name('admin.user-access.update-status');
+
     });
 
     Route::middleware('permission:manage-permissions')->group(function () {
@@ -210,6 +236,7 @@ Route::middleware('role:supervisor')->group(function () {
 
         Route::prefix('procurement')
             ->name('procurement.')
+            ->middleware('permission:view-ppmp')
             ->group(function () {
 
                 /*
@@ -280,29 +307,28 @@ Route::middleware('role:supervisor')->group(function () {
 
 /*
     |--------------------------------------------------------------------------
-    | INVENTORY 
+    | INVENTORY
     |--------------------------------------------------------------------------
     */
-    Route::get(
-        '/department-inventory',
-        [\App\Http\Controllers\Supervisor\DepartmentInventoryController::class, 'index']
-    )->name('department.inventory');
-    
-    Route::get('/reports', [ReportController::class, 'index'])
-    ->name('reports.index');
 
-    Route::get('/reports/inventory', [ReportController::class, 'inventory'])
-    ->name('reports.inventory');
+    Route::middleware('permission:view-department-inventory')->group(function () {
 
-    Route::get(
-        '/department-inventory-balance',
-        [DepartmentInventoryController::class, 'balance']
-    )->name('department.inventory.balance');
-    
-    Route::get(
-        '/department-inventory-balance/{department}',
-        [DepartmentInventoryController::class, 'details']
-    )->name('department.inventory.details');
+        Route::get(
+            '/department-inventory',
+            [\App\Http\Controllers\Supervisor\DepartmentInventoryController::class, 'index']
+        )->name('department.inventory');
+
+        Route::get(
+            '/department-inventory-balance',
+            [DepartmentInventoryController::class, 'balance']
+        )->name('department.inventory.balance');
+
+        Route::get(
+            '/department-inventory-balance/{department}',
+            [DepartmentInventoryController::class, 'details']
+        )->name('department.inventory.details');
+
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -310,57 +336,71 @@ Route::middleware('role:supervisor')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get(
-        '/inventory/reports/summary',
-        [MaterialController::class, 'inventorySummary']
-    )->name('inventory.summary');
+    Route::middleware('permission:view-reports')->group(function () {
 
-    Route::get(
-        '/inventory/reports/summary/print',
-        [MaterialController::class, 'inventorySummaryPrint']
-    )->name('inventory.summary.print');
+        Route::get('/reports', [ReportController::class, 'index'])
+        ->name('reports.index');
 
-    Route::get(
-        '/inventory/reports/executive-summary',
-        [MaterialController::class, 'executiveSummary']
-    )->name('inventory.executive');
+        Route::get('/reports/inventory', [ReportController::class, 'inventory'])
+        ->name('reports.inventory');
 
-    Route::get(
-        '/inventory/reports/executive-summary/print',
-        [MaterialController::class, 'executiveSummaryPrint']
-    )->name('inventory.executive.print');
+        Route::get(
+            '/inventory/reports/summary',
+            [MaterialController::class, 'inventorySummary']
+        )->name('inventory.summary');
 
-    /*
-    |--------------------------------------------------------------------------
-    | INDIVIDUAL INVENTORY REPORTS
-    |--------------------------------------------------------------------------
-    */
+        Route::get(
+            '/inventory/reports/executive-summary',
+            [MaterialController::class, 'executiveSummary']
+        )->name('inventory.executive');
 
-    Route::get('/inventory/reports/critical-stock', [MaterialController::class, 'criticalReport'])
-    ->name('inventory.critical');
+        /*
+        |--------------------------------------------------------------------------
+        | INDIVIDUAL INVENTORY REPORTS
+        |--------------------------------------------------------------------------
+        */
 
-    Route::get('/inventory/reports/critical-stock/print', [MaterialController::class, 'criticalReportPrint'])
-        ->name('inventory.critical.print');
+        Route::get('/inventory/reports/critical-stock', [MaterialController::class, 'criticalReport'])
+        ->name('inventory.critical');
 
-    Route::get(
-        '/inventory/reports/low-stock',
-        [MaterialController::class, 'lowStockReport']
-    )->name('inventory.low');
+        Route::get(
+            '/inventory/reports/low-stock',
+            [MaterialController::class, 'lowStockReport']
+        )->name('inventory.low');
 
-    Route::get(
-        '/inventory/reports/out-of-stock',
-        [MaterialController::class, 'outOfStockReport']
-    )->name('inventory.out');
+        Route::get(
+            '/inventory/reports/out-of-stock',
+            [MaterialController::class, 'outOfStockReport']
+        )->name('inventory.out');
 
-    Route::get(
-        '/inventory/reports/expiration',
-        [MaterialController::class, 'expirationReport']
-    )->name('inventory.expiration');
+        Route::get(
+            '/inventory/reports/expiration',
+            [MaterialController::class, 'expirationReport']
+        )->name('inventory.expiration');
 
-    Route::get(
-        '/inventory/reports/department-summary',
-        [MaterialController::class, 'departmentSummaryReport'
-    ])->name('inventory.department');
+        Route::get(
+            '/inventory/reports/department-summary',
+            [MaterialController::class, 'departmentSummaryReport'
+        ])->name('inventory.department');
+
+    });
+
+    Route::middleware('permission:print-reports')->group(function () {
+
+        Route::get(
+            '/inventory/reports/summary/print',
+            [MaterialController::class, 'inventorySummaryPrint']
+        )->name('inventory.summary.print');
+
+        Route::get(
+            '/inventory/reports/executive-summary/print',
+            [MaterialController::class, 'executiveSummaryPrint']
+        )->name('inventory.executive.print');
+
+        Route::get('/inventory/reports/critical-stock/print', [MaterialController::class, 'criticalReportPrint'])
+            ->name('inventory.critical.print');
+
+    });
 
 
     /*
@@ -487,36 +527,48 @@ Route::middleware('role:supervisor')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get(
-        '/walkin-requests',
-        [WalkinRequestController::class, 'index']
-    )->name('walkin.index');
+    Route::middleware('permission:view-walkin-requests')->group(function () {
 
-    Route::get(
-        '/walkin-requests/create',
-        [WalkinRequestController::class, 'create']
-    )->name('walkin.create');
+        Route::get(
+            '/walkin-requests',
+            [WalkinRequestController::class, 'index']
+        )->name('walkin.index');
 
-    Route::post(
-        '/walkin-requests/store',
-        [WalkinRequestController::class, 'store']
-    )->name('walkin.store');
+        Route::get(
+            '/walkin-requests/history',
+            [WalkinRequestController::class, 'history']
+        )->name('walkin.history');
 
-    Route::get(
-        '/walkin-requests/history',
-        [WalkinRequestController::class, 'history']
-    )->name('walkin.history');
+    });
 
-    /* KEEP THESE LAST */
-    Route::get(
-        '/walkin-requests/{id}',
-        [WalkinRequestController::class, 'show']
-    )->name('walkin.show');
+    Route::middleware('permission:create-walkin-requests')->group(function () {
 
-    Route::get(
-        '/walkin-requests/{id}/print',
-        [WalkinRequestController::class, 'print']
-    )->name('walkin.print');
+        Route::get(
+            '/walkin-requests/create',
+            [WalkinRequestController::class, 'create']
+        )->name('walkin.create');
+
+        Route::post(
+            '/walkin-requests/store',
+            [WalkinRequestController::class, 'store']
+        )->name('walkin.store');
+
+    });
+
+    Route::middleware('permission:view-walkin-requests')->group(function () {
+
+        /* KEEP THESE LAST — {id} must not shadow /create or /store above */
+        Route::get(
+            '/walkin-requests/{id}',
+            [WalkinRequestController::class, 'show']
+        )->name('walkin.show');
+
+        Route::get(
+            '/walkin-requests/{id}/print',
+            [WalkinRequestController::class, 'print']
+        )->name('walkin.print');
+
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -528,7 +580,21 @@ Route::middleware('role:supervisor')->group(function () {
         ->name('supervisor.')
         ->group(function () {
 
-            Route::resource('departments', DepartmentController::class);
+            Route::middleware('permission:view-departments')->group(function () {
+                Route::resource('departments', DepartmentController::class)->only(['index', 'show']);
+            });
+
+            Route::middleware('permission:create-departments')->group(function () {
+                Route::resource('departments', DepartmentController::class)->only(['create', 'store']);
+            });
+
+            Route::middleware('permission:edit-departments')->group(function () {
+                Route::resource('departments', DepartmentController::class)->only(['edit', 'update']);
+            });
+
+            Route::middleware('permission:delete-departments')->group(function () {
+                Route::resource('departments', DepartmentController::class)->only(['destroy']);
+            });
 
     });
     /*
@@ -536,49 +602,68 @@ Route::middleware('role:supervisor')->group(function () {
     | INVENTORY MOVEMENTS
     |--------------------------------------------------------------------------
     */
-        
+
     Route::prefix('supervisor')
     ->name('supervisor.')
     ->group(function () {
 
-        Route::get('/inventory-movements',
-            [InventoryMovementController::class, 'index'])
-            ->name('inventory.movements.index');
+        Route::middleware('permission:view-inventory-movements')->group(function () {
+
+            Route::get('/inventory-movements',
+                [InventoryMovementController::class, 'index'])
+                ->name('inventory.movements.index');
+
+        });
 
     });
-    
-   
+
+
     // 📦 Material Requests
-    Route::get('/supervisor/material-requests', [MaterialRequestController::class, 'index']);
+    Route::middleware('role:supervisor')->group(function () {
 
-    Route::post('/supervisor/material-requests/{id}/approve', [MaterialRequestController::class, 'approve']);
+        Route::get('/supervisor/material-requests', [MaterialRequestController::class, 'index']);
 
-    Route::post('/supervisor/material-requests/{id}/reject', [MaterialRequestController::class, 'reject']);
-    
-    Route::post(
-        '/supervisor/material-requests/{id}/release',
-        [MaterialRequestController::class, 'release']
-    );
+        Route::post('/supervisor/material-requests/{id}/approve', [MaterialRequestController::class, 'approve']);
 
-  
+        Route::post('/supervisor/material-requests/{id}/reject', [MaterialRequestController::class, 'reject']);
+
+        Route::post(
+            '/supervisor/material-requests/{id}/release',
+            [MaterialRequestController::class, 'release']
+        );
+
+    });
+
     // ✅ Units
-    Route::get('/units', [UnitController::class, 'index'])
-        ->name('units.index');
+    Route::middleware('permission:view-units')->group(function () {
+        Route::get('/units', [UnitController::class, 'index'])
+            ->name('units.index');
+    });
 
-    Route::get('/units/create', [UnitController::class, 'create'])
-        ->name('units.create');
+    Route::middleware('permission:create-units')->group(function () {
 
-    Route::post('/units/store', [UnitController::class, 'store'])
-        ->name('units.store');
+        Route::get('/units/create', [UnitController::class, 'create'])
+            ->name('units.create');
 
-    Route::get('/units/{id}/edit', [UnitController::class, 'edit'])
-        ->name('units.edit');
+        Route::post('/units/store', [UnitController::class, 'store'])
+            ->name('units.store');
 
-    Route::put('/units/{id}', [UnitController::class, 'update'])
-        ->name('units.update');
+    });
 
-    Route::delete('/units/{id}', [UnitController::class, 'destroy'])
-        ->name('units.destroy');
+    Route::middleware('permission:edit-units')->group(function () {
+
+        Route::get('/units/{id}/edit', [UnitController::class, 'edit'])
+            ->name('units.edit');
+
+        Route::put('/units/{id}', [UnitController::class, 'update'])
+            ->name('units.update');
+
+    });
+
+    Route::middleware('permission:delete-units')->group(function () {
+        Route::delete('/units/{id}', [UnitController::class, 'destroy'])
+            ->name('units.destroy');
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -706,39 +791,54 @@ Route::middleware('role:supervisor')->group(function () {
 
 
     // User approval
-    Route::get('admin/users/pending', [UserApprovalController::class, 'index'])
-        ->name('admin.users.pending');
+    Route::middleware('permission:approve-users')->group(function () {
 
-    // ✅ Employee Onboarding Page
-    Route::get('admin/users/{user}/onboarding',
-        [UserApprovalController::class, 'onboarding']
-    )->name('admin.users.onboarding');
+        Route::get('admin/users/pending', [UserApprovalController::class, 'index'])
+            ->name('admin.users.pending');
 
-    Route::post('admin/users/{user}/complete-onboarding',
-        [UserApprovalController::class, 'completeOnboarding']
-    )->name('admin.users.complete-onboarding');
+        Route::post('admin/users/{id}/approve', [UserApprovalController::class, 'approve'])
+            ->name('admin.users.approve');
 
-    Route::get('/admin/users/generate-employee-id/{employmentType}',
-    [UserApprovalController::class, 'getEmployeeId']
-    )->name('admin.users.generate-employee-id');
+    });
 
-    Route::get(
-        '/admin/users/employment-type/{employmentType}/positions',
-        [UserApprovalController::class, 'getPositions']
-    )->name('admin.users.positions');
+    Route::middleware('permission:reject-users')->group(function () {
 
-    Route::post('admin/users/{id}/approve', [UserApprovalController::class, 'approve'])
-        ->name('admin.users.approve');
+        Route::post('admin/users/{id}/reject', [UserApprovalController::class, 'reject'])
+            ->name('admin.users.reject');
 
-    Route::post('admin/users/{id}/reject', [UserApprovalController::class, 'reject'])
-        ->name('admin.users.reject');
+    });
+
+    Route::middleware('permission:onboard-users')->group(function () {
+
+        // ✅ Employee Onboarding Page
+        Route::get('admin/users/{user}/onboarding',
+            [UserApprovalController::class, 'onboarding']
+        )->name('admin.users.onboarding');
+
+        Route::post('admin/users/{user}/complete-onboarding',
+            [UserApprovalController::class, 'completeOnboarding']
+        )->name('admin.users.complete-onboarding');
+
+        Route::get('/admin/users/generate-employee-id/{employmentType}',
+        [UserApprovalController::class, 'getEmployeeId']
+        )->name('admin.users.generate-employee-id');
+
+        Route::get(
+            '/admin/users/employment-type/{employmentType}/positions',
+            [UserApprovalController::class, 'getPositions']
+        )->name('admin.users.positions');
+
+    });
 
     // Leave admin
-    Route::get('leave-requests',       [LeaveController::class, 'adminIndex'])->name('leave.requests');
-    Route::get('leave/admin',          [LeaveController::class, 'adminIndex']);
-    Route::post('leave/approve/{id}',  [LeaveController::class, 'approve']);
-    Route::post('leave/reject/{id}',   [LeaveController::class, 'reject']);
-});
+    Route::middleware('role:supervisor')->group(function () {
+
+        Route::get('leave-requests',       [LeaveController::class, 'adminIndex'])->name('leave.requests');
+        Route::get('leave/admin',          [LeaveController::class, 'adminIndex']);
+        Route::post('leave/approve/{id}',  [LeaveController::class, 'approve']);
+        Route::post('leave/reject/{id}',   [LeaveController::class, 'reject']);
+
+    });
           
     // ── Personnel routes ──
     Route::middleware('role:personnel')->group(function () {

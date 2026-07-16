@@ -101,6 +101,23 @@ class PermissionSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
+            | Walk-In Issuance
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Walk-In Issuance',
+
+                'permissions' => [
+
+                    ['name' => 'View Walk-In Requests', 'slug' => 'view-walkin-requests'],
+                    ['name' => 'Create Walk-In Requests', 'slug' => 'create-walkin-requests'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
             | Reports
             |--------------------------------------------------------------------------
             */
