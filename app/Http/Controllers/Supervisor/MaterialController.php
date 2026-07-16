@@ -405,6 +405,26 @@ class MaterialController extends Controller
             ->with('success', 'Material updated successfully!');
     }
 
+    // 🏢 Bulk Assign Department
+    public function bulkAssignDepartment(Request $request)
+    {
+        $validated = $request->validate([
+            'material_ids' => 'required|array|min:1',
+            'material_ids.*' => 'exists:materials,id',
+            'department_id' => 'required|exists:departments,id',
+        ]);
+
+        $count = Material::whereIn('id', $validated['material_ids'])
+            ->update(['department_id' => $validated['department_id']]);
+
+        $department = Department::find($validated['department_id']);
+
+        return back()->with(
+            'success',
+            "{$count} material(s) reassigned to {$department->department_name}."
+        );
+    }
+
     // 🗑 Delete Material
     
 

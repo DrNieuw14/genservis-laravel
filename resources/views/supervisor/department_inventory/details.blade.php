@@ -56,7 +56,7 @@
                         </td>
 
                         <td class="p-4">
-                            {{ $item->released_at }}
+                            {{ $item->released_at ? \Carbon\Carbon::parse($item->released_at)->format('M d, Y h:i A') : '-' }}
                         </td>
 
                     </tr>

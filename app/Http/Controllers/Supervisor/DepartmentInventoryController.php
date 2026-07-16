@@ -4,22 +4,48 @@ namespace App\Http\Controllers\Supervisor;
 
 use App\Http\Controllers\Controller;
 use App\Models\DepartmentMaterial;
+use App\Models\Department;
+use Illuminate\Http\Request;
 
 class DepartmentInventoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $inventories = DepartmentMaterial::with([
+        $query = DepartmentMaterial::with([
             'department',
             'material',
             'releaser'
-        ])
-        ->latest()
-        ->get();
+        ]);
+
+        if ($request->search) {
+            $query->whereHas('material', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->department_id) {
+            $query->where('department_id', $request->department_id);
+        }
+
+        $inventories = $query->latest()->get();
+
+        $totalReleases = DepartmentMaterial::count();
+        $totalQuantityReleased = DepartmentMaterial::sum('quantity');
+        $departmentsInvolved = DepartmentMaterial::distinct('department_id')->count('department_id');
+        $materialsInvolved = DepartmentMaterial::distinct('material_id')->count('material_id');
+
+        $departments = Department::orderBy('department_name')->get();
 
         return view(
             'supervisor.department_inventory.index',
-            compact('inventories')
+            compact(
+                'inventories',
+                'totalReleases',
+                'totalQuantityReleased',
+                'departmentsInvolved',
+                'materialsInvolved',
+                'departments'
+            )
         );
     }
 

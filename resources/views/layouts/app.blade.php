@@ -406,33 +406,42 @@
 
         @endif
 
-        <a href="#"
-        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+        @if(auth()->user()->hasPermission('view-activity-logs'))
+
+        <a href="{{ route('admin.activity-logs.index') }}"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+        {{ request()->routeIs('admin.activity-logs.*')
+            ? 'bg-green-100 text-green-700 font-semibold'
+            : 'hover:bg-gray-100 text-gray-700' }}">
 
             <span>📜</span>
             <span>Activity Logs</span>
 
-            <span class="ml-auto text-xs">
-                Soon
-            </span>
-
         </a>
 
-        <a href="#"
-        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+        @endif
+
+        @if(auth()->user()->hasPermission('manage-system-settings'))
+
+        <a href="{{ route('admin.system-settings.index') }}"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+        {{ request()->routeIs('admin.system-settings.*')
+            ? 'bg-green-100 text-green-700 font-semibold'
+            : 'hover:bg-gray-100 text-gray-700' }}">
 
             <span>⚙️</span>
             <span>System Settings</span>
 
-            <span class="ml-auto text-xs">
-                Soon
-            </span>
-
         </a>
+
+        @endif
 
 
                 <!-- PERSONNEL -->
-                @if(Auth::user()->role === 'personnel')
+                {{-- Hidden entirely for users who already have real inventory-management
+                     access (e.g. Inventory Custodian) — the self-service personnel/leave/
+                     material-request flows don't apply to their designation. --}}
+                @if(Auth::user()->role === 'personnel' && !auth()->user()->hasPermission('view-materials'))
 
                     <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
                         Personnel Services

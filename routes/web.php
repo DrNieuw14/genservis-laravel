@@ -28,6 +28,8 @@ use App\Http\Controllers\EmployeeEducationController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\UserAccessController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\SystemSettingsController;
 
 
 
@@ -175,6 +177,45 @@ Route::middleware(['auth'])->group(function () {
             '/roles/{role}/permissions',
             [RolePermissionController::class, 'update']
         )->name('roles.permissions.update');
+
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | SYSTEM ADMINISTRATION
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware('permission:view-activity-logs')->group(function () {
+
+        Route::get(
+            '/admin/activity-logs',
+            [ActivityLogController::class, 'index']
+        )->name('admin.activity-logs.index');
+
+    });
+
+    Route::middleware('permission:manage-system-settings')->group(function () {
+
+        Route::get(
+            '/admin/system-settings',
+            [SystemSettingsController::class, 'index']
+        )->name('admin.system-settings.index');
+
+        Route::post(
+            '/admin/system-settings/maintenance-mode',
+            [SystemSettingsController::class, 'updateMaintenanceMode']
+        )->name('admin.system-settings.maintenance-mode');
+
+        Route::post(
+            '/admin/system-settings/email',
+            [SystemSettingsController::class, 'updateEmailSettings']
+        )->name('admin.system-settings.email');
+
+        Route::post(
+            '/admin/system-settings/email/test',
+            [SystemSettingsController::class, 'sendTestEmail']
+        )->name('admin.system-settings.email.test');
 
     });
 
@@ -761,6 +802,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::put('/materials/{id}', [MaterialController::class, 'update'])
             ->name('materials.update');
+
+        Route::post('/materials/bulk-assign-department', [MaterialController::class, 'bulkAssignDepartment'])
+            ->name('materials.bulk-assign-department');
 
     });
 

@@ -131,6 +131,11 @@ DB::transaction(function () use ($request) {
         );
     }
 
+    public function index()
+    {
+        return redirect()->route('walkin.history');
+    }
+
     public function history()
     {
         $requests = WalkinRequest::with([
@@ -157,6 +162,20 @@ DB::transaction(function () use ($request) {
 
         return view(
             'supervisor.walkin_requests.show',
+            compact('request')
+        );
+    }
+
+    public function print($id)
+    {
+        $request = WalkinRequest::with([
+            'department',
+            'items.material',
+            'issuer'
+        ])->findOrFail($id);
+
+        return view(
+            'supervisor.walkin_requests.print',
             compact('request')
         );
     }

@@ -177,6 +177,23 @@ class PermissionSeeder extends Seeder
                 ]
             ],
 
+            /*
+            |--------------------------------------------------------------------------
+            | System Administration
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'System Administration',
+
+                'permissions' => [
+
+                    ['name' => 'View Activity Logs', 'slug' => 'view-activity-logs'],
+                    ['name' => 'Manage System Settings', 'slug' => 'manage-system-settings'],
+
+                ]
+            ],
+
         ];
 
         foreach ($modules as $module) {

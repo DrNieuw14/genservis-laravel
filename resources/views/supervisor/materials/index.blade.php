@@ -32,6 +32,22 @@
 
     </div>
 
+    @if(session('success'))
+
+        <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-xl mb-6">
+            {{ session('success') }}
+        </div>
+
+    @endif
+
+    @if(session('error'))
+
+        <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-6">
+            {{ session('error') }}
+        </div>
+
+    @endif
+
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
 
     <!-- TOTAL -->
@@ -206,16 +222,63 @@
 
     </div>
 
+    <!-- BULK DEPARTMENT REASSIGNMENT -->
+    <form id="bulk-assign-form" method="POST" action="{{ route('materials.bulk-assign-department') }}">
+
+        @csrf
+
+        <div id="bulk-action-bar"
+             class="hidden bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-4">
+
+            <span class="font-semibold text-blue-800">
+                <span id="selected-count">0</span> material(s) selected
+            </span>
+
+            <select name="department_id" required
+                    class="border rounded-xl p-2 flex-1 min-w-[200px] max-w-xs">
+
+                <option value="">Assign to department...</option>
+
+                @foreach($departments as $department)
+                    <option value="{{ $department->id }}">
+                        {{ $department->department_name }}
+                    </option>
+                @endforeach
+
+            </select>
+
+            <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl font-semibold shadow transition">
+
+                🏢 Assign Department
+
+            </button>
+
+            <button type="button" id="clear-selection-btn"
+                    class="text-gray-500 hover:text-gray-700 text-sm underline">
+
+                Clear selection
+
+            </button>
+
+        </div>
+
+    </form>
+
     <!-- TABLE -->
     <div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
 
-        
+
         <table class="min-w-full">
 
 
             <thead class="bg-gradient-to-r from-green-500 to-blue-600 text-white">
 
                 <tr>
+
+                    <th class="p-4">
+                        <input type="checkbox" id="select-all-checkbox" class="w-4 h-4">
+                    </th>
 
                     <th class="p-4 text-left">Name</th>
 
@@ -241,6 +304,10 @@
                 @forelse($materials as $material)
 
                     <tr class="border-b hover:bg-gray-50 transition">
+
+                        <td class="p-4">
+                            <input type="checkbox" class="material-checkbox w-4 h-4" value="{{ $material->id }}">
+                        </td>
 
                         <td class="p-4 font-medium">
                             {{ $material->name }}
@@ -354,7 +421,7 @@
 
                     <tr>
 
-                        <td colspan="7"
+                        <td colspan="8"
                             class="text-center text-gray-500 py-8">
 
                             No materials found
@@ -408,6 +475,87 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
     });
+
+    // ── Bulk Department Reassignment ──
+
+    const bulkForm = document.getElementById('bulk-assign-form');
+    const bulkBar = document.getElementById('bulk-action-bar');
+    const selectedCountEl = document.getElementById('selected-count');
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    const clearSelectionBtn = document.getElementById('clear-selection-btn');
+
+    function materialCheckboxes() {
+        return Array.from(document.querySelectorAll('.material-checkbox'));
+    }
+
+    function updateBulkBar() {
+        const checked = materialCheckboxes().filter(cb => cb.checked);
+        selectedCountEl.textContent = checked.length;
+        bulkBar.classList.toggle('hidden', checked.length === 0);
+    }
+
+    materialCheckboxes().forEach(cb => cb.addEventListener('change', updateBulkBar));
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function () {
+            materialCheckboxes().forEach(cb => cb.checked = selectAllCheckbox.checked);
+            updateBulkBar();
+        });
+    }
+
+    if (clearSelectionBtn) {
+        clearSelectionBtn.addEventListener('click', function () {
+            materialCheckboxes().forEach(cb => cb.checked = false);
+            if (selectAllCheckbox) selectAllCheckbox.checked = false;
+            updateBulkBar();
+        });
+    }
+
+    if (bulkForm) {
+        bulkForm.addEventListener('submit', function (e) {
+
+            e.preventDefault();
+
+            const checked = materialCheckboxes().filter(cb => cb.checked);
+
+            if (checked.length === 0) {
+                return;
+            }
+
+            const departmentSelect = bulkForm.querySelector('select[name="department_id"]');
+            const departmentName = departmentSelect.options[departmentSelect.selectedIndex]?.text || 'this department';
+
+            Swal.fire({
+                title: 'Reassign Department?',
+                text: `Move ${checked.length} material(s) to "${departmentName}"?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, Reassign',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    bulkForm.querySelectorAll('input[name="material_ids[]"]').forEach(el => el.remove());
+
+                    checked.forEach(cb => {
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'material_ids[]';
+                        hidden.value = cb.value;
+                        bulkForm.appendChild(hidden);
+                    });
+
+                    bulkForm.submit();
+
+                }
+
+            });
+
+        });
+    }
 
 });
 </script>
