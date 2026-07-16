@@ -14,6 +14,26 @@
 
 <div class="p-6">
 
+@if(session('success'))
+
+<div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded mb-6">
+
+{{ session('success') }}
+
+</div>
+
+@endif
+
+@if(session('error'))
+
+<div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded mb-6">
+
+{{ session('error') }}
+
+</div>
+
+@endif
+
 <div class="flex justify-between items-center mb-6">
 
 <h2 class="text-2xl font-bold">
@@ -111,39 +131,7 @@ Search
 
 <td class="px-4 py-3">
 
-@if($plan->status=="Draft")
-
-<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
-
-Draft
-
-</span>
-
-@elseif($plan->status=="Approved")
-
-<span class="bg-green-100 text-green-700 px-2 py-1 rounded">
-
-Approved
-
-</span>
-
-@elseif($plan->status=="Submitted")
-
-<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded">
-
-Submitted
-
-</span>
-
-@else
-
-<span class="bg-gray-100 px-2 py-1 rounded">
-
-{{ $plan->status }}
-
-</span>
-
-@endif
+@include('supervisor.procurement.plans.partials._status_badge', ['status' => $plan->status])
 
 </td>
 
@@ -163,15 +151,47 @@ Submitted
 
         </a>
 
-        |
+        @if($plan->status === 'Draft')
 
-        <a
-            href="{{ route('procurement.plans.edit', $plan->id) }}"
-            class="text-green-600 hover:underline">
+            @if(auth()->user()->hasPermission('edit-ppmp'))
 
-            Edit (Coming Soon)
+            |
 
-        </a>
+            <a
+                href="{{ route('procurement.plans.edit', $plan->id) }}"
+                class="text-green-600 hover:underline">
+
+                Edit
+
+            </a>
+
+            @endif
+
+            @if(auth()->user()->hasPermission('delete-ppmp'))
+
+            |
+
+            <form
+                id="deletePlanForm{{ $plan->id }}"
+                action="{{ route('procurement.plans.destroy', $plan->id) }}"
+                method="POST"
+                class="inline">
+                @csrf
+                @method('DELETE')
+            </form>
+
+            <button
+                type="button"
+                onclick="confirmDeletePlan({{ $plan->id }}, '{{ $plan->plan_number }}')"
+                class="text-red-600 hover:underline">
+
+                Delete
+
+            </button>
+
+            @endif
+
+        @endif
 
     </td>
 
@@ -209,5 +229,44 @@ No Procurement Plans Found
 </div>
 
 </div>
+
+<script>
+
+    function confirmDeletePlan(planId, planNumber)
+        {
+            Swal.fire({
+
+                title: 'Delete Procurement Plan?',
+
+                html:
+                    '<strong>' + planNumber + '</strong><br><br>' +
+                    'This action cannot be undone.',
+
+                icon: 'warning',
+
+                showCancelButton: true,
+
+                confirmButtonColor: '#d33',
+
+                cancelButtonColor: '#6b7280',
+
+                confirmButtonText: 'Delete',
+
+                cancelButtonText: 'Cancel'
+
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    document
+                        .getElementById('deletePlanForm' + planId)
+                        .submit();
+
+                }
+
+            });
+        }
+
+</script>
 
 </x-app-layout>

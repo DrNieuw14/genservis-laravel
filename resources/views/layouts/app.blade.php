@@ -287,33 +287,51 @@
 
             <!-- Budget Monitoring -->
 
-            <a href="#"
-            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+            @if(auth()->user()->hasPermission('view-budget-monitoring'))
+
+            <a href="{{ route('procurement.budget-monitoring') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('procurement.budget-monitoring*')
+                ? 'bg-green-200 font-semibold'
+                : 'hover:bg-green-100' }}">
 
                 💰 Budget Monitoring
-                <span class="text-xs">(Coming Soon)</span>
 
             </a>
+
+            @endif
 
             <!-- Purchase Forecast -->
 
-            <a href="#"
-            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+            @if(auth()->user()->hasPermission('view-purchase-forecast'))
+
+            <a href="{{ route('procurement.purchase-forecast') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('procurement.purchase-forecast*')
+                ? 'bg-green-200 font-semibold'
+                : 'hover:bg-green-100' }}">
 
                 📈 Purchase Forecast
-                <span class="text-xs">(Coming Soon)</span>
 
             </a>
+
+            @endif
 
             <!-- Procurement Calendar -->
 
-            <a href="#"
-            class="block px-3 py-2 rounded text-gray-400 cursor-not-allowed">
+            @if(auth()->user()->hasPermission('view-procurement-calendar'))
+
+            <a href="{{ route('procurement.calendar') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('procurement.calendar*')
+                ? 'bg-green-200 font-semibold'
+                : 'hover:bg-green-100' }}">
 
                 📅 Procurement Calendar
-                <span class="text-xs">(Coming Soon)</span>
 
             </a>
+
+            @endif
 
             @endif
 

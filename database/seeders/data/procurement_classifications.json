@@ -1,0 +1,1802 @@
+[
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Buildings and Other Structures",
+    "sub_category_b": "Buildings",
+    "sub_category_c": "BUILDINGS",
+    "code": "S1",
+    "uacs_code": "1060401000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Buildings and Other Structures",
+    "sub_category_b": "Hostels and Dormitories",
+    "sub_category_c": "HOSTELS AND DORMITORIES",
+    "code": "S4",
+    "uacs_code": "1060406000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Buildings and Other Structures",
+    "sub_category_b": "Other Structures",
+    "sub_category_c": "OTHER STRUCTURES",
+    "code": "S5",
+    "uacs_code": "1060499000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Buildings and Other Structures",
+    "sub_category_b": "School Buildings",
+    "sub_category_c": "SCHOOL BUILDINGS",
+    "code": "S2",
+    "uacs_code": "1060402000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Buildings and Other Structures",
+    "sub_category_b": "Slaughterhouses",
+    "sub_category_c": "SLAUGHTERHOUSES",
+    "code": "S3",
+    "uacs_code": "1060405000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Furniture, Fixtures and Books",
+    "sub_category_b": "Books (P50,000 AND UP PER COPY)",
+    "sub_category_c": "BOOKS",
+    "code": "V2",
+    "uacs_code": "1060702002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Furniture, Fixtures and Books",
+    "sub_category_b": "Furniture & Fixtures",
+    "sub_category_c": "FURNITURE AND FIXTURES",
+    "code": "V1",
+    "uacs_code": "1060701000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Infrastructure Assets",
+    "sub_category_b": "Power  Supply  Systems",
+    "sub_category_c": "POWER SUPPLY SYSTEMS",
+    "code": "R2",
+    "uacs_code": "1060305000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Infrastructure Assets",
+    "sub_category_b": "Water Supply Systems",
+    "sub_category_c": "WATER SUPPLY SYSTEMS",
+    "code": "R1",
+    "uacs_code": "1060304000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Land Improvement",
+    "sub_category_b": "Land Improvement",
+    "sub_category_c": "LAND IMPROVEMENT",
+    "code": "Q1",
+    "uacs_code": "1060201000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Land Improvement",
+    "sub_category_b": "Sewer System",
+    "sub_category_c": "SEWER SYSTEM",
+    "code": "Q2",
+    "uacs_code": "1060303000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Machinery and Equipment",
+    "sub_category_b": "Agricultural and Forestry Equipment",
+    "sub_category_c": "AGRICULTURAL AND FORESTRY EQUIPMENT",
+    "code": "T4",
+    "uacs_code": "1060504000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Machinery and Equipment",
+    "sub_category_b": "Communication Equipment",
+    "sub_category_c": "COMMUNICATION EQUIPMENT",
+    "code": "T5",
+    "uacs_code": "1060507000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Machinery and Equipment",
+    "sub_category_b": "Firefighting Equipment and Accessories",
+    "sub_category_c": "FIREFIGHTING EQUIPMENT & ACCESSORIES",
+    "code": "T6",
+    "uacs_code": "1060509000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Machinery and Equipment",
+    "sub_category_b": "ICT Equipment & Software",
+    "sub_category_c": "ICT EQUIPMENT AND SOFTWARE",
+    "code": "T3",
+    "uacs_code": "1060503000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Machinery and Equipment",
+    "sub_category_b": "Medical, Dental and Laboratory Equipment",
+    "sub_category_c": "MEDICAL, DENTAL & LAB EQUIPMENT",
+    "code": "T7",
+    "uacs_code": "1060511000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Machinery and Equipment",
+    "sub_category_b": "Office Equipment",
+    "sub_category_c": "OFFICE EQUIPMENT",
+    "code": "T2",
+    "uacs_code": "1060502000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Machinery and Equipment",
+    "sub_category_b": "Other Machinery and Equipment",
+    "sub_category_c": "OTHER MACHINERY & EQUIPMENT",
+    "code": "T11",
+    "uacs_code": "1060599000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Machinery and Equipment",
+    "sub_category_b": "Printing Equipment",
+    "sub_category_c": "PRINTING EQUIPMENT",
+    "code": "T8",
+    "uacs_code": "1060512000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Machinery and Equipment",
+    "sub_category_b": "Sports Equipment",
+    "sub_category_c": "SPORTS EQUIPMENT",
+    "code": "T9",
+    "uacs_code": "1060513000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Machinery and Equipment",
+    "sub_category_b": "Technical and Scientific Equipment",
+    "sub_category_c": "TECHNICAL & SCIENTIFIC EQUIPMENT",
+    "code": "T10",
+    "uacs_code": "1060514000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "CO",
+    "sub_category_a": "Transportation Equipment",
+    "sub_category_b": "Motor Vehicle",
+    "sub_category_c": "MOTOR VEHICLE",
+    "code": "U1",
+    "uacs_code": "1060601000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Awards/Rewards Expenses",
+    "sub_category_b": "Awards/ Rewards Expenses",
+    "sub_category_c": "AWARDS / INCENTIVES",
+    "code": "H2",
+    "uacs_code": "5020601002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Awards/Rewards Expenses",
+    "sub_category_b": "Awards/ Rewards Expenses",
+    "sub_category_c": "AWARDS / REWARDS",
+    "code": "H1",
+    "uacs_code": "5020601001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Communication Expenses",
+    "sub_category_b": "Internet Expenses",
+    "sub_category_c": "INTERNET SERVICES",
+    "code": "G4",
+    "uacs_code": "5020503000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Communication Expenses",
+    "sub_category_b": "Postage & Deliveries",
+    "sub_category_c": "POSTAGE & DELIVERIES",
+    "code": "G1",
+    "uacs_code": "5020501000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Communication Expenses",
+    "sub_category_b": "Telephone Expenses - Landline",
+    "sub_category_c": "TELEPHONE EXPENSE - LANDLINE",
+    "code": "G3",
+    "uacs_code": "5020502002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Communication Expenses",
+    "sub_category_b": "Telephone Expenses- Mobile",
+    "sub_category_c": "TELEPHONE EXPENSE - MOBILE",
+    "code": "G2",
+    "uacs_code": "5020502001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "General Services",
+    "sub_category_b": "Environment/Sanitary Services",
+    "sub_category_c": "ENVIRONMENTAL/SANITARY SERVICES",
+    "code": "M1",
+    "uacs_code": "5021201000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "General Services",
+    "sub_category_b": "Janitorial Services",
+    "sub_category_c": "JANITORIAL SERVICES",
+    "code": "M2",
+    "uacs_code": "5021202000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "General Services",
+    "sub_category_b": "Other General Services",
+    "sub_category_c": "OTHER GENERAL SERVICES",
+    "code": "M4",
+    "uacs_code": "5021299000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "General Services",
+    "sub_category_b": "Security Services",
+    "sub_category_c": "SECURITY SERVICES",
+    "code": "M3",
+    "uacs_code": "5021203000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Advertising Expenses",
+    "sub_category_c": "N/A",
+    "code": "P1",
+    "uacs_code": "5029901000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "ACCREDITATION",
+    "code": "P12",
+    "uacs_code": "5029999099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "EXTENSION",
+    "code": "P12",
+    "uacs_code": "5029999099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "FOUNDATION",
+    "code": "P12",
+    "uacs_code": "5029999099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "GRADUATION",
+    "code": "P12",
+    "uacs_code": "5029999099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "N/A",
+    "code": "P12",
+    "uacs_code": "5029999099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "N/A",
+    "code": "P9",
+    "uacs_code": "5029907000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 1\n(Capability Enhancement Training & Year-End Review)",
+    "code": "P12",
+    "uacs_code": "5029999099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 2\n(Carmona Sorteo Festival)",
+    "code": "P12",
+    "uacs_code": "5029999099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 3\n(Socio-Cultural Festival)",
+    "code": "P12",
+    "uacs_code": "5029999099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "RESEARCH",
+    "code": "P12",
+    "uacs_code": "5029999099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Other Maintenance & Operating Expenses",
+    "sub_category_c": "UNIVERSITY GAMES",
+    "code": "P12",
+    "uacs_code": "5029999099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Printing & Binding Expenses",
+    "sub_category_c": "N/A",
+    "code": "P2",
+    "uacs_code": "5029902000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Printing and Binding Expenses",
+    "sub_category_c": "EXTENSION",
+    "code": "P2",
+    "uacs_code": "5029902000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Printing and Binding Expenses",
+    "sub_category_c": "FOUNDATION",
+    "code": "P2",
+    "uacs_code": "5029902000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Printing and Binding Expenses",
+    "sub_category_c": "GRADUATION",
+    "code": "P2",
+    "uacs_code": "5029902000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Printing and Binding Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 1\n(Capability Enhancement Training & Year-End Review)",
+    "code": "P2",
+    "uacs_code": "5029902000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Printing and Binding Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 2\n(Carmona Sorteo Festival)",
+    "code": "P2",
+    "uacs_code": "5029902000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Printing and Binding Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 3\n(Socio-Cultural Festival)",
+    "code": "P2",
+    "uacs_code": "5029902000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Printing and Binding Expenses",
+    "sub_category_c": "RESEARCH",
+    "code": "P2",
+    "uacs_code": "5029902000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Printing and Binding Expenses",
+    "sub_category_c": "UNIVERSITY GAMES",
+    "code": "P2",
+    "uacs_code": "5029902000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Equipment",
+    "sub_category_c": "EXTENSION",
+    "code": "P8",
+    "uacs_code": "5029905003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Equipment",
+    "sub_category_c": "FOUNDATION",
+    "code": "P8",
+    "uacs_code": "5029905003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Equipment",
+    "sub_category_c": "GRADUATION",
+    "code": "P8",
+    "uacs_code": "5029905003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Equipment",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 1\n(Capability Enhancement Training & Year-End Review)",
+    "code": "P8",
+    "uacs_code": "5029905003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Equipment",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 2\n(Carmona Sorteo Festival)",
+    "code": "P8",
+    "uacs_code": "5029905003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Equipment",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 3\n(Socio-Cultural Festival)",
+    "code": "P8",
+    "uacs_code": "5029905003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Equipment",
+    "sub_category_c": "RESEARCH",
+    "code": "P8",
+    "uacs_code": "5029905003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Equipment",
+    "sub_category_c": "UNIVERSITY GAMES",
+    "code": "P8",
+    "uacs_code": "5029905003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Land",
+    "sub_category_c": "ACCREDITATION",
+    "code": "P6",
+    "uacs_code": "5029905001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Land",
+    "sub_category_c": "EXTENSION",
+    "code": "P6",
+    "uacs_code": "1060501000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Land",
+    "sub_category_c": "FOUNDATION",
+    "code": "P6",
+    "uacs_code": "5029905001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Land",
+    "sub_category_c": "GRADUATION",
+    "code": "P6",
+    "uacs_code": "5029905001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Land",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 1\n(Capability Enhancement Training & Year-End Review)",
+    "code": "P6",
+    "uacs_code": "5029905001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Land",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 2\n(Carmona Sorteo Festival)",
+    "code": "P6",
+    "uacs_code": "1060501000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Land",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 3\n(Socio-Cultural Festival)",
+    "code": "P6",
+    "uacs_code": "1060501000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Land",
+    "sub_category_c": "RESEARCH",
+    "code": "P6",
+    "uacs_code": "5029905001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Land",
+    "sub_category_c": "UNIVERSITY GAMES",
+    "code": "P6",
+    "uacs_code": "1060501000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Motor Vehicle",
+    "sub_category_c": "ACCREDITATION",
+    "code": "P7",
+    "uacs_code": "5029905002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Motor Vehicle",
+    "sub_category_c": "EXTENSION",
+    "code": "P7",
+    "uacs_code": "5029905002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Motor Vehicle",
+    "sub_category_c": "FOUNDATION",
+    "code": "P7",
+    "uacs_code": "5029905002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Motor Vehicle",
+    "sub_category_c": "GRADUATION",
+    "code": "P7",
+    "uacs_code": "5029905002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Motor Vehicle",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 1\n(Capability Enhancement Training & Year-End Review)",
+    "code": "P7",
+    "uacs_code": "5029905002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Motor Vehicle",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 2\n(Carmona Sorteo Festival)",
+    "code": "P7",
+    "uacs_code": "5029905002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Motor Vehicle",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 3\n(Socio-Cultural Festival)",
+    "code": "P7",
+    "uacs_code": "5029905002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Motor Vehicle",
+    "sub_category_c": "RESEARCH",
+    "code": "P7",
+    "uacs_code": "5029905002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Rent Expense - Motor Vehicle",
+    "sub_category_c": "UNIVERSITY GAMES",
+    "code": "P7",
+    "uacs_code": "5029905002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Representation Expense",
+    "sub_category_c": "ACCREDITATION",
+    "code": "P3",
+    "uacs_code": "5029903000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Representation Expense",
+    "sub_category_c": "EXTENSION",
+    "code": "P3",
+    "uacs_code": "5029903000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Representation Expense",
+    "sub_category_c": "FOUNDATION",
+    "code": "P3",
+    "uacs_code": "5029903000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Representation Expense",
+    "sub_category_c": "GRADUATION",
+    "code": "P3",
+    "uacs_code": "5029903000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Representation Expense",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 1\n(Capability Enhancement Training & Year-End Review)",
+    "code": "P3",
+    "uacs_code": "5029903000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Representation Expense",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 2\n(Carmona Sorteo Festival)",
+    "code": "P3",
+    "uacs_code": "5029903000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Representation Expense",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 3\n(Socio-Cultural Festival)",
+    "code": "P3",
+    "uacs_code": "5029903000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Representation Expense",
+    "sub_category_c": "RESEARCH",
+    "code": "P3",
+    "uacs_code": "5029903000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Representation Expense",
+    "sub_category_c": "UNIVERSITY GAMES",
+    "code": "P3",
+    "uacs_code": "5029903000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Representation Expenses",
+    "sub_category_c": "N/A",
+    "code": "P3",
+    "uacs_code": "5029903000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Other Maintenance & Operating Expenses",
+    "sub_category_b": "Transportation and Delivery Expenses",
+    "sub_category_c": "N/A",
+    "code": "P4",
+    "uacs_code": "5029904000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Prizes",
+    "sub_category_b": "Prizes",
+    "sub_category_c": "PRIZES",
+    "code": "H3",
+    "uacs_code": "5020602000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Professional Services",
+    "sub_category_b": "Auditing Services",
+    "sub_category_c": "AUDITING SERVICES",
+    "code": "L2",
+    "uacs_code": "5021102000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Professional Services",
+    "sub_category_b": "Consultancy Services",
+    "sub_category_c": "CONSULTANCY SERVICES",
+    "code": "L3",
+    "uacs_code": "5021103000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Professional Services",
+    "sub_category_b": "Legal Services",
+    "sub_category_c": "LEGAL SERVICES",
+    "code": "L1",
+    "uacs_code": "5021101000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Professional Services",
+    "sub_category_b": "Other Professional Services",
+    "sub_category_c": "OTHER PROFESSIONAL SERVICES",
+    "code": "L4",
+    "uacs_code": "5021199000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Rent / Lease Expenses",
+    "sub_category_b": "Buildings and Structures",
+    "sub_category_c": "N/A",
+    "code": "P5",
+    "uacs_code": "5029905001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Rent / Lease Expenses",
+    "sub_category_b": "Equipment",
+    "sub_category_c": "N/A",
+    "code": "P8",
+    "uacs_code": "5029905004"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Rent / Lease Expenses",
+    "sub_category_b": "Land",
+    "sub_category_c": "N/A",
+    "code": "P6",
+    "uacs_code": "5029905002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Rent / Lease Expenses",
+    "sub_category_b": "Motor Vehicle",
+    "sub_category_c": "N/A",
+    "code": "P7",
+    "uacs_code": "5029905003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M - Furniture and Fixtures",
+    "sub_category_c": "FURNITURES AND FIXTURES",
+    "code": "N5-1",
+    "uacs_code": "5021307000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M - Infrastructure Assets",
+    "sub_category_c": "OTHER LAND IMPROVEMENTS",
+    "code": "N1-1",
+    "uacs_code": "5021302099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M - Infrastructure Assets",
+    "sub_category_c": "POWER SUPPLY SYSTEM",
+    "code": "N1-4",
+    "uacs_code": "5021303005"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M - Infrastructure Assets",
+    "sub_category_c": "SEWER SYSTEMS",
+    "code": "N1-2",
+    "uacs_code": "5021303003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M - Infrastructure Assets",
+    "sub_category_c": "WATER SUPPLY SYSTEM",
+    "code": "N1-3",
+    "uacs_code": "5021303004"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M - Transportation Equipment",
+    "sub_category_c": "MOTOR VEHICLE",
+    "code": "N4-1",
+    "uacs_code": "5021306001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Buildings and Other Structures",
+    "sub_category_c": "BUILDINGS",
+    "code": "N2-1",
+    "uacs_code": "5021304001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Buildings and Other Structures",
+    "sub_category_c": "HOSPITALS AND HEALTH CENTERS",
+    "code": "N2-3",
+    "uacs_code": "5021304003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Buildings and Other Structures",
+    "sub_category_c": "HOSTELS AND DORMITORIES",
+    "code": "N2-4",
+    "uacs_code": "5021304006"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Buildings and Other Structures",
+    "sub_category_c": "OTHER STRUCTURES",
+    "code": "N2-5",
+    "uacs_code": "5021304099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Buildings and Other Structures",
+    "sub_category_c": "SCHOOL BUILDINGS",
+    "code": "N2-2",
+    "uacs_code": "5021304002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "AGRICULTURAL AND FORESTRY EQUIPMENT",
+    "code": "N3-4",
+    "uacs_code": "5021305004"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "COMMUNICATION EQUIPMENT",
+    "code": "N3-6",
+    "uacs_code": "5021305007"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "Disaster, Response and Rescue Equipment",
+    "code": "N3-7",
+    "uacs_code": "5021305009"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "ICT EQUIPMENT",
+    "code": "N3-3",
+    "uacs_code": "5021305003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "MEDICAL EQUIPMENT",
+    "code": "N3-9",
+    "uacs_code": "5021305011"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "Marine and Fishery Equipment",
+    "code": "N3-5",
+    "uacs_code": "50213050 05"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "Military Police and Security Equipment",
+    "code": "N3-8",
+    "uacs_code": "5021305010"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "OFFICE EQUIPMENT",
+    "code": "N3-2",
+    "uacs_code": "5021305002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "OTHER MACHINERY & EQUIPMENT",
+    "code": "N3-13",
+    "uacs_code": "5021305099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "PRINTING EQUIPMENT",
+    "code": "N3-10",
+    "uacs_code": "5021305012"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "SPORTS EQUIPMENT",
+    "code": "N3-11",
+    "uacs_code": "5021305013"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Repair and Maintenance (R&M)",
+    "sub_category_b": "R&M -- Machinery and Equipment",
+    "sub_category_c": "TECHNICAL AND SCIENTIFIC EQUIPMENT",
+    "code": "N3-12",
+    "uacs_code": "5021305014"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Agricultural and Forestry Equipment",
+    "sub_category_c": "AGRICULTURAL AND FORESTRY EQUIPMENT",
+    "code": "D4",
+    "uacs_code": "5020321004"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Communication Equipment",
+    "sub_category_c": "COMMUNICATION EQUIPMENT",
+    "code": "D6",
+    "uacs_code": "5020321007"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Disaster Response and Rescue Equipment",
+    "sub_category_c": "DISASTER RESPONSE AND RESCUE EQUIPMENT",
+    "code": "D7",
+    "uacs_code": "5020321008"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable ICT Equipment",
+    "sub_category_c": "ICT EQUIPMENT",
+    "code": "D3",
+    "uacs_code": "5020321003"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Medical Equipment",
+    "sub_category_c": "MEDICAL EQUIPMENT",
+    "code": "D9",
+    "uacs_code": "5020321010"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Military, Police and Security Equipment",
+    "sub_category_c": "MILITARY, POLICE AND SECURITY EQUIPMENT",
+    "code": "D8",
+    "uacs_code": "5020321009"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Office Equipment",
+    "sub_category_c": "OFFICE EQUIPMENT",
+    "code": "D2",
+    "uacs_code": "5020321002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Other Machinery and Equipment",
+    "sub_category_c": "CLEANING MACHINERY AND EQUIPMENT",
+    "code": "D13",
+    "uacs_code": "5020321099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Other Machinery and Equipment",
+    "sub_category_c": "ELECTRICAL, CONSTRUCTION, PLUMBING MACHINERY & EQUIPMENT",
+    "code": "D13",
+    "uacs_code": "5020321099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Other Machinery and Equipment",
+    "sub_category_c": "KITCHEN EQUIPMENT",
+    "code": "D13",
+    "uacs_code": "5020321099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Other Machinery and Equipment",
+    "sub_category_c": "OTHERS",
+    "code": "D13",
+    "uacs_code": "5020321099"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Printing Equipment",
+    "sub_category_c": "PRINTING EQUIPMENT",
+    "code": "D10",
+    "uacs_code": "5020321011"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Sports Equipment",
+    "sub_category_c": "SPORTS EQUIPMENT",
+    "code": "D11",
+    "uacs_code": "5020321012"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Technical and Scientific Equipment",
+    "sub_category_c": "TECHNICAL AND SCIENTIFIC EQUIPMENT",
+    "code": "D12",
+    "uacs_code": "5020321013"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendables Furnitures, Fixtures and Books",
+    "sub_category_b": "Semi Expendables Furnitures, Fixtures and Books",
+    "sub_category_c": "BOOKS BELOW P50,000     PER UNIT",
+    "code": "E2",
+    "uacs_code": "5020322002"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendables Furnitures, Fixtures and Books Expenses",
+    "sub_category_b": "Semi Expendables Furnitures, Fixtures and Books",
+    "sub_category_c": "FURNITURES AND FIXTURES",
+    "code": "E1",
+    "uacs_code": "5020322001"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Accountable Forms Expenses",
+    "sub_category_c": "ACCOUNTABLE FORMS",
+    "code": "C2",
+    "uacs_code": "5020302000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Agricultural Supplies Expenses",
+    "sub_category_c": "AGRICULTURAL SUPPLIES",
+    "code": "C9",
+    "uacs_code": "5020310000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Animal/Zoological Supplies Expenses",
+    "sub_category_c": "Animal/Zoological Supplies Expenses",
+    "code": "C4",
+    "uacs_code": "5020304000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "DRUGS AND MEDICINES",
+    "sub_category_c": "DRUGS AND MEDICINES",
+    "code": "C6",
+    "uacs_code": "5020307000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Fuel, Oil and Lubricants Expenses",
+    "sub_category_c": "ACCREDITATION",
+    "code": "C8",
+    "uacs_code": "5020309000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Fuel, Oil and Lubricants Expenses",
+    "sub_category_c": "EXTENSION",
+    "code": "C8",
+    "uacs_code": "5020309000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Fuel, Oil and Lubricants Expenses",
+    "sub_category_c": "FOUNDATION",
+    "code": "C8",
+    "uacs_code": "5020309000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Fuel, Oil and Lubricants Expenses",
+    "sub_category_c": "FUEL, OIL AND LUBRICANTS",
+    "code": "C8",
+    "uacs_code": "5020309000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Fuel, Oil and Lubricants Expenses",
+    "sub_category_c": "GRADUATION",
+    "code": "C8",
+    "uacs_code": "5020309000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Fuel, Oil and Lubricants Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 1\n(Capability Enhancement Training & Year-End Review)",
+    "code": "C8",
+    "uacs_code": "5020309000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Fuel, Oil and Lubricants Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 2\n(Carmona Sorteo Festival)",
+    "code": "C8",
+    "uacs_code": "5020309000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Fuel, Oil and Lubricants Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 3\n(Socio-Cultural Festival)",
+    "code": "C8",
+    "uacs_code": "5020309000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Fuel, Oil and Lubricants Expenses",
+    "sub_category_c": "RESEARCH",
+    "code": "C8",
+    "uacs_code": "5020309000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Fuel, Oil and Lubricants Expenses",
+    "sub_category_c": "UNIVERSITY GAMES",
+    "code": "C8",
+    "uacs_code": "5020309000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Medical, Dental and Laboratory Supplies Expenses",
+    "sub_category_c": "MEDICAL, DENTAL AND LABORATORY SUPPLIES",
+    "code": "C7",
+    "uacs_code": "5020308000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Non Accountable Forms Expenses",
+    "sub_category_c": "NON ACCOUNTABLE FORMS",
+    "code": "C3",
+    "uacs_code": "5020303000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "ACCREDITATION",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "COMMON OFFICE SUPPLIES AND MATERIALS",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "EXTENSION",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "FILING SUPPLIES AND MATERIALS",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "FOUNDATION",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "GRADUATION",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 1\n(Capability Enhancement Training & Year-End Review)",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 2\n(Carmona Sorteo Festival)",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 3\n(Socio-Cultural Festival)",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "PAPER PRODUCTS",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "RESEARCH",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "RIBBONS, INKS, TONERS AND CARTRIDGES",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "UNIVERSITY GAMES",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "ACCREDITATION",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "AUTOMOTIVE, CONSTRUCTION AND PLUMBING, TOOLS, SUPPLIES AND MATERIALS",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "COMMON CLEANING SUPPLIES AND MATERIALS",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "ELECTRICAL, LIGHTING FIXTURES, TOOLS AND ACCESSORIES",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "EXTENSION",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "FOUNDATION",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "GRADUATION",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "KITCHEN SUPPLIES AND MATERIALS",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "MILITARY, POLICE AND TRAFFIC SUPPLIES",
+    "code": "C11",
+    "uacs_code": "5020312000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "OTHER SUPPLIES AND MATERIALS",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 1\n(Capability Enhancement Training & Year-End Review)",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 2\n(Carmona Sorteo Festival)",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "OTHER UNIVERSITY ACTIVITY 3\n(Socio-Cultural Festival)",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "RESEARCH",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "UNIVERSITY GAMES",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Textbooks and Instructional Materials Expenses",
+    "sub_category_c": "MANUALS",
+    "code": "C10",
+    "uacs_code": "5020311000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Textbooks and Instructional Materials Expenses",
+    "sub_category_c": "OTHER INSTRUCTIONAL MATERIALS",
+    "code": "C10",
+    "uacs_code": "5020311000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Textbooks and Instructional Materials Expenses",
+    "sub_category_c": "PRINTED JOURNALS",
+    "code": "C10",
+    "uacs_code": "5020311000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Textbooks and Instructional Materials Expenses",
+    "sub_category_c": "TEXTBOOKS AND WORKBOOKS",
+    "code": "C10",
+    "uacs_code": "5020311000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Survey, Research, Exploration and Development Expenses",
+    "sub_category_b": "Research, Exploration and Development",
+    "sub_category_c": "N/A",
+    "code": "J1",
+    "uacs_code": "5020702000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Training and Scholarship Expenses",
+    "sub_category_b": "Training Expenses",
+    "sub_category_c": "CONDUCT OF TRAINING",
+    "code": "B1",
+    "uacs_code": "5020201000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Training and Scholarship Expenses",
+    "sub_category_b": "Training Expenses",
+    "sub_category_c": "EXTENSION",
+    "code": "B1",
+    "uacs_code": "5020201000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Traveling Expenses",
+    "sub_category_b": "Travelling Expense-Foreign",
+    "sub_category_c": "INTERNATIONAL TRAVEL",
+    "code": "A2",
+    "uacs_code": "5020102000"
+  },
+  {
+    "part": "NON-PS",
+    "main_category": "MOOE",
+    "sub_category_a": "Traveling Expenses",
+    "sub_category_b": "Travelling Expense-Local",
+    "sub_category_c": "LOCAL TRAVEL",
+    "code": "A1",
+    "uacs_code": "5020101000"
+  },
+  {
+    "part": "PS-DBM",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Disaster Response and Rescue Equipment Expenses",
+    "sub_category_c": "Disaster Response and Rescue Equipment",
+    "code": "D7",
+    "uacs_code": "5020321008"
+  },
+  {
+    "part": "PS-DBM",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable ICT Equipment Expenses",
+    "sub_category_c": "ICT EQUIPMENT",
+    "code": "D3",
+    "uacs_code": "5020321003"
+  },
+  {
+    "part": "PS-DBM",
+    "main_category": "MOOE",
+    "sub_category_a": "Semi Expendable Machinery and Equipment Expenses",
+    "sub_category_b": "Semi Expendable Office Equipment Expenses",
+    "sub_category_c": "OFFICE EQUIPMENT",
+    "code": "D2",
+    "uacs_code": "5020321002"
+  },
+  {
+    "part": "PS-DBM",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "COMMON OFFICE SUPPLIES",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "PS-DBM",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "FORMS",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "PS-DBM",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Office Supplies Expenses",
+    "sub_category_c": "RIBBONS, INKS, TONERS AND CARTRIDGES",
+    "code": "C1",
+    "uacs_code": "5020301000"
+  },
+  {
+    "part": "PS-DBM",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "CLEANING SUPPLIES AND MATERIALS",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "PS-DBM",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "COVID RECOVERY SUPPLIES",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  },
+  {
+    "part": "PS-DBM",
+    "main_category": "MOOE",
+    "sub_category_a": "Supplies and Materials Expenses",
+    "sub_category_b": "Other Supplies & Materials Expenses",
+    "sub_category_c": "ELECTRICAL SUPPLIES AND MATERIALS",
+    "code": "C12",
+    "uacs_code": "5020399000"
+  }
+]

@@ -112,7 +112,8 @@ class ProcurementPlanController extends Controller
     {
         $plan = ProcurementPlan::with([
             'department',
-            'items.unit'
+            'items.unit',
+            'items.material.classification'
         ])->findOrFail($id);
 
         $materials = \App\Models\Material::with([
@@ -131,9 +132,146 @@ class ProcurementPlanController extends Controller
         );
     }
 
-    public function edit(string $id){}
+    public function edit(string $id)
+    {
+        $plan = ProcurementPlan::findOrFail($id);
 
-    public function update(Request $request, string $id){}
+        if ($plan->status !== 'Draft') {
+            return redirect()
+                ->route('procurement.plans.show', $plan->id)
+                ->with('error', 'Only Draft plans can be edited.');
+        }
 
-    public function destroy(string $id){}
+        $departments = Department::orderBy('department_name')->get();
+
+        return view(
+            'supervisor.procurement.plans.edit',
+            compact('plan', 'departments')
+        );
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $plan = ProcurementPlan::findOrFail($id);
+
+        if ($plan->status !== 'Draft') {
+            return redirect()
+                ->route('procurement.plans.show', $plan->id)
+                ->with('error', 'Only Draft plans can be edited.');
+        }
+
+        $request->validate([
+            'year' => 'required|digits:4',
+            'department_id' => 'required|exists:departments,id',
+            'allocated_budget' => 'required|numeric|min:0',
+            'remarks' => 'nullable|string',
+        ]);
+
+        $plan->update([
+            'year' => $request->year,
+            'department_id' => $request->department_id,
+            'allocated_budget' => $request->allocated_budget,
+            'remaining_budget' => $request->allocated_budget - $plan->total_planned_cost,
+            'remarks' => $request->remarks,
+        ]);
+
+        return redirect()
+            ->route('procurement.plans.show', $plan->id)
+            ->with('success', 'Procurement Plan updated successfully.');
+    }
+
+    public function destroy(string $id)
+    {
+        $plan = ProcurementPlan::findOrFail($id);
+
+        if ($plan->status !== 'Draft') {
+            return redirect()
+                ->route('procurement.plans.show', $plan->id)
+                ->with('error', 'Only Draft plans can be deleted.');
+        }
+
+        $plan->delete();
+
+        return redirect()
+            ->route('procurement.plans.index')
+            ->with('success', 'Procurement Plan deleted successfully.');
+    }
+
+    public function submit(string $id)
+    {
+        $plan = ProcurementPlan::findOrFail($id);
+
+        if ($plan->status !== 'Draft') {
+            return redirect()
+                ->route('procurement.plans.show', $plan->id)
+                ->with('error', 'Only Draft plans can be submitted.');
+        }
+
+        if (! $plan->items()->exists()) {
+            return redirect()
+                ->route('procurement.plans.show', $plan->id)
+                ->with('error', 'Add at least one procurement item before submitting.');
+        }
+
+        $plan->update([
+            'status' => 'Submitted',
+            'submitted_at' => now(),
+        ]);
+
+        return redirect()
+            ->route('procurement.plans.show', $plan->id)
+            ->with('success', 'Procurement Plan submitted for approval.');
+    }
+
+    public function approve(string $id)
+    {
+        $plan = ProcurementPlan::findOrFail($id);
+
+        if ($plan->status !== 'Submitted') {
+            return redirect()
+                ->route('procurement.plans.show', $plan->id)
+                ->with('error', 'Only Submitted plans can be approved.');
+        }
+
+        $plan->update([
+            'status' => 'Approved',
+            'approved_by' => Auth::id(),
+            'approved_at' => now(),
+            'approved_budget' => $plan->allocated_budget,
+        ]);
+
+        return redirect()
+            ->route('procurement.plans.show', $plan->id)
+            ->with('success', 'Procurement Plan approved.');
+    }
+
+    public function reject(Request $request, string $id)
+    {
+        $plan = ProcurementPlan::findOrFail($id);
+
+        if ($plan->status !== 'Submitted') {
+            return redirect()
+                ->route('procurement.plans.show', $plan->id)
+                ->with('error', 'Only Submitted plans can be rejected.');
+        }
+
+        $request->validate([
+            'reason' => 'nullable|string',
+        ]);
+
+        $remarks = $plan->remarks;
+
+        if ($request->filled('reason')) {
+            $remarks = trim($remarks . "\n\nRejected: " . $request->reason);
+        }
+
+        $plan->update([
+            'status' => 'Rejected',
+            'remarks' => $remarks,
+        ]);
+
+        return redirect()
+            ->route('procurement.plans.show', $plan->id)
+            ->with('success', 'Procurement Plan rejected.');
+    }
 }

@@ -20,6 +20,16 @@
 
 @endif
 
+@if(session('error'))
+
+<div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded mb-6">
+
+{{ session('error') }}
+
+</div>
+
+@endif
+
 <!-- Header -->
 
 <div class="bg-white rounded-xl shadow">
@@ -42,20 +52,105 @@ Working Document
 
 </div>
 
-<span class="px-4 py-2 rounded-full
-@if($plan->status=='Draft')
-bg-yellow-100 text-yellow-700
-@elseif($plan->status=='Approved')
-bg-green-100 text-green-700
-@else
-bg-blue-100 text-blue-700
-@endif">
-
-{{ $plan->status }}
-
-</span>
+@include('supervisor.procurement.plans.partials._status_badge', ['status' => $plan->status, 'size' => 'lg'])
 
 </div>
+
+@if($plan->status === 'Draft' || $plan->status === 'Submitted')
+
+<div class="border-b px-6 py-4 flex flex-wrap gap-3">
+
+@if($plan->status === 'Draft')
+
+@if(auth()->user()->hasPermission('submit-ppmp'))
+
+<form id="submitPlanForm" action="{{ route('procurement.plans.submit', $plan->id) }}" method="POST" class="inline">
+@csrf
+</form>
+
+<button
+type="button"
+onclick="confirmSubmitPlan()"
+class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded">
+
+✅ Submit for Approval
+
+</button>
+
+@endif
+
+@if(auth()->user()->hasPermission('edit-ppmp'))
+
+<a
+href="{{ route('procurement.plans.edit', $plan->id) }}"
+class="bg-white border px-5 py-2 rounded hover:bg-gray-50">
+
+✏️ Edit
+
+</a>
+
+@endif
+
+@if(auth()->user()->hasPermission('delete-ppmp'))
+
+<form id="deletePlanForm" action="{{ route('procurement.plans.destroy', $plan->id) }}" method="POST" class="inline">
+@csrf
+@method('DELETE')
+</form>
+
+<button
+type="button"
+onclick="confirmDeletePlan()"
+class="bg-white border border-red-300 text-red-600 px-5 py-2 rounded hover:bg-red-50">
+
+🗑 Delete
+
+</button>
+
+@endif
+
+@elseif($plan->status === 'Submitted')
+
+@if(auth()->user()->hasPermission('approve-ppmp'))
+
+<form id="approvePlanForm" action="{{ route('procurement.plans.approve', $plan->id) }}" method="POST" class="inline">
+@csrf
+</form>
+
+<button
+type="button"
+onclick="confirmApprovePlan()"
+class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded">
+
+✔️ Approve
+
+</button>
+
+@endif
+
+@if(auth()->user()->hasPermission('reject-ppmp'))
+
+<form id="rejectPlanForm" action="{{ route('procurement.plans.reject', $plan->id) }}" method="POST" class="inline">
+@csrf
+<input type="hidden" name="reason" id="rejectPlanReason">
+</form>
+
+<button
+type="button"
+onclick="confirmRejectPlan()"
+class="bg-white border border-red-300 text-red-600 px-5 py-2 rounded hover:bg-red-50">
+
+✖️ Reject
+
+</button>
+
+@endif
+
+@endif
+
+</div>
+
+@endif
 
 <div class="p-6">
 
@@ -423,6 +518,138 @@ Allocated Budget
             openProcurementModal();
         }
         
+    function confirmSubmitPlan()
+        {
+            Swal.fire({
+
+                title: 'Submit for Approval?',
+
+                text: 'This will lock the plan for editing until it is approved or rejected.',
+
+                icon: 'warning',
+
+                showCancelButton: true,
+
+                confirmButtonColor: '#16a34a',
+
+                cancelButtonColor: '#6b7280',
+
+                confirmButtonText: 'Yes, submit it!',
+
+                cancelButtonText: 'Cancel'
+
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    document.getElementById('submitPlanForm').submit();
+
+                }
+
+            });
+        }
+
+    function confirmApprovePlan()
+        {
+            Swal.fire({
+
+                title: 'Approve Procurement Plan?',
+
+                text: 'This action cannot be undone.',
+
+                icon: 'warning',
+
+                showCancelButton: true,
+
+                confirmButtonColor: '#16a34a',
+
+                cancelButtonColor: '#6b7280',
+
+                confirmButtonText: 'Yes, approve it!',
+
+                cancelButtonText: 'Cancel'
+
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    document.getElementById('approvePlanForm').submit();
+
+                }
+
+            });
+        }
+
+    function confirmRejectPlan()
+        {
+            Swal.fire({
+
+                title: 'Reject Procurement Plan?',
+
+                input: 'textarea',
+
+                inputLabel: 'Reason (optional)',
+
+                inputPlaceholder: 'Explain why this plan is being rejected...',
+
+                icon: 'warning',
+
+                showCancelButton: true,
+
+                confirmButtonColor: '#d33',
+
+                cancelButtonColor: '#6b7280',
+
+                confirmButtonText: 'Yes, reject it!',
+
+                cancelButtonText: 'Cancel'
+
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    document.getElementById('rejectPlanReason').value = result.value || '';
+
+                    document.getElementById('rejectPlanForm').submit();
+
+                }
+
+            });
+        }
+
+    function confirmDeletePlan()
+        {
+            Swal.fire({
+
+                title: 'Delete Procurement Plan?',
+
+                html:
+                    '<strong>' + {{ Js::from($plan->plan_number) }} + '</strong><br><br>' +
+                    'This action cannot be undone.',
+
+                icon: 'warning',
+
+                showCancelButton: true,
+
+                confirmButtonColor: '#d33',
+
+                cancelButtonColor: '#6b7280',
+
+                confirmButtonText: 'Delete',
+
+                cancelButtonText: 'Cancel'
+
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    document.getElementById('deletePlanForm').submit();
+
+                }
+
+            });
+        }
+
     function confirmDelete(itemId, materialName)
         {
             Swal.fire({
@@ -491,6 +718,9 @@ Allocated Budget
             document.getElementById('q2').value = item.q2;
             document.getElementById('q3').value = item.q3;
             document.getElementById('q4').value = item.q4;
+
+            document.getElementById('procurement_method').value =
+                item.procurement_method || '';
 
             updateProcurementSummary();
         }

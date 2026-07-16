@@ -20,6 +20,7 @@ use App\Http\Controllers\Supervisor\ReportController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementDashboardController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanItemController;
+use App\Http\Controllers\Supervisor\Procurement\ProcurementReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmployeeProfileController;
 use App\Http\Controllers\EmployeeController;
@@ -302,6 +303,21 @@ Route::middleware(['auth'])->group(function () {
                     ProcurementPlanController::class
                 );
 
+                Route::post(
+                    'plans/{plan}/submit',
+                    [ProcurementPlanController::class, 'submit']
+                )->middleware('permission:submit-ppmp')->name('plans.submit');
+
+                Route::post(
+                    'plans/{plan}/approve',
+                    [ProcurementPlanController::class, 'approve']
+                )->middleware('permission:approve-ppmp')->name('plans.approve');
+
+                Route::post(
+                    'plans/{plan}/reject',
+                    [ProcurementPlanController::class, 'reject']
+                )->middleware('permission:reject-ppmp')->name('plans.reject');
+
                 /*
                 |--------------------------------------------------------------------------
                 | MATERIAL DETAILS (AJAX)
@@ -343,6 +359,72 @@ Route::middleware(['auth'])->group(function () {
                     'plans/items/{item}',
                     [ProcurementPlanItemController::class, 'destroy']
                 )->name('plans.items.destroy');
+
+            });
+
+        Route::prefix('procurement')
+            ->name('procurement.')
+            ->group(function () {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Budget Monitoring
+                |--------------------------------------------------------------------------
+                */
+
+                Route::middleware('permission:view-budget-monitoring')->group(function () {
+
+                    Route::get(
+                        '/budget-monitoring',
+                        [ProcurementReportController::class, 'budgetMonitoring']
+                    )->name('budget-monitoring');
+
+                    Route::get(
+                        '/budget-monitoring/print',
+                        [ProcurementReportController::class, 'budgetMonitoringPrint']
+                    )->name('budget-monitoring.print');
+
+                });
+
+                /*
+                |--------------------------------------------------------------------------
+                | Purchase Forecast
+                |--------------------------------------------------------------------------
+                */
+
+                Route::middleware('permission:view-purchase-forecast')->group(function () {
+
+                    Route::get(
+                        '/purchase-forecast',
+                        [ProcurementReportController::class, 'purchaseForecast']
+                    )->name('purchase-forecast');
+
+                    Route::get(
+                        '/purchase-forecast/print',
+                        [ProcurementReportController::class, 'purchaseForecastPrint']
+                    )->name('purchase-forecast.print');
+
+                });
+
+                /*
+                |--------------------------------------------------------------------------
+                | Procurement Calendar
+                |--------------------------------------------------------------------------
+                */
+
+                Route::middleware('permission:view-procurement-calendar')->group(function () {
+
+                    Route::get(
+                        '/calendar',
+                        [ProcurementReportController::class, 'calendar']
+                    )->name('calendar');
+
+                    Route::get(
+                        '/calendar/print',
+                        [ProcurementReportController::class, 'calendarPrint']
+                    )->name('calendar.print');
+
+                });
 
             });
 
@@ -805,6 +887,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/materials/bulk-assign-department', [MaterialController::class, 'bulkAssignDepartment'])
             ->name('materials.bulk-assign-department');
+
+        Route::post('/materials/bulk-assign-classification', [MaterialController::class, 'bulkAssignClassification'])
+            ->name('materials.bulk-assign-classification');
 
     });
 

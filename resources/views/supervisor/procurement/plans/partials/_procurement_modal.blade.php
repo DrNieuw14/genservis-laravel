@@ -241,6 +241,30 @@
 
                     </div>
 
+                    <!-- Mode of Procurement -->
+                    <div class="md:col-span-2">
+
+                        <label class="font-semibold">
+                            Mode of Procurement
+                        </label>
+
+                        <select
+                            id="procurement_method"
+                            name="procurement_method"
+                            class="w-full border rounded mt-2"
+                            required>
+
+                            <option value="">-- Select Mode of Procurement --</option>
+                            <option value="COMPETITIVE BIDDING">Competitive Bidding</option>
+                            <option value="SHOPPING">Shopping</option>
+                            <option value="DIRECT CONTRACTING">Direct Contracting</option>
+                            <option value="NP- SMALL VALUE PROCUREMENT">NP - Small Value Procurement</option>
+                            <option value="NP- AGENCY TO AGENCY">NP - Agency to Agency</option>
+
+                        </select>
+
+                    </div>
+
                 </div>
 
                 <!-- Procurement Summary -->

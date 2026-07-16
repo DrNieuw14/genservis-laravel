@@ -14,6 +14,7 @@ use App\Models\InventoryMovement;
 use App\Models\Department;
 use App\Models\DepartmentMaterial;
 use App\Models\WalkinRequestItem;
+use App\Models\ProcurementClassification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;  
 use App\Imports\MaterialImport;
@@ -259,12 +260,18 @@ class MaterialController extends Controller
         $categorySummary = Category::withCount('materials')
         ->orderBy('materials_count', 'desc')
         ->get();
-        
+
+        $classifications = ProcurementClassification::where('is_active', true)
+            ->orderBy('main_category')
+            ->orderBy('sub_category_c')
+            ->get();
+
         return view('supervisor.materials.index', compact(
             'materials',
             'departments',
             'categories',
             'categorySummary',
+            'classifications',
             'totalMaterials',
             'lowStock',
             'criticalStock',
@@ -283,12 +290,18 @@ class MaterialController extends Controller
 
         $departments = Department::all();
 
+        $classifications = ProcurementClassification::where('is_active', true)
+            ->orderBy('main_category')
+            ->orderBy('sub_category_c')
+            ->get();
+
         return view(
             'supervisor.materials.create',
             compact(
                 'categories',
                 'units',
-                'departments'
+                'departments',
+                'classifications'
             )
         );
     }
@@ -302,6 +315,7 @@ class MaterialController extends Controller
             'category_id' => 'required',
             'unit_id' => 'required',
             'quantity' => 'required|integer|min:0',
+            'classification_id' => 'nullable|exists:procurement_classifications,id',
         ]);
 
         $material = Material::create([
@@ -310,6 +324,7 @@ class MaterialController extends Controller
             'category_id' => $request->category_id,
             'unit_id' => $request->unit_id,
             'quantity' => $request->quantity,
+            'classification_id' => $request->classification_id,
             'created_by' => Auth::id(),
         ]);
 
@@ -369,9 +384,15 @@ class MaterialController extends Controller
 
         $departments = Department::all();
 
+        $classifications = ProcurementClassification::where('is_active', true)
+            ->orderBy('main_category')
+            ->orderBy('sub_category_c')
+            ->get();
+
         return view('supervisor.materials.edit', compact(
             'material',
             'categories',
+            'classifications',
             'units',
             'departments'
         ));
@@ -385,7 +406,8 @@ class MaterialController extends Controller
             'department_id' => 'required|exists:departments,id',
             'category_id' => 'required',
             'unit_id' => 'required',
-            
+            'classification_id' => 'nullable|exists:procurement_classifications,id',
+
             'threshold' => 'required|integer|min:0',
         ]);
 
@@ -396,7 +418,8 @@ class MaterialController extends Controller
             'department_id' => $request->department_id,
             'category_id' => $request->category_id,
             'unit_id' => $request->unit_id,
-            
+            'classification_id' => $request->classification_id,
+
             'threshold' => $request->threshold,
         ]);
 
@@ -422,6 +445,23 @@ class MaterialController extends Controller
         return back()->with(
             'success',
             "{$count} material(s) reassigned to {$department->department_name}."
+        );
+    }
+
+    public function bulkAssignClassification(Request $request)
+    {
+        $validated = $request->validate([
+            'material_ids' => 'required|array|min:1',
+            'material_ids.*' => 'exists:materials,id',
+            'classification_id' => 'required|exists:procurement_classifications,id',
+        ]);
+
+        $count = Material::whereIn('id', $validated['material_ids'])
+            ->update(['classification_id' => $validated['classification_id']]);
+
+        return back()->with(
+            'success',
+            "{$count} material(s) classified."
         );
     }
 

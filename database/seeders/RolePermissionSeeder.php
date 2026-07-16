@@ -174,6 +174,11 @@ class RolePermissionSeeder extends Seeder
                     'view-ppmp',
                     'create-ppmp',
                     'edit-ppmp',
+                    'submit-ppmp',
+
+                    'view-budget-monitoring',
+                    'view-purchase-forecast',
+                    'view-procurement-calendar',
 
                     'view-reports',
 

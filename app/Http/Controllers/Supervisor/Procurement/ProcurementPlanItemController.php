@@ -60,6 +60,12 @@ class ProcurementPlanItemController extends Controller
                 'min:0'
             ],
 
+            'procurement_method' => [
+                'required',
+                'string',
+                'in:COMPETITIVE BIDDING,SHOPPING,DIRECT CONTRACTING,NP- SMALL VALUE PROCUREMENT,NP- AGENCY TO AGENCY',
+            ],
+
         ]);
 
         /*
@@ -93,6 +99,17 @@ class ProcurementPlanItemController extends Controller
             $validated['material_id']
         );
 
+        if (! $material->classification_id) {
+
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'This material has no procurement classification assigned yet. Assign one via Materials Inventory before adding it to a PPMP.'
+                );
+
+        }
+
         DB::transaction(function () use (
             $plan,
             $validated,
@@ -119,6 +136,8 @@ class ProcurementPlanItemController extends Controller
             $item->q3 = $validated['q3'];
 
             $item->q4 = $validated['q4'];
+
+            $item->procurement_method = $validated['procurement_method'];
 
             /*
             |--------------------------------------------------------------------------
@@ -175,6 +194,7 @@ class ProcurementPlanItemController extends Controller
             'q4' => $item->q4,
             'priority' => $item->priority,
             'remarks' => $item->remarks,
+            'procurement_method' => $item->procurement_method,
         ]);
     }
 
@@ -232,13 +252,30 @@ class ProcurementPlanItemController extends Controller
                 'string'
             ],
 
+            'procurement_method' => [
+                'required',
+                'string',
+                'in:COMPETITIVE BIDDING,SHOPPING,DIRECT CONTRACTING,NP- SMALL VALUE PROCUREMENT,NP- AGENCY TO AGENCY',
+            ],
+
         ]);
 
-        DB::transaction(function () use ($validated, $item) {
+        $material = Material::findOrFail(
+            $validated['material_id']
+        );
 
-            $material = Material::findOrFail(
-                $validated['material_id']
-            );
+        if (! $material->classification_id) {
+
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'This material has no procurement classification assigned yet. Assign one via Materials Inventory before adding it to a PPMP.'
+                );
+
+        }
+
+        DB::transaction(function () use ($validated, $item, $material) {
 
             $item->material_id = $material->id;
             $item->material_name = $material->name;
@@ -250,6 +287,8 @@ class ProcurementPlanItemController extends Controller
             $item->q2 = $validated['q2'];
             $item->q3 = $validated['q3'];
             $item->q4 = $validated['q4'];
+
+            $item->procurement_method = $validated['procurement_method'];
 
             $item->priority =
                 $validated['priority'] ?? 'Medium';

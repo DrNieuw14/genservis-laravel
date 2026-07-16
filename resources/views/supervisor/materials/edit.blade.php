@@ -126,6 +126,37 @@
 
             </div>
 
+            <!-- PROCUREMENT CLASSIFICATION -->
+            <div class="mb-5">
+
+                <label class="block text-gray-700 font-semibold mb-2">
+                    Procurement Classification
+                </label>
+
+                <select name="classification_id"
+                        class="w-full border rounded-xl p-3">
+
+                    <option value="">-- Unclassified --</option>
+
+                    @foreach($classifications as $classification)
+
+                        <option value="{{ $classification->id }}"
+                            {{ $material->classification_id == $classification->id ? 'selected' : '' }}>
+
+                            {{ $classification->code }} — {{ $classification->sub_category_c }} ({{ $classification->uacs_code }})
+
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+                <p class="text-sm text-gray-500 mt-2">
+                    Required before this material can be added to a Procurement Plan (PPMP).
+                </p>
+
+            </div>
+
             <!-- CURRENT STOCK -->
             <div class="mb-5">
 

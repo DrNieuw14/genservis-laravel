@@ -95,6 +95,12 @@ class PermissionSeeder extends Seeder
                     ['name' => 'Create PPMP', 'slug' => 'create-ppmp'],
                     ['name' => 'Edit PPMP', 'slug' => 'edit-ppmp'],
                     ['name' => 'Delete PPMP', 'slug' => 'delete-ppmp'],
+                    ['name' => 'Submit PPMP', 'slug' => 'submit-ppmp'],
+                    ['name' => 'Approve PPMP', 'slug' => 'approve-ppmp'],
+                    ['name' => 'Reject PPMP', 'slug' => 'reject-ppmp'],
+                    ['name' => 'View Budget Monitoring', 'slug' => 'view-budget-monitoring'],
+                    ['name' => 'View Purchase Forecast', 'slug' => 'view-purchase-forecast'],
+                    ['name' => 'View Procurement Calendar', 'slug' => 'view-procurement-calendar'],
 
                 ]
             ],

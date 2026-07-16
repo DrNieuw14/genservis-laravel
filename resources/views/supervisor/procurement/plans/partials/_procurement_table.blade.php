@@ -25,6 +25,8 @@
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-4 py-3 text-left">Material</th>
+                        <th class="px-4 py-3 text-left">Classification</th>
+                        <th class="px-4 py-3 text-left">Mode of Procurement</th>
                         <th class="px-4 py-3 text-left">Unit</th>
                         <th class="px-4 py-3 text-right">Unit Cost</th>
                         <th class="px-4 py-3 text-center">Q1</th>
@@ -45,6 +47,18 @@
 
                     <td class="px-4 py-3">
                         {{ $item->material_name }}
+                    </td>
+
+                    <td class="px-4 py-3 text-sm">
+                        @if(optional($item->material)->classification)
+                            {{ $item->material->classification->code }} / {{ $item->material->classification->uacs_code }}
+                        @else
+                            <span class="text-gray-400">—</span>
+                        @endif
+                    </td>
+
+                    <td class="px-4 py-3 text-sm">
+                        {{ $item->procurement_method ?? '—' }}
                     </td>
 
                     <td class="px-4 py-3">
@@ -104,7 +118,7 @@
                 @empty
 
                 <tr>
-                    <td colspan="10" class="text-center text-gray-500 py-10">
+                    <td colspan="12" class="text-center text-gray-500 py-10">
                         No Procurement Items Yet
                     </td>
                 </tr>

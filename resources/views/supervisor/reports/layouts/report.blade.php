@@ -171,7 +171,7 @@
         <div>
 
             <a
-                href="{{ route(Route::currentRouteName().'.print') }}"
+                href="{{ route(Route::currentRouteName().'.print') }}{{ request()->getQueryString() ? '?'.request()->getQueryString() : '' }}"
                 target="_blank"
                 class="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded">
 

@@ -265,6 +265,49 @@
 
     </form>
 
+    <!-- BULK CLASSIFICATION ASSIGNMENT -->
+    <form id="bulk-assign-classification-form" method="POST" action="{{ route('materials.bulk-assign-classification') }}">
+
+        @csrf
+
+        <div id="bulk-classification-bar"
+             class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-4">
+
+            <span class="font-semibold text-amber-800">
+                <span id="selected-count-classification">0</span> material(s) selected
+            </span>
+
+            <select name="classification_id" required
+                    class="border rounded-xl p-2 flex-1 min-w-[200px] max-w-xs">
+
+                <option value="">Assign classification...</option>
+
+                @foreach($classifications as $classification)
+                    <option value="{{ $classification->id }}">
+                        {{ $classification->code }} — {{ $classification->sub_category_c }} ({{ $classification->uacs_code }})
+                    </option>
+                @endforeach
+
+            </select>
+
+            <button type="submit"
+                    class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl font-semibold shadow transition">
+
+                🏷 Assign Classification
+
+            </button>
+
+            <button type="button" id="clear-selection-btn-classification"
+                    class="text-gray-500 hover:text-gray-700 text-sm underline">
+
+                Clear selection
+
+            </button>
+
+        </div>
+
+    </form>
+
     <!-- TABLE -->
     <div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
 
@@ -484,6 +527,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectAllCheckbox = document.getElementById('select-all-checkbox');
     const clearSelectionBtn = document.getElementById('clear-selection-btn');
 
+    const classificationForm = document.getElementById('bulk-assign-classification-form');
+    const classificationBar = document.getElementById('bulk-classification-bar');
+    const selectedCountClassificationEl = document.getElementById('selected-count-classification');
+    const clearSelectionClassificationBtn = document.getElementById('clear-selection-btn-classification');
+
     function materialCheckboxes() {
         return Array.from(document.querySelectorAll('.material-checkbox'));
     }
@@ -492,6 +540,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const checked = materialCheckboxes().filter(cb => cb.checked);
         selectedCountEl.textContent = checked.length;
         bulkBar.classList.toggle('hidden', checked.length === 0);
+        selectedCountClassificationEl.textContent = checked.length;
+        classificationBar.classList.toggle('hidden', checked.length === 0);
     }
 
     materialCheckboxes().forEach(cb => cb.addEventListener('change', updateBulkBar));
@@ -505,6 +555,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (clearSelectionBtn) {
         clearSelectionBtn.addEventListener('click', function () {
+            materialCheckboxes().forEach(cb => cb.checked = false);
+            if (selectAllCheckbox) selectAllCheckbox.checked = false;
+            updateBulkBar();
+        });
+    }
+
+    if (clearSelectionClassificationBtn) {
+        clearSelectionClassificationBtn.addEventListener('click', function () {
             materialCheckboxes().forEach(cb => cb.checked = false);
             if (selectAllCheckbox) selectAllCheckbox.checked = false;
             updateBulkBar();
@@ -549,6 +607,52 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
 
                     bulkForm.submit();
+
+                }
+
+            });
+
+        });
+    }
+
+    if (classificationForm) {
+        classificationForm.addEventListener('submit', function (e) {
+
+            e.preventDefault();
+
+            const checked = materialCheckboxes().filter(cb => cb.checked);
+
+            if (checked.length === 0) {
+                return;
+            }
+
+            const classificationSelect = classificationForm.querySelector('select[name="classification_id"]');
+            const classificationLabel = classificationSelect.options[classificationSelect.selectedIndex]?.text || 'this classification';
+
+            Swal.fire({
+                title: 'Assign Classification?',
+                text: `Classify ${checked.length} material(s) as "${classificationLabel}"?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d97706',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, Assign',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    classificationForm.querySelectorAll('input[name="material_ids[]"]').forEach(el => el.remove());
+
+                    checked.forEach(cb => {
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'material_ids[]';
+                        hidden.value = cb.value;
+                        classificationForm.appendChild(hidden);
+                    });
+
+                    classificationForm.submit();
 
                 }
 
