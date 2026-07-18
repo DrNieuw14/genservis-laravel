@@ -15,8 +15,10 @@ class MaterialRequest extends Model
 
     'status',
 
+    'room',
+
     'purpose',
-    
+
     'remarks'
     ];
 

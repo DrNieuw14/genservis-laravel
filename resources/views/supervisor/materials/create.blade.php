@@ -2,23 +2,20 @@
 
 @section('content')
 
-<div class="max-w-4xl mx-auto mt-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- PAGE TITLE -->
     <div class="mb-6">
 
-        <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             ➕ Add Material
         </h2>
 
-        <p class="text-gray-200 mt-2">
+        <p class="text-gray-500 mt-1 text-lg">
             Create and manage inventory materials for GenServis.
         </p>
 
     </div>
-
-    <!-- FORM CARD -->
-    <div class="bg-white rounded-2xl shadow-2xl p-8">
 
         <!-- ERROR MESSAGE -->
         @if ($errors->any())
@@ -227,8 +224,6 @@
             </div>
 
         </form>
-
-    </div>
 
 </div>
 

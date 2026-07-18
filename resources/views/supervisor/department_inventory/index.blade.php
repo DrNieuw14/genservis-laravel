@@ -2,39 +2,39 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto mt-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <h2 class="text-3xl font-bold text-white mb-6">
+    <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3 mb-6">
         🏢 Department Inventory
     </h2>
 
     <!-- SUMMARY CARDS -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 
-        <div class="rounded-2xl shadow-xl p-5 bg-blue-600 text-white">
-            <h3 class="text-sm">Total Releases</h3>
-            <p class="text-3xl font-bold mt-2">{{ $totalReleases }}</p>
+        <div class="rounded-xl shadow-lg p-5 bg-blue-600 text-white">
+            <div class="text-base">Total Releases</div>
+            <div class="text-4xl font-bold">{{ $totalReleases }}</div>
         </div>
 
-        <div class="rounded-2xl shadow-xl p-5 bg-green-600 text-white">
-            <h3 class="text-sm">Total Quantity Released</h3>
-            <p class="text-3xl font-bold mt-2">{{ number_format($totalQuantityReleased) }}</p>
+        <div class="rounded-xl shadow-lg p-5 bg-green-600 text-white">
+            <div class="text-base">Total Quantity Released</div>
+            <div class="text-4xl font-bold">{{ number_format($totalQuantityReleased) }}</div>
         </div>
 
-        <div class="rounded-2xl shadow-xl p-5 bg-purple-600 text-white">
-            <h3 class="text-sm">Departments Involved</h3>
-            <p class="text-3xl font-bold mt-2">{{ $departmentsInvolved }}</p>
+        <div class="rounded-xl shadow-lg p-5 bg-purple-600 text-white">
+            <div class="text-base">Departments Involved</div>
+            <div class="text-4xl font-bold">{{ $departmentsInvolved }}</div>
         </div>
 
-        <div class="rounded-2xl shadow-xl p-5 bg-indigo-600 text-white">
-            <h3 class="text-sm">Materials Involved</h3>
-            <p class="text-3xl font-bold mt-2">{{ $materialsInvolved }}</p>
+        <div class="rounded-xl shadow-lg p-5 bg-indigo-600 text-white">
+            <div class="text-base">Materials Involved</div>
+            <div class="text-4xl font-bold">{{ $materialsInvolved }}</div>
         </div>
 
     </div>
 
     <!-- FILTERS -->
-    <div class="bg-white rounded-2xl shadow-xl p-4 mb-6">
+    <div class="border rounded-lg p-4 bg-gray-50 mb-6">
 
         <form method="GET" action="{{ route('department.inventory') }}">
 
@@ -74,33 +74,33 @@
 
     </div>
 
-    <div class="bg-white rounded-2xl shadow overflow-hidden">
+    <div class="border rounded-lg overflow-hidden">
 
-        <table class="w-full">
+        <table class="w-full text-lg">
 
-            <thead class="bg-blue-600 text-white">
+            <thead class="bg-gray-100">
 
                 <tr>
 
-                    <th class="p-4 text-left">Department</th>
+                    <th class="p-4 text-left text-gray-800">Department</th>
 
-                    <th class="p-4 text-left">Material</th>
+                    <th class="p-4 text-left text-gray-800">Material</th>
 
-                    <th class="p-4 text-left">Quantity</th>
+                    <th class="p-4 text-left text-gray-800">Quantity</th>
 
-                    <th class="p-4 text-left">Released By</th>
+                    <th class="p-4 text-left text-gray-800">Released By</th>
 
-                    <th class="p-4 text-left">Released At</th>
+                    <th class="p-4 text-left text-gray-800">Released At</th>
 
                 </tr>
 
             </thead>
 
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
 
                 @forelse($inventories as $item)
 
-                <tr class="border-b hover:bg-gray-50 transition">
+                <tr class="hover:bg-gray-50 transition">
 
                     <td class="p-4">
                         {{ $item->department?->department_name ?? 'Unknown Department' }}

@@ -1,25 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-5xl mx-auto px-4 py-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <div class="mb-8">
+    <div class="mb-6">
 
-        <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             👤 Employee Onboarding
-        </h1>
+        </h2>
 
-        <p class="text-gray-200 mt-2">
+        <p class="text-gray-500 mt-1 text-lg">
             Complete the employee information before granting ERP access.
         </p>
 
     </div>
 
-    <div class="bg-white rounded-2xl shadow-2xl p-8">
-
-    <h2 class="text-2xl font-bold text-gray-800">
+    <h3 class="text-2xl font-bold text-gray-800">
         Employee Information
-    </h2>
+    </h3>
 
     <p class="text-gray-500 mt-2 mb-6">
         Review the registered account and complete the employee profile.
@@ -203,9 +201,7 @@
                 </div>
              </form>
 
-        </div>
-
-    </div>
+</div>
 
   @push('scripts')
 <script>

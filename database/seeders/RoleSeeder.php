@@ -15,12 +15,7 @@ class RoleSeeder extends Seeder
         $roles = [
 
             [
-                'name' => 'Super Administrator',
-                'description' => 'Full system administration'
-            ],
-
-            [
-                'name' => 'System Administrator',
+                'name' => 'Administrator',
                 'description' => 'Administrative access'
             ],
 
@@ -62,6 +57,11 @@ class RoleSeeder extends Seeder
             [
                 'name' => 'Employee',
                 'description' => 'Standard employee access'
+            ],
+
+            [
+                'name' => 'Department Chair / Unit Head',
+                'description' => 'Manages PPMP line items for their own department'
             ]
 
         ];

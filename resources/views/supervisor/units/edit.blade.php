@@ -2,15 +2,15 @@
 
 @section('content')
 
-<div class="max-w-2xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <div class="mb-6">
 
-        <h2 class="text-4xl font-bold text-white flex items-center gap-3">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             ✏️ Edit Unit
         </h2>
 
-        <p class="text-white/80 mt-2">
+        <p class="text-gray-500 mt-1 text-lg">
             Update inventory unit information.
         </p>
 
@@ -18,7 +18,7 @@
 
     @if ($errors->any())
 
-        <div class="bg-red-500 text-white p-4 rounded-xl mb-4 shadow">
+        <div class="bg-red-500 text-white p-4 rounded-xl mb-4 shadow text-lg">
 
             <ul class="list-disc list-inside">
 
@@ -33,8 +33,6 @@
         </div>
 
     @endif
-
-    <div class="bg-white rounded-2xl shadow-2xl p-8">
 
         <form action="{{ route('units.update', $unit->id) }}"
               method="POST">
@@ -78,8 +76,6 @@
             </div>
 
         </form>
-
-    </div>
 
 </div>
 

@@ -2,17 +2,17 @@
 
 @section('content')
 
-<div class="max-w-6xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- HEADER -->
     <div class="flex items-center justify-between mb-6">
 
         <div>
-            <h2 class="text-4xl font-bold text-white flex items-center gap-3">
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
                 📏 Units
             </h2>
 
-            <p class="text-white/80 mt-2">
+            <p class="text-gray-500 mt-1 text-lg">
                 Manage inventory units for GenServis.
             </p>
         </div>
@@ -31,7 +31,7 @@
     <!-- ALERTS -->
     @if(session('success'))
 
-        <div class="bg-green-500 text-white p-4 rounded-xl mb-4 shadow">
+        <div class="bg-green-500 text-white p-4 rounded-xl mb-4 shadow text-lg">
             {{ session('success') }}
         </div>
 
@@ -39,35 +39,35 @@
 
     @if(session('error'))
 
-        <div class="bg-red-500 text-white p-4 rounded-xl mb-4 shadow">
+        <div class="bg-red-500 text-white p-4 rounded-xl mb-4 shadow text-lg">
             {{ session('error') }}
         </div>
 
     @endif
 
-    <!-- CARD -->
-    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <!-- TABLE -->
+    <div class="border rounded-lg overflow-hidden">
 
-        <table class="w-full">
+        <table class="w-full text-lg">
 
             <!-- HEADER -->
-            <thead class="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+            <thead class="bg-gray-100">
 
                 <tr>
-                    <th class="p-4 text-left">#</th>
-                    <th class="p-4 text-left">Unit Name</th>
-                    <th class="p-4 text-left">Materials</th>
-                    <th class="p-4 text-center">Actions</th>
+                    <th class="p-4 text-left text-gray-800">#</th>
+                    <th class="p-4 text-left text-gray-800">Unit Name</th>
+                    <th class="p-4 text-left text-gray-800">Materials</th>
+                    <th class="p-4 text-center text-gray-800">Actions</th>
                 </tr>
 
             </thead>
 
             <!-- BODY -->
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
 
                 @forelse($units as $unit)
 
-                <tr class="border-b hover:bg-gray-50 transition">
+                <tr class="hover:bg-gray-50 transition">
 
                     <!-- NUMBER -->
                     <td class="p-4 font-semibold text-gray-700">

@@ -37,7 +37,7 @@ class UserAccessController extends Controller
         }
 
         $users = $query
-            ->orderBy('name')
+            ->orderByDesc('updated_at')
             ->paginate(10)
             ->withQueryString();
 

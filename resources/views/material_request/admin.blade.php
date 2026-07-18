@@ -2,16 +2,16 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto mt-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- HEADER -->
     <div class="mb-6">
 
-        <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             📦 Material Requests
         </h2>
 
-        <p class="text-white/80 mt-2">
+        <p class="text-gray-500 mt-1 text-lg">
             Manage and monitor personnel material requests.
         </p>
 
@@ -20,7 +20,7 @@
     <!-- SUCCESS -->
     @if(session('success'))
 
-        <div class="bg-green-500 text-white p-4 rounded-xl mb-4 shadow">
+        <div class="bg-green-500 text-white p-4 rounded-xl mb-4 shadow text-lg">
             {{ session('success') }}
         </div>
 
@@ -29,7 +29,7 @@
     <!-- ERROR -->
     @if(session('error'))
 
-        <div class="bg-red-500 text-white p-4 rounded-xl mb-4 shadow">
+        <div class="bg-red-500 text-white p-4 rounded-xl mb-4 shadow text-lg">
             {{ session('error') }}
         </div>
 
@@ -40,84 +40,88 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
 
         <div class="bg-yellow-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-sm">
+            <div class="text-base">
                 Pending Requests
             </div>
 
-            <div class="text-3xl font-bold">
+            <div class="text-4xl font-bold">
                 {{ $pendingCount }}
             </div>
         </div>
 
         <div class="bg-green-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-sm">
+            <div class="text-base">
                 Approved Requests
             </div>
 
-            <div class="text-3xl font-bold">
+            <div class="text-4xl font-bold">
                 {{ $approvedCount }}
             </div>
         </div>
 
         <div class="bg-blue-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-sm">
+            <div class="text-base">
                 Released Requests
             </div>
 
-            <div class="text-3xl font-bold">
+            <div class="text-4xl font-bold">
                 {{ $releasedCount }}
             </div>
         </div>
 
         <div class="bg-red-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-sm">
+            <div class="text-base">
                 Rejected Requests
             </div>
 
-            <div class="text-3xl font-bold">
+            <div class="text-4xl font-bold">
                 {{ $rejectedCount }}
             </div>
         </div>
 
     </div>
 
-    <!-- TABLE CARD -->
-    <div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
+    <!-- TABLE -->
+    <div class="border rounded-lg overflow-hidden">
 
-        <table class="w-full">
+        <div class="overflow-x-auto">
+
+        <table class="w-full text-lg">
 
             <!-- HEADER -->
-            <thead class="bg-gradient-to-r from-green-500 to-blue-600 text-white">
+            <thead class="bg-gray-100">
 
                 <tr>
-                    <th class="p-4 text-left">Request No.</th>
+                    <th class="p-4 text-left text-gray-800">Request No.</th>
 
-                    <th class="p-4 text-left">Requester</th>
+                    <th class="p-4 text-left text-gray-800">Requester</th>
 
-                    <th class="p-4 text-left">Department</th>
+                    <th class="p-4 text-left text-gray-800">Department</th>
 
-                    <th class="p-4 text-left">Material</th>
+                    <th class="p-4 text-left text-gray-800">Room</th>
 
-                    <th class="p-4 text-left">Qty</th>
+                    <th class="p-4 text-left text-gray-800">Material</th>
 
-                    <th class="p-4 text-left">Purpose</th>
+                    <th class="p-4 text-left text-gray-800">Qty</th>
 
-                    <th class="p-4 text-left">Requested At</th>
+                    <th class="p-4 text-left text-gray-800">Purpose</th>
 
-                    <th class="p-4 text-left">Status</th>
+                    <th class="p-4 text-left text-gray-800">Requested At</th>
 
-                    <th class="p-4 text-left">Actions</th>
+                    <th class="p-4 text-left text-gray-800">Status</th>
+
+                    <th class="p-4 text-left text-gray-800">Actions</th>
 
                 </tr>
 
             </thead>
 
             <!-- BODY -->
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
 
     @forelse($requests as $request)
 
-        <tr class="border-b hover:bg-gray-50 transition">
+        <tr class="hover:bg-gray-50 transition">
 
             <!-- REQUEST NUMBER -->
             <td class="p-4">
@@ -140,6 +144,11 @@
                 <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
                     🏢 {{ $request->department->department_code ?? 'N/A' }}
                 </span>
+            </td>
+
+            <!-- ROOM -->
+            <td class="p-4 text-gray-700">
+                {{ $request->room ?? '—' }}
             </td>
 
             <!-- MATERIAL -->
@@ -272,7 +281,7 @@
         <!-- HIDDEN MODAL DATA -->
         <tr class="hidden">
 
-            <td colspan="9">
+            <td colspan="10">
 
                 <div
                     id="request-{{ $request->id }}"
@@ -292,6 +301,13 @@
                         <strong>Department:</strong>
                         {{ $request->department->department_name ?? 'N/A' }}
                     </p>
+
+                    @if($request->room)
+                    <p>
+                        <strong>Room / Location:</strong>
+                        {{ $request->room }}
+                    </p>
+                    @endif
 
                     <p>
                         <strong>Purpose:</strong>
@@ -363,7 +379,7 @@
                 @empty
 
                     <tr>
-                        <td colspan="9" class="p-6 text-center text-gray-500">
+                        <td colspan="10" class="p-6 text-center text-gray-500">
                             No material requests found.
                         </td>
                     </tr>
@@ -372,9 +388,11 @@
 
             </tbody>
 
-        </table>    
+        </table>
 
      </div>
+
+    </div>
 
 </div>
 

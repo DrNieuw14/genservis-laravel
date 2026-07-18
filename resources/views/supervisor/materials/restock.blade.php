@@ -2,18 +2,18 @@
 
 @section('content')
 
-<div class="max-w-4xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- HEADER -->
     <div class="mb-6">
 
-        <h2 class="text-4xl font-bold text-white flex items-center gap-3">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
 
             📦 Restock Material
 
         </h2>
 
-        <p class="text-white/80 mt-2">
+        <p class="text-gray-500 mt-1 text-lg">
 
             Add stock quantity to inventory materials.
 
@@ -39,9 +39,6 @@
         </div>
 
     @endif
-
-    <!-- CARD -->
-    <div class="bg-white rounded-2xl shadow-2xl p-8">
 
         <!-- MATERIAL INFO -->
         <div class="mb-8">
@@ -207,20 +204,11 @@
                 </button>
 
                 <!-- BACK -->
-                <a href="{{ route('materials.index') }}"
-                   class="bg-gray-200 hover:bg-gray-300
-                          text-gray-700 px-6 py-3
-                          rounded-xl shadow font-semibold">
-
-                    ← Back
-
-                </a>
+                <x-back-button :href="route('materials.index')" />
 
             </div>
 
         </form>
-
-    </div>
 
 </div>
 

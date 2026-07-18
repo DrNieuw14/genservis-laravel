@@ -1,22 +1,56 @@
-<x-app-layout>
+@extends('layouts.app')
 
-<x-slot name="header">
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Annual PPMP
-    </h2>
-</x-slot>
+@section('content')
 
-<div class="py-6">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <!-- HEADER -->
+    <div class="flex items-center justify-between mb-6">
 
-<div class="bg-white shadow rounded-lg">
+        <div>
 
-<div class="p-6">
+            @if($scopedDepartment)
+
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+                📄 My Department PPMP
+            </h2>
+
+            <p class="text-gray-500 mt-1 text-lg">
+                Procurement plans for {{ $scopedDepartment->department_name }}.
+            </p>
+
+            @else
+
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+                📄 Annual PPMP
+            </h2>
+
+            <p class="text-gray-500 mt-1 text-lg">
+                Manage your institution's annual procurement plans.
+            </p>
+
+            @endif
+
+        </div>
+
+        @if(auth()->user()->hasPermission('create-ppmp'))
+
+        <a href="{{ route('procurement.plans.create') }}"
+           class="bg-gradient-to-r from-green-500 to-blue-500
+                  hover:scale-105 transition
+                  text-white px-5 py-3 rounded-xl shadow-lg font-semibold whitespace-nowrap">
+
+            ➕ Create New PPMP
+
+        </a>
+
+        @endif
+
+    </div>
 
 @if(session('success'))
 
-<div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded mb-6">
+<div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded mb-6 text-lg">
 
 {{ session('success') }}
 
@@ -26,30 +60,13 @@
 
 @if(session('error'))
 
-<div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded mb-6">
+<div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded mb-6 text-lg">
 
 {{ session('error') }}
 
 </div>
 
 @endif
-
-<div class="flex justify-between items-center mb-6">
-
-<h2 class="text-2xl font-bold">
-
-Annual Procurement Plans
-
-</h2>
-
-<a href="{{ route('procurement.plans.create') }}"
-class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-
-+ Create New PPMP
-
-</a>
-
-</div>
 
 <form method="GET">
 
@@ -224,12 +241,6 @@ No Procurement Plans Found
 
 </div>
 
-</div>
-
-</div>
-
-</div>
-
 <script>
 
     function confirmDeletePlan(planId, planNumber)
@@ -269,4 +280,4 @@ No Procurement Plans Found
 
 </script>
 
-</x-app-layout>
+@endsection

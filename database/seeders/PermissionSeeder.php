@@ -77,6 +77,9 @@ class PermissionSeeder extends Seeder
                     ['name' => 'View Department Inventory', 'slug' => 'view-department-inventory'],
                     ['name' => 'View Material Logs', 'slug' => 'view-material-logs'],
 
+                    // Material Requests
+                    ['name' => 'Process Material Requests', 'slug' => 'process-material-requests'],
+
                 ]
             ],
 
@@ -101,6 +104,7 @@ class PermissionSeeder extends Seeder
                     ['name' => 'View Budget Monitoring', 'slug' => 'view-budget-monitoring'],
                     ['name' => 'View Purchase Forecast', 'slug' => 'view-purchase-forecast'],
                     ['name' => 'View Procurement Calendar', 'slug' => 'view-procurement-calendar'],
+                    ['name' => 'Manage Own Department PPMP Items', 'slug' => 'manage-own-department-ppmp-items'],
 
                 ]
             ],

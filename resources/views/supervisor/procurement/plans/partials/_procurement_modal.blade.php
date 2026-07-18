@@ -76,6 +76,127 @@
 
                         </select>
 
+                        <button
+                            type="button"
+                            onclick="toggleNewMaterialForm()"
+                            class="text-sm text-blue-600 hover:underline mt-2">
+
+                            + Can't find it? Add New Material
+
+                        </button>
+
+                    </div>
+
+                    <!-- New Material Inline Form -->
+                    <div class="md:col-span-2">
+
+                        <div
+                            id="newMaterialForm"
+                            class="hidden rounded-lg border border-green-200 bg-green-50 p-4">
+
+                            <h4 class="font-semibold text-green-800 mb-3">
+                                ➕ Add New Material
+                            </h4>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+                                <div class="md:col-span-2">
+
+                                    <label class="text-sm font-semibold">
+                                        Material Name
+                                    </label>
+
+                                    <input
+                                        id="newMaterialName"
+                                        type="text"
+                                        class="w-full border rounded mt-1">
+
+                                </div>
+
+                                <div>
+
+                                    <label class="text-sm font-semibold">
+                                        Category
+                                    </label>
+
+                                    <select id="newMaterialCategory" class="w-full border rounded mt-1">
+
+                                        <option value="">-- Select Category --</option>
+
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
+
+                                    </select>
+
+                                </div>
+
+                                <div>
+
+                                    <label class="text-sm font-semibold">
+                                        Unit
+                                    </label>
+
+                                    <select id="newMaterialUnit" class="w-full border rounded mt-1">
+
+                                        <option value="">-- Select Unit --</option>
+
+                                        @foreach($units as $unit)
+                                            <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                                        @endforeach
+
+                                    </select>
+
+                                </div>
+
+                                <div class="md:col-span-2">
+
+                                    <label class="text-sm font-semibold">
+                                        Procurement Classification
+                                    </label>
+
+                                    <select id="newMaterialClassification" class="w-full border rounded mt-1">
+
+                                        <option value="">-- Select Classification --</option>
+
+                                        @foreach($classifications as $classification)
+                                            <option value="{{ $classification->id }}">
+                                                {{ $classification->code }} — {{ $classification->sub_category_c }} ({{ $classification->uacs_code }})
+                                            </option>
+                                        @endforeach
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div id="newMaterialError" class="hidden text-sm text-red-600 mt-3"></div>
+
+                            <div class="mt-4 flex justify-end gap-2">
+
+                                <button
+                                    type="button"
+                                    onclick="toggleNewMaterialForm()"
+                                    class="px-4 py-2 border rounded text-sm">
+
+                                    Cancel
+
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onclick="createNewMaterial()"
+                                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+
+                                    Create &amp; Select
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
                     </div>
 
                     <!-- Material Information -->
@@ -156,6 +277,40 @@
                                 </div>
 
                             </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Assign Classification (shown only when the selected material has none yet) -->
+                    <div class="md:col-span-2">
+
+                        <div
+                            id="assignClassificationCard"
+                            class="hidden rounded-lg border border-amber-200 bg-amber-50 p-4">
+
+                            <h4 class="font-semibold text-amber-800 mb-2">
+                                🏷 This material has no classification yet
+                            </h4>
+
+                            <p class="text-sm text-amber-700 mb-3">
+                                Pick one below - it will be saved to the material and this item will be added together.
+                            </p>
+
+                            <select
+                                id="assignClassificationSelect"
+                                name="assign_classification_id"
+                                class="w-full border rounded">
+
+                                <option value="">-- Select Classification --</option>
+
+                                @foreach($classifications as $classification)
+                                    <option value="{{ $classification->id }}">
+                                        {{ $classification->code }} — {{ $classification->sub_category_c }} ({{ $classification->uacs_code }})
+                                    </option>
+                                @endforeach
+
+                            </select>
 
                         </div>
 
@@ -262,6 +417,22 @@
                             <option value="NP- AGENCY TO AGENCY">NP - Agency to Agency</option>
 
                         </select>
+
+                    </div>
+
+                    <!-- Reason for Change (edit mode only) -->
+                    <div id="editReasonField" class="md:col-span-2 hidden">
+
+                        <label class="font-semibold">
+                            Reason for Change (optional)
+                        </label>
+
+                        <textarea
+                            id="edit_reason"
+                            name="edit_reason"
+                            rows="2"
+                            placeholder="Let the person who added this item know why it changed..."
+                            class="w-full border rounded mt-2"></textarea>
 
                     </div>
 

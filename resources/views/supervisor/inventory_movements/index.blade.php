@@ -2,98 +2,90 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- HEADER -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="mb-6">
 
-        <div>
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+            📦 Inventory Movement Logs
+        </h2>
 
-            <h2 class="text-4xl font-bold text-white flex items-center gap-3">
-                📦 Inventory Movement Logs
-            </h2>
+        <p class="text-gray-500 mt-1 text-lg">
+            Inventory Audit Center
+        </p>
 
-            <p class="text-white/80 mt-2">
-                Inventory Audit Center
-            </p>
+    </div>
+
+    <!-- SEARCH -->
+    <form method="GET" class="mb-6">
+
+        <div class="flex flex-col md:flex-row gap-4">
+
+            <input type="text"
+                   name="search"
+                   value="{{ request('search') }}"
+                   placeholder="Search material or movement type..."
+                   class="w-full border border-gray-300
+                          rounded-lg p-3 text-lg
+                          focus:ring-2 focus:ring-blue-400
+                          outline-none">
+
+            <button type="submit"
+                    class="bg-gradient-to-r from-green-500 to-blue-500
+                           hover:scale-105 transition
+                           text-white px-6 py-3
+                           rounded-xl shadow-lg font-semibold">
+
+                🔍 Search
+
+            </button>
 
         </div>
 
-    </div>
+    </form>
 
-    <!-- SEARCH CARD -->
-    <div class="bg-white rounded-2xl shadow-2xl p-5 mb-6">
-
-        <form method="GET">
-
-            <div class="flex flex-col md:flex-row gap-4">
-
-                <input type="text"
-                       name="search"
-                       value="{{ request('search') }}"
-                       placeholder="Search material or movement type..."
-                       class="w-full border border-gray-300
-                              rounded-xl p-3
-                              focus:ring-2 focus:ring-blue-400
-                              outline-none">
-
-                <button type="submit"
-                        class="bg-gradient-to-r from-green-500 to-blue-500
-                               hover:scale-105 transition
-                               text-white px-6 py-3
-                               rounded-xl shadow-lg font-semibold">
-
-                    🔍 Search
-
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-    <!-- TABLE CARD -->
-    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <!-- TABLE -->
+    <div class="border rounded-lg overflow-hidden">
 
         <div class="overflow-x-auto">
 
-            <table class="min-w-full">
+            <table class="w-full text-lg">
 
                 <!-- HEADER -->
-                <thead class="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                <thead class="bg-gray-100">
 
                     <tr>
 
-                        <th class="p-4 text-left whitespace-nowrap">
+                        <th class="p-4 text-left text-gray-800 whitespace-nowrap">
                             Date
                         </th>
 
-                        <th class="p-4 text-left whitespace-nowrap">
+                        <th class="p-4 text-left text-gray-800 whitespace-nowrap">
                             Material
                         </th>
 
-                        <th class="p-4 text-left whitespace-nowrap">
+                        <th class="p-4 text-left text-gray-800 whitespace-nowrap">
                             Department
                         </th>
 
-                        <th class="p-4 text-left whitespace-nowrap">
+                        <th class="p-4 text-left text-gray-800 whitespace-nowrap">
                             Movement Type
                         </th>
 
-                        <th class="p-4 text-left whitespace-nowrap">
+                        <th class="p-4 text-left text-gray-800 whitespace-nowrap">
                             Quantity
                         </th>
 
-                        <th class="p-4 text-left whitespace-nowrap">
+                        <th class="p-4 text-left text-gray-800 whitespace-nowrap">
                             Previous
                         </th>
 
-                        <th class="p-4 text-left whitespace-nowrap">
+                        <th class="p-4 text-left text-gray-800 whitespace-nowrap">
                             New
                         </th>
 
-                        <th class="p-4 text-left whitespace-nowrap">
+                        <th class="p-4 text-left text-gray-800 whitespace-nowrap">
                             User
                         </th>
 
@@ -102,11 +94,11 @@
                 </thead>
 
                 <!-- BODY -->
-                <tbody>
+                <tbody class="divide-y divide-gray-200">
 
                     @forelse($movements as $movement)
 
-                    <tr class="border-b hover:bg-gray-50 transition">
+                    <tr class="hover:bg-gray-50 transition">
 
                         <!-- DATE -->
                         <td class="p-4 text-sm text-gray-600 whitespace-nowrap">

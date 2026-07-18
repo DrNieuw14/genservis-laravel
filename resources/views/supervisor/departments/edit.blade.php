@@ -2,27 +2,20 @@
 
 @section('content')
 
-<div class="min-h-screen bg-gradient-to-r from-cyan-700 to-blue-900 p-10">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <div class="max-w-5xl mx-auto">
+    <!-- HEADER -->
+    <div class="mb-6">
 
-        <!-- HEADER -->
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+            ✏️ Edit Department
+        </h2>
 
-        <div class="mb-8 text-center">
+        <p class="text-gray-500 mt-1 text-lg">
+            Update department information.
+        </p>
 
-            <h1 class="text-4xl font-bold text-white flex items-center justify-center gap-3">
-                ✏️ Edit Department
-            </h1>
-
-            <p class="text-gray-200 mt-2">
-                Update department information.
-            </p>
-
-        </div>
-
-        <!-- FORM CARD -->
-
-        <div class="bg-white rounded-3xl shadow-2xl p-8">
+    </div>
 
             <form action="{{ route('supervisor.departments.update', $department->id) }}"
                   method="POST">
@@ -95,10 +88,6 @@
                 </div>
 
             </form>
-
-        </div>
-
-    </div>
 
 </div>
 

@@ -10,11 +10,17 @@ class PermissionMiddleware
 {
     /**
      * Handle an incoming request.
+     *
+     * Accepts one or more permission slugs (e.g. `permission:view-ppmp` or
+     * `permission:view-ppmp,manage-own-department-ppmp-items`) - the user
+     * needs any one of them. Laravel splits the comma-separated middleware
+     * parameter string itself and passes each piece as its own argument,
+     * so this must be variadic rather than a single string parameter.
      */
     public function handle(
         Request $request,
         Closure $next,
-        string $permission
+        string ...$permissions
     ): Response {
 
         $user = auth()->user();
@@ -25,7 +31,10 @@ class PermissionMiddleware
 
         }
 
-        if (!$user->hasPermission($permission)) {
+        $allowed = collect($permissions)
+            ->contains(fn ($p) => $user->hasPermission(trim($p)));
+
+        if (!$allowed) {
 
             abort(403, 'Unauthorized.');
 

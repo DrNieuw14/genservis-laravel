@@ -2,20 +2,18 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <!-- ========================================================= -->
     <!-- PAGE HEADER -->
-    <!-- ========================================================= -->
-    <div class="flex justify-between items-start mb-8">
+    <div class="flex justify-between items-start mb-6">
 
         <div>
 
-            <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
                 👤 {{ optional($user->personnel)->fullname ?? $user->name }}
-            </h1>
+            </h2>
 
-            <p class="text-gray-200 mt-2">
+            <p class="text-gray-500 mt-1 text-lg">
                 User account details and role permissions.
             </p>
 
@@ -24,16 +22,7 @@
         <div class="flex gap-2">
 
             <!-- Back -->
-            <a
-                href="{{ route('admin.user-access.index') }}"
-                class="inline-flex items-center gap-2 px-4 py-2
-                    bg-indigo-600 hover:bg-indigo-700
-                    text-white text-sm font-medium
-                    rounded-lg shadow transition">
-
-                ⬅️ Back
-
-            </a>
+            <x-back-button :href="route('admin.user-access.index')" />
 
             <!-- Assign Role -->
             <a
@@ -53,7 +42,7 @@
 
     @if(session('success'))
 
-        <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-lg mb-8">
+        <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-lg mb-6 text-lg">
 
             {{ session('success') }}
 
@@ -63,7 +52,7 @@
 
     @if(session('error'))
 
-        <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-8">
+        <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-6 text-lg">
 
             {{ session('error') }}
 
@@ -71,14 +60,12 @@
 
     @endif
 
-    <!-- ========================================================= -->
     <!-- EMPLOYEE INFORMATION -->
-    <!-- ========================================================= -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+    <div class="border rounded-lg p-5 bg-gray-50 mb-6">
 
-        <h2 class="text-xl font-semibold text-gray-800 mb-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">
             🧾 Employee Information
-        </h2>
+        </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
@@ -121,14 +108,12 @@
 
     </div>
 
-    <!-- ========================================================= -->
     <!-- ACCOUNT INFORMATION -->
-    <!-- ========================================================= -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+    <div class="border rounded-lg p-5 bg-gray-50 mb-6">
 
-        <h2 class="text-xl font-semibold text-gray-800 mb-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">
             🔑 Account Information
-        </h2>
+        </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
@@ -184,14 +169,12 @@
 
     </div>
 
-    <!-- ========================================================= -->
     <!-- ACCOUNT STATUS -->
-    <!-- ========================================================= -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+    <div class="border rounded-lg p-5 bg-gray-50 mb-6">
 
-        <h2 class="text-xl font-semibold text-gray-800 mb-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">
             🔒 Account Status
-        </h2>
+        </h3>
 
         <div class="flex items-center justify-between flex-wrap gap-4">
 
@@ -341,14 +324,12 @@
 
     </div>
 
-    <!-- ========================================================= -->
     <!-- PERMISSIONS -->
-    <!-- ========================================================= -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+    <div class="border rounded-lg p-5 bg-gray-50">
 
-        <h2 class="text-xl font-semibold text-gray-800 mb-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">
             🛡️ Permissions
-        </h2>
+        </h3>
 
         @if($user->systemRole && $permissions->isNotEmpty())
 

@@ -49,6 +49,11 @@ class ProcurementPlan extends Model
         return $this->hasMany(ProcurementPlanItem::class, 'plan_id');
     }
 
+    public function itemLogs()
+    {
+        return $this->hasMany(ProcurementPlanItemLog::class, 'plan_id');
+    }
+
     public function preparedBy()
     {
         return $this->belongsTo(User::class, 'prepared_by');

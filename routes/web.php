@@ -265,7 +265,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('permission:manage-permissions')->group(function () {
 
-    Route::resource('permissions', PermissionController::class);
+    Route::resource('permissions', PermissionController::class)
+        ->only(['index', 'edit', 'update']);
 
 });
 
@@ -278,7 +279,6 @@ Route::middleware(['auth'])->group(function () {
 
         Route::prefix('procurement')
             ->name('procurement.')
-            ->middleware('permission:view-ppmp')
             ->group(function () {
 
                 /*
@@ -287,78 +287,107 @@ Route::middleware(['auth'])->group(function () {
                 |--------------------------------------------------------------------------
                 */
 
-                Route::get(
-                    '/dashboard',
-                    [ProcurementDashboardController::class, 'index']
-                )->name('dashboard');
+                Route::middleware('permission:view-ppmp')->group(function () {
+
+                    Route::get(
+                        '/dashboard',
+                        [ProcurementDashboardController::class, 'index']
+                    )->name('dashboard');
+
+                });
 
                 /*
                 |--------------------------------------------------------------------------
                 | Annual PPMP
                 |--------------------------------------------------------------------------
+                | index/show are also reachable by a department-scoped user
+                | (manage-own-department-ppmp-items); create/edit/update/destroy
+                | remain full-access only (view-ppmp).
                 */
 
                 Route::resource(
                     'plans',
                     ProcurementPlanController::class
-                );
+                )
+                    ->middlewareFor(
+                        ['index', 'show'],
+                        'permission:view-ppmp,manage-own-department-ppmp-items'
+                    )
+                    ->middlewareFor(
+                        ['create', 'store', 'edit', 'update', 'destroy'],
+                        'permission:view-ppmp'
+                    );
 
-                Route::post(
-                    'plans/{plan}/submit',
-                    [ProcurementPlanController::class, 'submit']
-                )->middleware('permission:submit-ppmp')->name('plans.submit');
+                Route::middleware('permission:view-ppmp')->group(function () {
 
-                Route::post(
-                    'plans/{plan}/approve',
-                    [ProcurementPlanController::class, 'approve']
-                )->middleware('permission:approve-ppmp')->name('plans.approve');
+                    Route::post(
+                        'plans/{plan}/submit',
+                        [ProcurementPlanController::class, 'submit']
+                    )->middleware('permission:submit-ppmp')->name('plans.submit');
 
-                Route::post(
-                    'plans/{plan}/reject',
-                    [ProcurementPlanController::class, 'reject']
-                )->middleware('permission:reject-ppmp')->name('plans.reject');
+                    Route::post(
+                        'plans/{plan}/approve',
+                        [ProcurementPlanController::class, 'approve']
+                    )->middleware('permission:approve-ppmp')->name('plans.approve');
+
+                    Route::post(
+                        'plans/{plan}/reject',
+                        [ProcurementPlanController::class, 'reject']
+                    )->middleware('permission:reject-ppmp')->name('plans.reject');
+
+                    Route::post(
+                        'plans/items/{item}/toggle-approval',
+                        [ProcurementPlanItemController::class, 'toggleApproval']
+                    )->name('plans.items.toggle-approval');
+
+                });
 
                 /*
                 |--------------------------------------------------------------------------
-                | MATERIAL DETAILS (AJAX)
+                | MATERIAL DETAILS (AJAX) + PROCUREMENT PLAN ITEMS
                 |--------------------------------------------------------------------------
+                | Reachable by full-access roles AND a department-scoped user managing
+                | their own department's PPMP items.
                 */
 
-                Route::get(
-                    'materials/{material}/details',
-                    [MaterialController::class, 'details']
-                )->name('materials.details');
+                Route::middleware('permission:view-ppmp,manage-own-department-ppmp-items')->group(function () {
 
-                /*
-                |--------------------------------------------------------------------------
-                | PROCUREMENT PLAN ITEMS
-                |--------------------------------------------------------------------------
-                */
+                    Route::get(
+                        'materials/{material}/details',
+                        [MaterialController::class, 'details']
+                    )->name('materials.details');
 
-                Route::get(
-                    'plans/{plan}/items/create',
-                    [ProcurementPlanItemController::class, 'create']
-                )->name('plans.items.create');
+                    Route::post(
+                        'plans/{plan}/materials/quick-create',
+                        [MaterialController::class, 'quickStoreForProcurement']
+                    )->name('materials.quick-create');
 
-                Route::post(
-                    'plans/{plan}/items',
-                    [ProcurementPlanItemController::class, 'store']
-                )->name('plans.items.store');
+                    Route::get(
+                        'plans/{plan}/items/create',
+                        [ProcurementPlanItemController::class, 'create']
+                    )->name('plans.items.create');
 
-                Route::get(
-                    'plans/items/{item}',
-                    [ProcurementPlanItemController::class, 'show']
-                )->name('plans.items.show');
+                    Route::post(
+                        'plans/{plan}/items',
+                        [ProcurementPlanItemController::class, 'store']
+                    )->name('plans.items.store');
 
-                Route::put(
-                    'plans/items/{item}',
-                    [ProcurementPlanItemController::class, 'update']
-                )->name('plans.items.update');
+                    Route::get(
+                        'plans/items/{item}',
+                        [ProcurementPlanItemController::class, 'show']
+                    )->name('plans.items.show');
 
-                Route::delete(
-                    'plans/items/{item}',
-                    [ProcurementPlanItemController::class, 'destroy']
-                )->name('plans.items.destroy');
+                    Route::put(
+                        'plans/items/{item}',
+                        [ProcurementPlanItemController::class, 'update']
+                    )->name('plans.items.update');
+
+                    Route::delete(
+                        'plans/items/{item}',
+                        [ProcurementPlanItemController::class, 'destroy']
+                    )->name('plans.items.destroy');
+
+                });
 
             });
 
@@ -754,7 +783,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // 📦 Material Requests
-    Route::middleware('role:supervisor')->group(function () {
+    Route::middleware('permission:process-material-requests')->group(function () {
 
         Route::get('/supervisor/material-requests', [MaterialRequestController::class, 'index']);
 

@@ -2,33 +2,33 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <h1 class="text-4xl font-bold text-white mb-8">
+    <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3 mb-6">
         📦 Department Inventory Balance
-    </h1>
+    </h2>
 
-    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div class="border rounded-lg overflow-hidden">
 
-        <table class="w-full">
+        <table class="w-full text-lg">
 
-            <thead>
+            <thead class="bg-gray-100">
 
-                <tr class="bg-gradient-to-r from-green-500 to-blue-600 text-white">
+                <tr>
 
-                    <th class="p-4 text-left">
+                    <th class="p-4 text-left text-gray-800">
                         Department
                     </th>
 
-                    <th class="p-4 text-left">
+                    <th class="p-4 text-left text-gray-800">
                         Total Materials
                     </th>
 
-                    <th class="p-4 text-left">
+                    <th class="p-4 text-left text-gray-800">
                         Total Quantity
                     </th>
 
-                    <th class="p-4 text-center">
+                    <th class="p-4 text-center text-gray-800">
                         Action
                     </th>
 
@@ -36,11 +36,11 @@
 
             </thead>
 
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
 
                 @forelse($balances as $item)
 
-                    <tr class="border-b hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50 transition">
 
                         <td class="p-4 font-semibold">
                             {{ $item->department->department_name }}

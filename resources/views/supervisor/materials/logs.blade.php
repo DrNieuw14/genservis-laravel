@@ -2,20 +2,18 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto mt-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- PAGE HEADER -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="mb-6">
 
-        <div>
-            <h2 class="text-3xl font-bold text-white flex items-center gap-2">
-                📜 Material Logs
-            </h2>
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+            📜 Material Logs
+        </h2>
 
-            <p class="text-gray-200 mt-1">
-                Inventory activity and audit trail history
-            </p>
-        </div>
+        <p class="text-gray-500 mt-1 text-lg">
+            Inventory activity and audit trail history
+        </p>
 
     </div>
 
@@ -23,121 +21,99 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
 
         <!-- TOTAL LOGS -->
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-
-            <h3 class="text-gray-500 text-sm">
-                Total Logs
-            </h3>
-
-            <p class="text-3xl font-bold text-blue-600 mt-2">
-                {{ $logs->count() }}
-            </p>
-
+        <div class="bg-blue-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Total Logs</div>
+            <div class="text-4xl font-bold">{{ $logs->count() }}</div>
         </div>
 
         <!-- STOCK IN -->
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-
-            <h3 class="text-gray-500 text-sm">
-                Stock In
-            </h3>
-
-            <p class="text-3xl font-bold text-green-500 mt-2">
-                {{ $logs->where('action', 'stock_in')->count() }}
-            </p>
-
+        <div class="bg-green-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Stock In</div>
+            <div class="text-4xl font-bold">{{ $logs->where('action', 'stock_in')->count() }}</div>
         </div>
 
         <!-- STOCK OUT -->
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-
-            <h3 class="text-gray-500 text-sm">
-                Stock Out
-            </h3>
-
-            <p class="text-3xl font-bold text-red-500 mt-2">
-                {{ $logs->where('action', 'stock_out')->count() }}
-            </p>
-
+        <div class="bg-red-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Stock Out</div>
+            <div class="text-4xl font-bold">{{ $logs->where('action', 'stock_out')->count() }}</div>
         </div>
 
     </div>
 
     <!-- SEARCH + FILTER -->
-    <div class="bg-white rounded-2xl shadow-xl p-4 mb-6">
+    <form method="GET"
+        action="{{ route('materials.logs') }}"
+        class="mb-6">
 
-        <form method="GET"
-            action="{{ route('materials.logs') }}">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <!-- SEARCH -->
+            <input type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search material, user, or action..."
+                class="border border-gray-300 rounded-lg p-3 text-lg focus:ring-2 focus:ring-blue-400">
 
-                <!-- SEARCH -->
-                <input type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Search material, user, or action..."
-                    class="border rounded-xl p-3 focus:ring-2 focus:ring-blue-400">
+            <!-- DATE FILTER -->
+            <select name="date_filter"
+                    class="border border-gray-300 rounded-lg p-3 text-lg focus:ring-2 focus:ring-blue-400">
 
-                <!-- DATE FILTER -->
-                <select name="date_filter"
-                        class="border rounded-xl p-3 focus:ring-2 focus:ring-blue-400">
+                <option value="">All Dates</option>
 
-                    <option value="">All Dates</option>
+                <option value="today"
+                    {{ request('date_filter') == 'today' ? 'selected' : '' }}>
+                    Today
+                </option>
 
-                    <option value="today"
-                        {{ request('date_filter') == 'today' ? 'selected' : '' }}>
-                        Today
-                    </option>
+                <option value="week"
+                    {{ request('date_filter') == 'week' ? 'selected' : '' }}>
+                    This Week
+                </option>
 
-                    <option value="week"
-                        {{ request('date_filter') == 'week' ? 'selected' : '' }}>
-                        This Week
-                    </option>
+                <option value="month"
+                    {{ request('date_filter') == 'month' ? 'selected' : '' }}>
+                    This Month
+                </option>
 
-                    <option value="month"
-                        {{ request('date_filter') == 'month' ? 'selected' : '' }}>
-                        This Month
-                    </option>
+            </select>
 
-                </select>
+            <!-- BUTTON -->
+            <button
+                class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-semibold text-lg">
 
-                <!-- BUTTON -->
-                <button
-                    class="bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">
+                Filter Logs
 
-                    Filter Logs
+            </button>
 
-                </button>
+        </div>
 
-            </div>
-
-        </form>
-
-    </div>
+    </form>
 
     <!-- TABLE -->
-    <div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
+    <div class="border rounded-lg overflow-hidden">
 
-        <table class="w-full">
+      <div class="overflow-x-auto">
 
-            <thead class="bg-gradient-to-r from-green-500 to-blue-600 text-white">
+        <table class="w-full text-lg">
+
+            <thead class="bg-gray-100">
 
                 <tr>
-                    <th class="p-4 text-left">Material</th>
-                    <th class="p-4 text-left">Action</th>
-                    <th class="p-4 text-left">Quantity</th>
-                    <th class="p-4 text-left">User</th>
-                    <th class="p-4 text-left">Remarks</th>
-                    <th class="p-4 text-left">Date</th>
+                    <th class="p-4 text-left text-gray-800">Material</th>
+                    <th class="p-4 text-left text-gray-800">Action</th>
+                    <th class="p-4 text-left text-gray-800">Quantity</th>
+                    <th class="p-4 text-left text-gray-800">User</th>
+                    <th class="p-4 text-left text-gray-800">Remarks</th>
+                    <th class="p-4 text-left text-gray-800">Date</th>
                 </tr>
 
             </thead>
 
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
 
                 @forelse($logs as $log)
 
-                    <tr class="border-b hover:bg-gray-50 transition">
+                    <tr class="hover:bg-gray-50 transition">
 
                         <!-- MATERIAL -->
                         <td class="p-4 font-medium">
@@ -209,6 +185,8 @@
             </tbody>
 
         </table>
+
+      </div>
 
     </div>
 

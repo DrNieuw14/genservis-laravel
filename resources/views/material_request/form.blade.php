@@ -2,315 +2,438 @@
 
 @section('content')
 
-<div class="max-w-2xl mx-auto mt-10">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <div class="bg-white shadow-2xl rounded-2xl p-8">
+    <!-- PAGE HEADER -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+                📦 Material Request
+            </h2>
 
-        <h2 class="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-            📦 Material Request
-        </h2>
+            <p class="text-gray-500 mt-1 text-lg">
+                Request materials from the Centralized Stockroom for your department.
+            </p>
+        </div>
+    </div>
 
-        @if(session('success'))
-            <div class="bg-green-500 text-white p-3 mb-4 rounded">
-                {{ session('success') }}
-            </div>
-        @endif
+    @if(session('success'))
+        <div class="bg-green-500 text-white p-4 mb-4 rounded-lg text-lg">
+            {{ session('success') }}
+        </div>
+    @endif
 
-        @if(session('error'))
-            <div class="bg-red-500 text-white p-3 mb-4 rounded">
-                {{ session('error') }}
-            </div>
-        @endif
+    @if(session('error'))
+        <div class="bg-red-500 text-white p-4 mb-4 rounded-lg text-lg">
+            {{ session('error') }}
+        </div>
+    @endif
 
-        @if ($errors->any())
-            <div class="bg-red-500 text-white p-3 mb-4 rounded">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    @if ($errors->any())
+        <div class="bg-red-500 text-white p-4 mb-4 rounded-lg text-lg">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        <form method="POST" action="/material-request">
-            @csrf
+    <form id="materialRequestForm" method="POST" action="/material-request">
+        @csrf
 
-            <!-- DEPARTMENT -->
+        <!-- DEPARTMENT -->
+        <div class="mb-6">
 
-            <div class="mb-6">
+            <label class="block mb-2 font-semibold text-lg">
+                Destination Department / Office
+            </label>
 
-                <label class="block text-sm font-semibold mb-1">
+            <p class="text-gray-500 text-base mb-2">
+                Materials will be requested from the Centralized Stockroom and assigned to the selected department.
+            </p>
 
-                    Destination Department / Office
+            <select
+                id="departmentSelect"
+                name="department_id"
+                class="w-full border rounded-lg p-4 text-lg"
+                required>
 
-                </label>
+                <option value="">
+                    -- Select Department --
+                </option>
 
-                <p class="text-xs text-gray-500 mt-1">
+                @foreach($departments as $department)
 
-                    Materials will be requested from the Centralized Stockroom and assigned to the selected department.
-
-                </p>
-
-                <select
-                    name="department_id"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
-                    required>
-
-                    <option value="">
-                        -- Select Department --
+                    <option value="{{ $department->id }}">
+                        {{ $department->department_name }}
                     </option>
 
-                    @foreach($departments as $department)
+                @endforeach
 
-                        <option value="{{ $department->id }}">
+            </select>
 
-                            {{ $department->department_name }}
+        </div>
 
-                        </option>
+        <!-- SOURCE & DESTINATION -->
+        <div class="border border-blue-200 bg-blue-50 rounded-xl p-5 mb-6">
 
-                    @endforeach
+            <h3 class="text-xl font-semibold text-blue-700 mb-4">
+                🏢 Source & Destination
+            </h3>
 
-                </select>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                <div>
+                    <p class="text-gray-500 text-base">
+                        Source Location
+                    </p>
+
+                    <p class="font-bold text-xl">
+                        Centralized Stockroom
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-gray-500 text-base">
+                        Requested For
+                    </p>
+
+                    <p
+                        id="departmentPreview"
+                        class="font-bold text-xl">
+
+                        Selected Department / Office
+
+                    </p>
+                </div>
 
             </div>
 
-            <!-- STOCKROOM INFO -->
+        </div>
 
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <!-- MATERIALS NEEDED -->
+        <div class="border rounded-lg p-5 mb-6 bg-gray-50">
 
-                <h3 class="font-bold text-blue-800 mb-2">
-                    🏢 Source & Destination
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+
+                <h3 class="text-xl font-semibold text-blue-700 flex items-center gap-2">
+                    🧾 Materials Needed
+                    <span id="item-count-badge" class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold">
+                        1 item
+                    </span>
                 </h3>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="w-full sm:w-72">
+                    <select id="category-filter"
+                        class="w-full border rounded-lg p-3 text-base">
 
-                    <div>
-                        <p class="text-xs text-gray-500">
-                            Source Location
-                        </p>
-
-                        <p class="font-semibold text-gray-800">
-                            Centralized Stockroom
-                        </p>
-                    </div>
-
-                    <div>
-                        <p class="text-xs text-gray-500">
-                            Requested For
-                        </p>
-
-                        <p class="font-semibold text-gray-800">
-                            Selected Department / Office
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- CATEGORY FILTER -->
-
-            <div class="mb-6">
-
-                <label class="block text-sm font-semibold mb-1">
-                    Material Category
-                </label>
-
-                <select id="category-filter"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none">
-
-                    <option value="">
-                        All Categories
-                    </option>
-
-                    @foreach($categories as $category)
-
-                        <option value="{{ $category->id }}">
-                            {{ $category->name }}
+                        <option value="">
+                            All Categories
                         </option>
 
-                    @endforeach
+                        @foreach($categories as $category)
 
-                </select>
+                            <option value="{{ $category->id }}">
+                                {{ $category->name }}
+                            </option>
 
-            </div>
+                        @endforeach
 
-            <!-- ITEMS CONTAINER -->
-            <div id="items-container">
-
-                <!-- ITEM ROW -->
-                <div class="item-row bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4">
-
-                    <!-- MATERIAL -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-semibold mb-1">
-                            Material
-                        </label>
-
-                        <select name="material_id[]"
-                            class="material-select w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
-                            required>
-
-                            <option value="">-- Select Material --</option>
-
-                            @foreach($materials as $material)
-
-                                <option
-                                    value="{{ $material->id }}"
-                                    data-stock="{{ $material->quantity }}"
-                                    data-category="{{ $material->category->name ?? 'N/A' }}"
-                                    data-unit="{{ $material->unit->name ?? 'pcs' }}"
-                                    data-threshold="{{ $material->threshold }}"
-                                    {{ $material->quantity <= 0 ? 'disabled' : '' }}
-                                >
-                                    {{ $material->name }}
-                                    — Stock: {{ $material->quantity }}
-
-                                    @if($material->quantity <= 0)
-                                        (Out of Stock)
-                                    @endif
-
-                                </option>
-
-                            @endforeach
-
-                        </select>
-                    </div>
-
-                    <div class="material-info hidden bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4">
-
-                        <h4 class="font-semibold text-blue-800 mb-2">
-                            📦 Material Information
-                        </h4>
-
-                        <div class="grid grid-cols-2 gap-2 text-sm">
-
-                            <div>
-                                <span class="text-gray-500">Category:</span>
-                                <span class="info-category font-medium">-</span>
-                            </div>
-
-                            <div>
-                                <span class="text-gray-500">Unit:</span>
-                                <span class="info-unit font-medium">-</span>
-                            </div>
-
-                            <div>
-                                <span class="text-gray-500">Available:</span>
-                                <span class="info-stock font-medium text-green-600">-</span>
-                            </div>
-
-                            <div>
-                                <span class="text-gray-500">Status:</span>
-                                <span class="info-status font-medium">-</span>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- QUANTITY -->
-                    <div class="mb-2">
-                        <label class="block text-sm font-semibold mb-1">
-                            Quantity
-                        </label>
-
-                        <input type="number"
-                            name="quantity[]"
-                            min="1"
-                            class="quantity-input w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
-                            required>
-
-                        <p class="stock-warning text-red-500 text-sm mt-1 hidden">
-                            Quantity exceeds available stock.
-                        </p>
-                    </div>
-
-                    <!-- REMOVE BUTTON -->
-                    <button type="button"
-                        class="remove-item bg-red-500 text-white px-3 py-1 rounded-lg text-sm mt-2 hidden">
-                        Remove
-                    </button>
-
+                    </select>
                 </div>
 
             </div>
 
-           
+            <div class="overflow-x-auto">
 
-            <!-- ADD ITEM -->
-            <button type="button"
+                <table class="w-full border rounded-lg overflow-hidden" id="materialsTable">
+
+                    <thead class="bg-gray-100">
+
+                        <tr>
+                            <th class="p-3 text-left text-lg">
+                                Material
+                            </th>
+
+                            <th class="p-3 text-left text-lg w-48">
+                                Quantity
+                            </th>
+
+                            <th class="p-3 text-center text-lg w-32">
+                                Action
+                            </th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="items-container" class="divide-y-2 divide-gray-300">
+
+                        <!-- ITEM ROW -->
+                        <tr class="item-row">
+
+                            <td class="p-3 align-top">
+
+                                <select name="material_id[]"
+                                    class="material-select w-full"
+                                    required>
+
+                                    <option value="">🔍 Click to search materials...</option>
+
+                                </select>
+
+                                <p class="material-meta text-base text-gray-500 mt-1"></p>
+
+                            </td>
+
+                            <td class="p-3 align-top">
+
+                                <input type="number"
+                                    name="quantity[]"
+                                    min="1"
+                                    class="quantity-input w-full border rounded-lg p-4 text-lg"
+                                    required>
+
+                                <p class="stock-warning text-red-500 text-base mt-1 hidden">
+                                    Exceeds available stock.
+                                </p>
+
+                            </td>
+
+                            <td class="p-3 text-center align-top">
+
+                                <button
+                                    type="button"
+                                    class="remove-item hidden bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg text-base font-semibold">
+
+                                    Remove
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <button
+                type="button"
                 id="add-item"
-                class="mb-6 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg text-lg font-semibold">
 
-                ➕ Add Another Material
+                ➕ Add Material
 
             </button>
 
-            <!-- REQUEST SUMMARY -->
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        </div>
 
-                <h3 class="font-bold text-blue-800 mb-3">
-                    📋 Material Requisition Summary
-                </h3>
+        <!-- REQUEST DETAILS -->
+        <div class="border rounded-lg p-5 mb-6 bg-gray-50">
 
-                <p class="text-xs text-gray-500 mb-3">
-                    Review all requested materials before submission.
-                </p>
+            <h3 class="text-xl font-semibold text-green-700 mb-4">
+                📝 Request Details
+            </h3>
 
-                <!-- ITEM LIST -->
-                <div id="summary-items"
-                    class="text-sm text-gray-700 space-y-1 mb-3">
+            <label class="block mb-2 font-semibold text-lg">
+                Room / Location
+            </label>
 
-                    <p class="text-gray-400">
-                        No materials selected yet.
-                    </p>
+            <p class="text-gray-500 text-base mb-2">
+                Optional — where the materials will be used, e.g. "Room 201".
+            </p>
 
-                </div>
+            <input
+                type="text"
+                name="room"
+                placeholder="Example: Room 201"
+                class="w-full border rounded-lg p-4 text-lg mb-4">
 
-                <!-- TOTALS -->
-                <div class="border-t pt-3 text-sm">
+            <label class="block mb-2 font-semibold text-lg">
+                Purpose of Request
+            </label>
 
-                    <div class="flex justify-between">
-                        <span>Total Items:</span>
-                        <span id="summary-total-items">0</span>
-                    </div>
+            <textarea
+                name="purpose"
+                rows="4"
+                placeholder="Example: Cleaning of ICT Laboratory"
+                class="w-full border rounded-lg p-4 text-lg"
+                required></textarea>
 
-                    <div class="flex justify-between font-semibold">
-                        <span>Total Quantity:</span>
-                        <span id="summary-total-qty">0</span>
-                    </div>
+        </div>
 
-                </div>
+        <!-- ACTION BUTTONS -->
+        <div class="flex gap-3">
 
-            </div>
-
-            <!-- PURPOSE -->
-            <div class="mb-4">
-
-                <label class="block text-sm font-semibold mb-1">
-                    Purpose of Request
-                </label>
-
-                <textarea
-                    name="purpose"
-                    rows="4"
-                    placeholder="Example: Cleaning of ICT Laboratory"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
-                    required></textarea>
-
-            </div>
-
-            <!-- SUBMIT -->
-            <button class="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
+            <button
+                type="button"
+                onclick="showConfirmationModal()"
+                class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-4 rounded-lg shadow text-lg">
 
                 📨 Submit Material Requisition
 
             </button>
 
-        </form>
+            <a href="{{ route('material-request.history') }}"
+               class="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-8 py-4 rounded-lg shadow text-lg">
+
+                📋 View History
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- Confirmation Modal -->
+<div
+    id="confirmationModal"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-[9999] p-4">
+
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6 lg:p-8">
+
+        <h2 class="text-2xl font-bold text-yellow-600 mb-4">
+            ⚠ Confirm Material Requisition
+        </h2>
+
+        <div class="space-y-2 text-gray-700 text-lg">
+
+           <p>
+                <strong>Source Location:</strong>
+                Centralized Stockroom
+            </p>
+
+            <p>
+                <strong>Destination:</strong>
+                <span id="confirmDepartment"></span>
+            </p>
+
+            <p id="confirmRoomRow">
+                <strong>Room / Location:</strong>
+                <span id="confirmRoom"></span>
+            </p>
+
+            <p>
+                <strong>Purpose:</strong>
+                <span id="confirmPurpose"></span>
+            </p>
+
+        </div>
+
+        <div class="mt-5">
+
+            <h3 class="font-semibold text-gray-800 mb-2 text-lg">
+                Materials
+            </h3>
+
+            <div
+                class="border rounded-lg p-3 bg-gray-50 max-h-64 overflow-y-auto">
+
+                <table class="w-full text-lg">
+
+                    <thead>
+
+                        <tr class="border-b">
+
+                            <th class="text-left py-2">
+                                Material
+                            </th>
+
+                            <th class="text-right py-2">
+                                Qty
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="confirmMaterials">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+
+            <button
+                id="cancelRequestBtn"
+                type="button"
+                onclick="closeConfirmationModal()"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg text-lg">
+
+                Cancel
+
+            </button>
+
+            <button
+                id="confirmRequestBtn"
+                type="button"
+                onclick="submitMaterialRequestForm()"
+                class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg text-lg">
+
+                Confirm Request
+
+            </button>
+
+        </div>
 
     </div>
+
+</div>
+
+<!-- Processing Modal -->
+<div
+    id="processingModal"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-[9999]">
+
+    <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md text-center">
+
+        <div class="flex justify-center mb-4">
+
+            <svg
+                class="animate-spin h-12 w-12 text-green-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24">
+
+                <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4">
+                </circle>
+
+                <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                </path>
+
+            </svg>
+
+        </div>
+
+        <h2 class="text-xl font-bold text-green-700">
+            Submitting Material Requisition
+        </h2>
+
+        <p class="text-gray-600 mt-2 text-lg">
+            Please wait...
+        </p>
+
+    </div>
+
 </div>
 
 <!-- Tom Select CSS -->
@@ -319,21 +442,39 @@
 <style>
 
     .ts-control {
-        border-radius: 0.75rem !important;
+        border-radius: 0.5rem !important;
         border: 1px solid #d1d5db !important;
-        padding: 0.75rem 1rem !important;
-        min-height: 52px !important;
+        padding: 1rem !important;
+        min-height: 58px !important;
         box-shadow: none !important;
+        font-size: 18px !important;
+        --ts-pr-min: 2.75rem;
     }
 
     .ts-control input {
-        font-size: 14px !important;
+        font-size: 18px !important;
         padding: 0 !important;
         margin: 0 !important;
     }
 
     .ts-wrapper.single .ts-control {
         background: white !important;
+        position: relative;
+    }
+
+    /* Chevron so this reads as a dropdown, matching the native Department/Category selects */
+    .ts-wrapper.single .ts-control::after {
+        content: "";
+        position: absolute;
+        right: 1.1rem;
+        top: 50%;
+        width: 10px;
+        height: 10px;
+        margin-top: -6px;
+        border-right: 2px solid #6b7280;
+        border-bottom: 2px solid #6b7280;
+        transform: rotate(45deg);
+        pointer-events: none;
     }
 
     .ts-control:focus-within {
@@ -342,9 +483,19 @@
     }
 
     .ts-dropdown {
-        border-radius: 0.75rem !important;
+        border-radius: 0.5rem !important;
         border: 1px solid #d1d5db !important;
         overflow: hidden;
+        font-size: 17px !important;
+    }
+
+    .ts-dropdown .option {
+        padding: 0.6rem 1rem !important;
+    }
+
+    /* Zebra striping so item rows read as distinct records, not one blur */
+    #materialsTable tbody tr:nth-child(even) {
+        background-color: #f9fafb;
     }
 
 </style>
@@ -354,28 +505,102 @@
 
 <script>
 
+    // ✅ MASTER MATERIAL DATA (single source of truth — avoids relying on
+    // Tom Select re-syncing custom data attributes when options are rebuilt)
+    const allMaterials = @json($materialsForJs);
+
+    const materialsById = {};
+
+    allMaterials.forEach(function (m) {
+        materialsById[m.id] = m;
+    });
+
+    function getSelectedDepartmentId() {
+
+        const value =
+            document.getElementById('departmentSelect').value;
+
+        return value ? parseInt(value) : null;
+    }
+
+    // ✅ (RE)BUILD A MATERIAL SELECT'S OPTIONS BASED ON CURRENT FILTERS
+    function populateMaterialSelect(tom, categoryId) {
+
+        const departmentId = getSelectedDepartmentId();
+
+        const currentValue = tom.getValue();
+
+        tom.clear(true);
+        tom.clearOptions();
+
+        tom.addOption({
+            value: '',
+            text: '🔍 Click to search materials...'
+        });
+
+        allMaterials.forEach(function (m) {
+
+            if (categoryId && String(categoryId) !== String(m.category_id)) {
+                return;
+            }
+
+            let text = m.name + ' — Stock: ' + m.stock;
+
+            let disabled = false;
+
+            if (m.stock <= 0) {
+
+                text += ' (Out of Stock)';
+
+                disabled = true;
+
+            } else if (departmentId && m.department_id === departmentId) {
+
+                text += ' (Already in this department)';
+
+                disabled = true;
+
+            }
+
+            tom.addOption({
+                value: String(m.id),
+                text: text,
+                disabled: disabled
+            });
+
+        });
+
+        tom.refreshOptions(false);
+
+        // Keep the previous selection if it's still valid under the new filters
+        if (currentValue && materialsById[currentValue]) {
+            tom.setValue(currentValue, true);
+        }
+
+    }
+
     // ✅ INIT TOMSELECT
-        function initTomSelect(element) {
+    function initTomSelect(element) {
 
         const tom = new TomSelect(element, {
             create: false,
+            dropdownParent: 'body',
+            disabledField: 'disabled',
             sortField: {
                 field: "text",
                 direction: "asc"
             }
         });
 
+        populateMaterialSelect(
+            tom,
+            document.getElementById('category-filter').value
+        );
+
         // ✅ STOCK CHECK
         element.addEventListener('change', function () {
 
-            const selectedOption =
-                element.options[element.selectedIndex];
-
-            console.log(selectedOption);
-            console.log(selectedOption.dataset);
-
-            const stock =
-                selectedOption.dataset.stock || 0;
+            const material = materialsById[element.value];
 
             const row =
                 element.closest('.item-row');
@@ -383,55 +608,34 @@
             const quantityInput =
                 row.querySelector('.quantity-input');
 
-            const infoCard = row.querySelector('.material-info');
+            const meta = row.querySelector('.material-meta');
 
-            console.log('Info Card:', infoCard);
-
-            if (!infoCard) {
-                console.error('Material info card not found');
+            if (!meta) {
                 return;
             }
 
-            const category =
-                selectedOption.dataset.category;
-
-            const unit =
-                selectedOption.dataset.unit;
-
-            const threshold =
-                parseInt(selectedOption.dataset.threshold || 0);
-
-            const stockNumber =
-                parseInt(stock);
+            if (!material) {
+                meta.innerHTML = '';
+                quantityInput.max = 0;
+                return;
+            }
 
             let status = 'Available';
             let statusColor = 'text-green-600';
 
-            if(stockNumber <= 0){
+            if(material.stock <= 0){
                 status = 'Out of Stock';
                 statusColor = 'text-red-600';
             }
-            else if(stockNumber <= threshold){
+            else if(material.stock <= material.threshold){
                 status = 'Low Stock';
                 statusColor = 'text-yellow-600';
             }
 
-            if (infoCard) {
-                infoCard.classList.remove('hidden');
-            }
+            meta.innerHTML =
+                `Category: <strong>${material.category_name}</strong> &nbsp;•&nbsp; Unit: <strong>${material.unit}</strong> &nbsp;•&nbsp; Available: <strong>${material.stock} ${material.unit}</strong> &nbsp;•&nbsp; <span class="${statusColor} font-semibold">${status}</span>`;
 
-            if (infoCard) {
-
-                infoCard.querySelector('.info-category').innerText = category;
-                infoCard.querySelector('.info-unit').innerText = unit;
-                infoCard.querySelector('.info-stock').innerText = stock + ' ' + unit;
-                infoCard.querySelector('.info-status').innerText = status;
-
-                infoCard.querySelector('.info-status').className =
-                    'info-status font-medium ' + statusColor;
-            }
-
-            quantityInput.max = stock;
+            quantityInput.max = material.stock;
 
         });
 
@@ -442,135 +646,84 @@
         initTomSelect(select);
     });
 
-    // ✅ MATERIAL OPTIONS TEMPLATE
-    const materialOptions = `
-        <option value="">-- Select Material --</option>
-
-        @foreach($materials as $material)
-
-            <option
-                value="{{ $material->id }}"
-                data-stock="{{ $material->quantity }}"
-                data-category="{{ $material->category->name ?? 'N/A' }}"
-                data-unit="{{ $material->unit->name ?? 'pcs' }}"
-                data-threshold="{{ $material->threshold }}"
-                {{ $material->quantity <= 0 ? 'disabled' : '' }}
-            >
-                {{ $material->name }}
-                — Stock: {{ $material->quantity }}
-
-                @if($material->quantity <= 0)
-                    (Out of Stock)
-                @endif
-
-            </option>
-
-        @endforeach
-    `;
-
     // ✅ ADD ITEM
     document.getElementById('add-item').addEventListener('click', function () {
 
-        const container = document.getElementById('items-container');
+        const tbody = document.getElementById('items-container');
 
-        // CREATE CLEAN ROW
-        const newRow = document.createElement('div');
+        const newRow = document.createElement('tr');
 
-        newRow.className =
-        'item-row bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4';
+        newRow.className = 'item-row';
 
         newRow.innerHTML = `
 
-            <div class="mb-4">
-
-                <label class="block text-sm font-semibold mb-1">
-                    Material
-                </label>
+            <td class="p-3 align-top">
 
                 <select
                     name="material_id[]"
-                    class="material-select w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
+                    class="material-select w-full"
                     required>
 
-                    ${materialOptions}
+                    <option value="">🔍 Click to search materials...</option>
 
                 </select>
 
-                    <div class="material-info hidden bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4">
+                <p class="material-meta text-base text-gray-500 mt-1"></p>
 
-                        <h4 class="font-semibold text-blue-800 mb-2">
-                            📦 Material Information
-                        </h4>
+            </td>
 
-                            <div class="grid grid-cols-2 gap-2 text-sm">
-
-                                <div>
-                                    <span class="text-gray-500">Category:</span>
-                                    <span class="info-category font-medium">-</span>
-                                </div>
-
-                                <div>
-                                    <span class="text-gray-500">Unit:</span>
-                                    <span class="info-unit font-medium">-</span>
-                                </div>
-
-                                <div>
-                                    <span class="text-gray-500">Available:</span>
-                                    <span class="info-stock font-medium text-green-600">-</span>
-                                </div>
-
-                                <div>
-                                    <span class="text-gray-500">Status:</span>
-                                    <span class="info-status font-medium">-</span>
-                                </div>
-
-                            </div>
-
-                    </div>
-
-            </div>
-
-            <div class="mb-2">
-
-                <label class="block text-sm font-semibold mb-1">
-                    Quantity
-                </label>
+            <td class="p-3 align-top">
 
                 <input type="number"
                     name="quantity[]"
                     min="1"
-                    class="quantity-input w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
+                    class="quantity-input w-full border rounded-lg p-4 text-lg"
                     required>
 
-                <p class="stock-warning text-red-500 text-sm mt-1 hidden">
-                    Quantity exceeds available stock.
+                <p class="stock-warning text-red-500 text-base mt-1 hidden">
+                    Exceeds available stock.
                 </p>
 
-            </div>
+            </td>
 
-            <button type="button"
-                class="remove-item bg-red-500 text-white px-3 py-1 rounded-lg text-sm mt-2">
+            <td class="p-3 text-center align-top">
 
-                Remove
+                <button
+                    type="button"
+                    class="remove-item bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg text-base font-semibold">
 
-            </button>
+                    Remove
+
+                </button>
+
+            </td>
         `;
 
-        container.appendChild(newRow);
+        tbody.appendChild(newRow);
 
         // INIT TOMSELECT
         initTomSelect(
             newRow.querySelector('.material-select')
         );
 
+        updateItemCount();
+
     });
 
     // ✅ REMOVE ITEM
     document.addEventListener('click', function(e){
 
-        if(e.target.classList.contains('remove-item')){
+        if(e.target.closest('.remove-item')){
 
-            e.target.closest('.item-row').remove();
+            const rows = document.querySelectorAll('.item-row');
+
+            if(rows.length > 1){
+
+                e.target.closest('.item-row').remove();
+
+                updateItemCount();
+
+            }
 
         }
 
@@ -597,13 +750,6 @@
 
             const value =
                 parseInt(input.value || 0);
-
-            console.log(
-                'Value:',
-                value,
-                'Max:',
-                max
-            );
 
             // ❌ EXCEEDS STOCK
             if(value > max){
@@ -632,7 +778,6 @@
             }
 
         }
-
 
     });
 
@@ -685,76 +830,21 @@ document.addEventListener('change', function(e){
 
 <script>
 
-    // ✅ UPDATE SUMMARY PANEL
-    function updateSummary() {
+    // ✅ ITEM COUNT BADGE
+    function updateItemCount() {
 
-        const summaryItems =
-            document.getElementById('summary-items');
+        const itemCountBadge =
+            document.getElementById('item-count-badge');
 
-        const totalItems =
-            document.getElementById('summary-total-items');
+        const rowCount =
+            document.querySelectorAll('.item-row').length;
 
-        const totalQty =
-            document.getElementById('summary-total-qty');
-
-        let html = '';
-
-        let itemCount = 0;
-
-        let qtyCount = 0;
-
-        document.querySelectorAll('.item-row').forEach(row => {
-
-            const select =
-                row.querySelector('.material-select');
-
-            const quantity =
-                row.querySelector('.quantity-input');
-
-            const materialName =
-                select.options[select.selectedIndex]?.text || '';
-
-            const qty =
-                parseInt(quantity.value || 0);
-
-            // SKIP EMPTY
-            if(select.value && qty > 0){
-
-                itemCount++;
-
-                qtyCount += qty;
-
-                html += `
-                    <div class="flex justify-between">
-                        <span>${materialName}</span>
-                        <span>x${qty}</span>
-                    </div>
-                `;
-            }
-
-        });
-
-        // EMPTY
-        if(itemCount === 0){
-
-            html = `
-                <p class="text-gray-400">
-                    No materials selected yet.
-                </p>
-            `;
+        if(itemCountBadge){
+            itemCountBadge.innerText = rowCount + (rowCount === 1 ? ' item' : ' items');
         }
-
-        summaryItems.innerHTML = html;
-
-        totalItems.innerText = itemCount;
-
-        totalQty.innerText = qtyCount;
     }
 
-    // ✅ AUTO UPDATE
-    document.addEventListener('change', updateSummary);
-
-    document.addEventListener('input', updateSummary);
+    document.addEventListener('change', updateItemCount);
 
 </script>
 
@@ -771,36 +861,242 @@ document.getElementById('category-filter')
 
         if (!tom) return;
 
-        tom.clear();
-
-        tom.clearOptions();
-
-        tom.addOption({
-            value: '',
-            text: '-- Select Material --'
-        });
-
-        @foreach($materials as $material)
-
-            if (
-                categoryId === '' ||
-                categoryId == '{{ $material->category_id }}'
-            ) {
-
-                tom.addOption({
-                    value: '{{ $material->id }}',
-                    text: '{{ $material->name }} — Stock: {{ $material->quantity }}'
-                });
-
-            }
-
-        @endforeach
-
-        tom.refreshOptions(false);
+        populateMaterialSelect(tom, categoryId);
 
     });
 
 });
+
+</script>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const departmentSelect =
+        document.getElementById('departmentSelect');
+
+    const departmentPreview =
+        document.getElementById('departmentPreview');
+
+    departmentSelect.addEventListener('change', function () {
+
+        departmentPreview.textContent =
+            this.options[this.selectedIndex].text;
+
+        const departmentId = getSelectedDepartmentId();
+
+        const categoryId =
+            document.getElementById('category-filter').value;
+
+        let clearedMaterials = [];
+
+        document.querySelectorAll('.material-select').forEach(select => {
+
+            const tom = select.tomselect;
+
+            if (!tom) return;
+
+            const currentValue = tom.getValue();
+
+            const currentMaterial = materialsById[currentValue];
+
+            // If the material picked in this row is already assigned
+            // to the newly selected department, clear it and warn.
+            if (
+                currentMaterial &&
+                departmentId &&
+                currentMaterial.department_id === departmentId
+            ) {
+
+                clearedMaterials.push(currentMaterial.name);
+
+                tom.clear(true);
+
+            }
+
+            populateMaterialSelect(tom, categoryId);
+
+        });
+
+        if (clearedMaterials.length > 0) {
+
+            alert(
+                'These materials were removed because they are already assigned to the selected department: '
+                + clearedMaterials.join(', ')
+            );
+
+        }
+
+    });
+
+});
+
+function showConfirmationModal()
+{
+    const departmentSelect =
+        document.getElementById('departmentSelect');
+
+    const department =
+        departmentSelect.options[
+            departmentSelect.selectedIndex
+        ].text;
+
+    const room =
+        document.querySelector(
+            'input[name="room"]'
+        ).value;
+
+    const purpose =
+        document.querySelector(
+            'textarea[name="purpose"]'
+        ).value;
+
+    if(
+        !departmentSelect.value ||
+        !purpose
+    )
+    {
+        alert(
+            'Please complete the department and purpose fields.'
+        );
+
+        return;
+    }
+
+    let materialRows = '';
+
+    const emptyRows = [];
+
+    document.querySelectorAll(
+        '#materialsTable tbody tr'
+    ).forEach(row => {
+
+        const select =
+            row.querySelector('.material-select');
+
+        const quantity =
+            row.querySelector(
+                'input[name="quantity[]"]'
+            );
+
+        if(
+            select.value &&
+            parseInt(quantity.value) > 0
+        )
+        {
+            materialRows += `
+                <tr class="border-b">
+                    <td class="py-2">
+                        ${select.options[select.selectedIndex].text}
+                    </td>
+                    <td class="text-right py-2">
+                        ${quantity.value}
+                    </td>
+                </tr>
+            `;
+        }
+        else
+        {
+            // Row has no material picked (or no quantity) — it's an
+            // unused "Add Material" row, not a real request. Drop it
+            // so it never gets submitted and never trips server validation.
+            emptyRows.push(row);
+        }
+    });
+
+    if(materialRows === '')
+    {
+        alert(
+            'Please add at least one material.'
+        );
+
+        return;
+    }
+
+    emptyRows.forEach(row => row.remove());
+
+    updateItemCount();
+
+    document.getElementById(
+        'confirmDepartment'
+    ).textContent = department;
+
+    document.getElementById(
+        'confirmRoomRow'
+    ).classList.toggle('hidden', !room);
+
+    document.getElementById(
+        'confirmRoom'
+    ).textContent = room;
+
+    document.getElementById(
+        'confirmPurpose'
+    ).textContent = purpose;
+
+    document.getElementById(
+        'confirmMaterials'
+    ).innerHTML = materialRows;
+
+    document.getElementById(
+        'confirmationModal'
+    ).classList.remove('hidden');
+
+    document.getElementById(
+        'confirmationModal'
+    ).classList.add('flex');
+}
+
+function closeConfirmationModal()
+{
+    document.getElementById(
+        'confirmationModal'
+    ).classList.add('hidden');
+
+    document.getElementById(
+        'confirmationModal'
+    ).classList.remove('flex');
+}
+
+let isSubmitting = false;
+
+function submitMaterialRequestForm()
+{
+    if (isSubmitting)
+    {
+        return;
+    }
+
+    isSubmitting = true;
+
+    document.getElementById(
+        'confirmRequestBtn'
+    ).disabled = true;
+
+    document.getElementById(
+        'cancelRequestBtn'
+    ).disabled = true;
+
+    document.getElementById(
+        'confirmationModal'
+    ).classList.add('hidden');
+
+    document.getElementById(
+        'confirmationModal'
+    ).classList.remove('flex');
+
+    document.getElementById(
+        'processingModal'
+    ).classList.remove('hidden');
+
+    document.getElementById(
+        'processingModal'
+    ).classList.add('flex');
+
+    document.getElementById(
+        'materialRequestForm'
+    ).submit();
+}
 
 </script>
 

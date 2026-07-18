@@ -28,16 +28,31 @@ class MaterialRequestController extends Controller
     {
         $materials = Material::with('category')->get();
 
-        $departments = Department::all();
+        // Central Stockroom is the request's source, not a valid destination
+        $departments = Department::where('department_name', '!=', 'Central Stockroom')->get();
 
         $categories = Category::all();
+
+        $materialsForJs = $materials->map(function ($material) {
+            return [
+                'id' => $material->id,
+                'name' => $material->name,
+                'stock' => $material->quantity,
+                'category_id' => $material->category_id,
+                'category_name' => $material->category->name ?? 'N/A',
+                'unit' => $material->unit->name ?? 'pcs',
+                'threshold' => $material->threshold,
+                'department_id' => $material->department_id,
+            ];
+        })->values();
 
         return view(
             'material_request.form',
             compact(
                 'materials',
                 'departments',
-                'categories'
+                'categories',
+                'materialsForJs'
             )
         );
     }
@@ -99,24 +114,73 @@ class MaterialRequestController extends Controller
     
     public function store(Request $request)
     {
+        // Drop any incomplete rows (no material picked, or no quantity
+        // entered) before validating — an unused "Add Material" row left
+        // blank shouldn't surface a confusing "material_id.1 is required"
+        // error, it should just be ignored.
+        $materialIds = $request->input('material_id', []);
+        $quantities = $request->input('quantity', []);
+
+        $cleanMaterialIds = [];
+        $cleanQuantities = [];
+
+        foreach ($materialIds as $index => $materialId) {
+
+            $qty = $quantities[$index] ?? null;
+
+            if (!empty($materialId) && !empty($qty)) {
+                $cleanMaterialIds[] = $materialId;
+                $cleanQuantities[] = $qty;
+            }
+        }
+
+        $request->merge([
+            'material_id' => $cleanMaterialIds,
+            'quantity' => $cleanQuantities,
+        ]);
+
         $request->validate([
             'department_id' => 'required|exists:departments,id',
 
-            'material_id' => 'required|array',
+            'material_id' => 'required|array|min:1',
 
             'material_id.*' => 'required|exists:materials,id',
 
-            'quantity' => 'required|array',
+            'quantity' => 'required|array|min:1',
 
             'quantity.*' => 'required|integer|min:1',
 
+            'room' => 'nullable|string|max:100',
+
             'purpose' => 'required|string|max:500',
+        ], [
+            'department_id.required' => 'Please select a destination department.',
+
+            'material_id.required' => 'Please add at least one material to your request.',
+            'material_id.min' => 'Please add at least one material to your request.',
+            'material_id.*.required' => 'Please select a material for every row you added.',
+            'material_id.*.exists' => 'One of the selected materials is no longer available.',
+
+            'quantity.required' => 'Please add at least one material to your request.',
+            'quantity.min' => 'Please add at least one material to your request.',
+            'quantity.*.required' => 'Please enter a quantity for every material you added.',
+            'quantity.*.integer' => 'Quantity must be a whole number.',
+            'quantity.*.min' => 'Quantity must be at least 1.',
+
+            'purpose.required' => 'Please describe the purpose of this request.',
         ]);
 
         $personnel = Personnel::where('user_id', Auth::id())->first();
 
         if (!$personnel) {
             return back()->with('error', 'Personnel not found');
+        }
+
+        // ❌ Central Stockroom is the source, not a valid destination
+        $centralStockroom = Department::where('department_name', 'Central Stockroom')->first();
+
+        if ($centralStockroom && (int) $request->department_id === $centralStockroom->id) {
+            return back()->with('error', 'You cannot request materials to the Centralized Stockroom itself.');
         }
 
         // ✅ Validate stock first
@@ -137,6 +201,15 @@ class MaterialRequestController extends Controller
                     'error',
                     'Requested quantity exceeds available stock for '
                     . $material->name
+                );
+            }
+
+            // ❌ Prevent requesting a material to the department it's already assigned to
+            if ((int) $material->department_id === (int) $request->department_id) {
+
+                return back()->with(
+                    'error',
+                    $material->name . ' is already assigned to the selected department.'
                 );
             }
         }
@@ -160,6 +233,8 @@ class MaterialRequestController extends Controller
 
             'status' => 'pending',
 
+            'room' => $request->room,
+
             'purpose' => $request->purpose,
 
         ]);
@@ -174,13 +249,16 @@ class MaterialRequestController extends Controller
             ]);
         }
 
-        // 🔔 Notify supervisors
-        $supervisors = User::where('role', 'supervisor')->get();
+        // 🔔 Notify whoever processes material requests (Inventory Custodian, Administrator, etc.)
+        $processors = User::whereHas('systemRole.permissions', function ($query) {
+            $query->where('slug', 'process-material-requests')
+                ->where('status', true);
+        })->get();
 
-        foreach ($supervisors as $admin) {
+        foreach ($processors as $processor) {
 
-            Notification::create([
-                'user_id' => $admin->id,
+            $notif = Notification::create([
+                'user_id' => $processor->id,
                 'type' => 'material',
                 'title' => 'New Material Request',
                 'url' => '/supervisor/material-requests',
@@ -189,6 +267,8 @@ class MaterialRequestController extends Controller
                     . ' submitted a material request.',
                 'is_read' => 0
             ]);
+
+            event(new NewNotificationEvent($notif));
         }
 
         return back()->with(
@@ -200,7 +280,7 @@ class MaterialRequestController extends Controller
     // 📊 Supervisor view (NEW FUNCTION)
         public function index()
         {
-            if (!auth()->check() || auth()->user()->role !== 'supervisor') {
+            if (!auth()->check() || !auth()->user()->hasPermission('process-material-requests')) {
                 abort(403);
             }
 

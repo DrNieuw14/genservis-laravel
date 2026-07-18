@@ -15,6 +15,7 @@ use App\Models\Department;
 use App\Models\DepartmentMaterial;
 use App\Models\WalkinRequestItem;
 use App\Models\ProcurementClassification;
+use App\Models\ProcurementPlan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;  
 use App\Imports\MaterialImport;
@@ -446,6 +447,64 @@ class MaterialController extends Controller
             'success',
             "{$count} material(s) reassigned to {$department->department_name}."
         );
+    }
+
+    // ➕ Quick-create a Material from inside the PPMP item modal
+    public function quickStoreForProcurement(Request $request, ProcurementPlan $plan)
+    {
+        $user = Auth::user();
+
+        if (! $user->hasPermission('view-ppmp') && $plan->department_id !== $user->personnel?->department_id) {
+
+            abort(403);
+
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
+            'unit_id' => 'required|exists:units,id',
+            'classification_id' => 'required|exists:procurement_classifications,id',
+        ]);
+
+        $material = Material::create([
+            'name' => $validated['name'],
+            'department_id' => $plan->department_id,
+            'category_id' => $validated['category_id'],
+            'unit_id' => $validated['unit_id'],
+            'classification_id' => $validated['classification_id'],
+            'quantity' => 0,
+            'threshold' => 1,
+            'created_by' => $user->id,
+        ]);
+
+        InventoryMovement::create([
+            'material_id' => $material->id,
+            'movement_type' => 'initial_stock',
+            'quantity' => 0,
+            'previous_stock' => 0,
+            'new_stock' => 0,
+            'remarks' => 'Created via PPMP item entry',
+            'performed_by' => $user->id,
+        ]);
+
+        MaterialLog::create([
+            'material_id' => $material->id,
+            'user_id' => $user->id,
+            'action' => 'stock_in',
+            'quantity' => 0,
+            'remarks' => 'Created via PPMP item entry',
+        ]);
+
+        $material->load(['category', 'unit', 'classification']);
+
+        return response()->json([
+            'id' => $material->id,
+            'name' => $material->name,
+            'category' => optional($material->category)->name,
+            'unit' => optional($material->unit)->name,
+            'classification_code' => optional($material->classification)->code,
+        ]);
     }
 
     public function bulkAssignClassification(Request $request)
@@ -1624,6 +1683,8 @@ class MaterialController extends Controller
             'quantity' => $material->quantity,
 
             'threshold' => $material->threshold,
+
+            'classification_id' => $material->classification_id,
 
         ]);
     }

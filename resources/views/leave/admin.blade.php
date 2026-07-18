@@ -2,11 +2,11 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto mt-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <div class="flex justify-between items-center mb-6">
+    <div class="mb-6">
 
-        <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             📄 Leave Management
         </h2>
 
@@ -15,50 +15,30 @@
     <!-- STATS -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
 
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-            <h3 class="text-gray-500 text-sm">
-                Pending
-            </h3>
-
-            <p class="text-3xl font-bold text-yellow-500 mt-2">
-                {{ $leaves->where('status','Pending')->count() }}
-            </p>
+        <div class="bg-yellow-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Pending</div>
+            <div class="text-4xl font-bold">{{ $leaves->where('status','Pending')->count() }}</div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-            <h3 class="text-gray-500 text-sm">
-                ✅ Approved
-            </h3>
-
-            <p class="text-3xl font-bold text-green-600 mt-2">
-                {{ $leaves->where('status','Approved')->count() }}
-            </p>
+        <div class="bg-green-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">✅ Approved</div>
+            <div class="text-4xl font-bold">{{ $leaves->where('status','Approved')->count() }}</div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-            <h3 class="text-gray-500 text-sm">
-                Rejected
-            </h3>
-
-            <p class="text-3xl font-bold text-red-600 mt-2">
-                {{ $leaves->where('status','Rejected')->count() }}
-            </p>
+        <div class="bg-red-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Rejected</div>
+            <div class="text-4xl font-bold">{{ $leaves->where('status','Rejected')->count() }}</div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-xl p-6">
-            <h3 class="text-gray-500 text-sm">
-                Total Requests
-            </h3>
-
-            <p class="text-3xl font-bold text-blue-600 mt-2">
-                {{ $leaves->count() }}
-            </p>
+        <div class="bg-blue-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Total Requests</div>
+            <div class="text-4xl font-bold">{{ $leaves->count() }}</div>
         </div>
 
     </div>
 
     <!-- FILTER -->
-    <div class="bg-white rounded-2xl shadow-xl p-4 mb-6">
+    <div class="border rounded-lg p-4 bg-gray-50 mb-6">
 
     <div class="flex flex-wrap gap-2 mb-4">
 
@@ -117,25 +97,27 @@
 </div>
 
     <!-- TABLE -->
-    <div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
+    <div class="border rounded-lg overflow-hidden">
 
-    <table class="min-w-full">
-        <thead class="bg-gradient-to-r from-green-500 to-blue-600 text-white">
+    <div class="overflow-x-auto">
+
+    <table class="w-full text-lg">
+        <thead class="bg-gray-100">
             <tr>
-                <th class="p-4 text-left">Name</th>
-                <th class="p-4 text-left">Type</th>
-                <th class="p-4 text-left">Reason</th>
-                <th class="p-4 text-left">Approved At</th>
-                <th class="p-4 text-left">Date From</th>
-                <th class="p-4 text-left">Date To</th>
-                <th class="p-4 text-left">Status</th>
-                <th class="p-4 text-left">Action</th>
+                <th class="p-4 text-left text-gray-800">Name</th>
+                <th class="p-4 text-left text-gray-800">Type</th>
+                <th class="p-4 text-left text-gray-800">Reason</th>
+                <th class="p-4 text-left text-gray-800">Approved At</th>
+                <th class="p-4 text-left text-gray-800">Date From</th>
+                <th class="p-4 text-left text-gray-800">Date To</th>
+                <th class="p-4 text-left text-gray-800">Status</th>
+                <th class="p-4 text-left text-gray-800">Action</th>
             </tr>
         </thead>
 
-        <tbody>
+        <tbody class="divide-y divide-gray-200">
             @forelse($leaves as $leave)
-            <tr class="border-b hover:bg-gray-50 transition">
+            <tr class="hover:bg-gray-50 transition">
 
                 <td class="p-4">
                     {{ $leave->personnel->fullname ?? $leave->personnel->user->name ?? 'N/A' }}
@@ -230,6 +212,8 @@
             @endforelse
         </tbody>
     </table>
+
+    </div>
 
     </div>
 

@@ -18,12 +18,7 @@
             </p>
         </div>
 
-        <a href="{{ route('roles.index') }}"
-           class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-3 rounded-lg shadow">
-
-            ← Back to Roles
-
-        </a>
+        <x-back-button :href="route('roles.index')">Back to Roles</x-back-button>
 
     </div>
 

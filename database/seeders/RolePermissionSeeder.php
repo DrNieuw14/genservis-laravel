@@ -144,6 +144,14 @@ class RolePermissionSeeder extends Seeder
 
                     /*
                     |--------------------------------------------------------------------------
+                    | Material Requests
+                    |--------------------------------------------------------------------------
+                    */
+
+                    'process-material-requests',
+
+                    /*
+                    |--------------------------------------------------------------------------
                     | Reports
                     |--------------------------------------------------------------------------
                     */
@@ -203,6 +211,28 @@ class RolePermissionSeeder extends Seeder
                 Permission::whereIn('slug', [
 
                     'view-employee-profile',
+
+                ])->pluck('id')->toArray()
+
+            );
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Department Chair / Unit Head
+        |--------------------------------------------------------------------------
+        */
+
+        $departmentChair = Role::where('name', 'Department Chair / Unit Head')->first();
+
+        if ($departmentChair) {
+
+            $departmentChair->permissions()->sync(
+
+                Permission::whereIn('slug', [
+
+                    'manage-own-department-ppmp-items',
 
                 ])->pluck('id')->toArray()
 

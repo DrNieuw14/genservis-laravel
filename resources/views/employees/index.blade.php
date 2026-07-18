@@ -2,66 +2,60 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto px-6 py-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
+    <div class="mb-6">
 
-        <div>
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+            👥 Employee Master
+        </h2>
 
-            <h1 class="text-3xl font-bold text-gray-800">
-                👥 Employee Master
-            </h1>
-
-            <p class="text-gray-500 mt-2">
-                Central repository of employee information across the GenServis ERP.
-            </p>
-
-        </div>
+        <p class="text-gray-500 mt-1 text-lg">
+            Central repository of employee information across the GenServis ERP.
+        </p>
 
     </div>
 
     <!-- Search -->
-    <div class="bg-white rounded-xl shadow p-6 mb-6">
+    <form method="GET" class="mb-6">
 
-        <form method="GET">
+        <input
+            type="text"
+            name="search"
+            value="{{ $search }}"
+            placeholder="Search employee..."
+            class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg focus:border-green-500 focus:ring focus:ring-green-200">
 
-            <input
-                type="text"
-                name="search"
-                value="{{ $search }}"
-                placeholder="Search employee..."
-                class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:ring focus:ring-green-200">
-
-        </form>
-
-    </div>
+    </form>
 
     <!-- Employee Table -->
 
-    <div class="bg-white rounded-xl shadow overflow-hidden">
+    <div class="border rounded-lg overflow-hidden">
 
-        <table class="min-w-full divide-y divide-gray-200">
+        <div class="overflow-x-auto">
+
+        <table class="w-full text-lg">
 
             <thead class="bg-gray-100">
 
                 <tr>
 
-                    <th class="px-6 py-3 text-left">Employee ID</th>
+                    <th class="px-6 py-3 text-left text-gray-800">Employee ID</th>
 
-                    <th class="px-6 py-3 text-left">Employee</th>
+                    <th class="px-6 py-3 text-left text-gray-800">Employee</th>
 
-                    <th class="px-6 py-3 text-left">Department</th>
+                    <th class="px-6 py-3 text-left text-gray-800">Department</th>
 
-                    <th class="px-6 py-3 text-left">Position</th>
+                    <th class="px-6 py-3 text-left text-gray-800">Position</th>
 
-                    <th class="px-6 py-3 text-left">Employment Type</th>
+                    <th class="px-6 py-3 text-left text-gray-800">Employment Type</th>
 
-                    <th class="px-6 py-3 text-center">System Role</th>
+                    <th class="px-6 py-3 text-center text-gray-800">System Role</th>
 
-                    <th class="px-6 py-3 text-center">Status</th>
+                    <th class="px-6 py-3 text-center text-gray-800">Status</th>
 
-                    <th class="px-6 py-3 text-center">Action</th>
+                    <th class="px-6 py-3 text-center text-gray-800">Action</th>
 
                 </tr>
 
@@ -166,7 +160,9 @@
 
         </table>
 
-        <div class="px-6 py-4 border-t">
+        </div>
+
+        <div class="px-6 py-4 border-t bg-white">
 
             {{ $employees->links() }}
 

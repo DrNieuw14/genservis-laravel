@@ -47,6 +47,21 @@
 
             @endif
 
+            @if(Auth::user()->role === 'personnel')
+
+            <!-- Dashboard (personal, role-tailored — kept at the top so it's
+                 always reachable regardless of how many sections below it
+                 apply to this account) -->
+            <a href="{{ route('personnel.dashboard') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->is('personnel/dashboard') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                🏠 Dashboard
+            </a>
+
+            <div class="border-t my-2"></div>
+
+            @endif
+
             <!-- User Approval -->
 
             @if(auth()->user()->hasPermission('approve-users'))
@@ -75,9 +90,20 @@
 
             <!-- INVENTORY MANAGEMENT -->
 
+            @if(
+                auth()->user()->hasPermission('view-materials') ||
+                auth()->user()->hasPermission('process-material-requests') ||
+                auth()->user()->hasPermission('create-walkin-requests') ||
+                auth()->user()->hasPermission('view-walkin-requests') ||
+                auth()->user()->hasPermission('view-material-logs') ||
+                auth()->user()->hasPermission('view-department-inventory')
+            )
+
             <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
                 Inventory Management
             </div>
+
+            @endif
 
             <!-- Materials Inventory -->
 
@@ -93,7 +119,7 @@
 
             @endif
 
-            @if(Auth::user()->role === 'supervisor')
+            @if(auth()->user()->hasPermission('process-material-requests'))
 
             <!-- Material Requests -->
 
@@ -176,9 +202,19 @@
 
             <!-- INVENTORY SETTINGS -->
 
+            @if(
+                auth()->user()->hasPermission('create-materials') ||
+                auth()->user()->hasPermission('view-categories') ||
+                auth()->user()->hasPermission('view-units') ||
+                auth()->user()->hasPermission('view-departments') ||
+                auth()->user()->hasPermission('view-inventory-movements')
+            )
+
             <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-6 mb-2">
                 Inventory Settings
             </div>
+
+            @endif
 
             <!-- Add Material -->
 
@@ -333,6 +369,22 @@
 
             @endif
 
+            @elseif(auth()->user()->hasPermission('manage-own-department-ppmp-items'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-6 mb-2">
+                Procurement Planning
+            </div>
+
+            <a href="{{ route('procurement.plans.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('procurement.plans.*')
+                ? 'bg-green-200 font-semibold'
+                : 'hover:bg-green-100' }}">
+
+                📄 My Department PPMP
+
+            </a>
+
             @endif
 
             <!-- REPORTS -->
@@ -459,17 +511,19 @@
                 {{-- Hidden entirely for users who already have real inventory-management
                      access (e.g. Inventory Custodian) — the self-service personnel/leave/
                      material-request flows don't apply to their designation. --}}
-                @if(Auth::user()->role === 'personnel' && !auth()->user()->hasPermission('view-materials'))
+                @php
+                    $isSelfServicePersonnel = Auth::user()->role === 'personnel' && !auth()->user()->hasPermission('view-materials');
+                    $showFullPersonnelServices = $isSelfServicePersonnel && !auth()->user()->hasPermission('manage-own-department-ppmp-items');
+                @endphp
+
+                {{-- Department Chairs manage their department's PPMP, not their own
+                     attendance/scheduling/leave through this panel — only Inventory
+                     Services (Material Request) applies to their designation. --}}
+                @if($showFullPersonnelServices)
 
                     <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
                         Personnel Services
                     </div>
-
-                    <a href="/personnel/dashboard"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->is('personnel/dashboard') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        🏠 Dashboard
-                    </a>
 
                     <a href="/attendance"
                     class="block px-4 py-3 rounded-xl transition
@@ -502,6 +556,10 @@
                     </a>
 
                     <div class="border-t my-3"></div>
+
+                @endif
+
+                @if($isSelfServicePersonnel)
 
                     <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
                         Inventory Services
@@ -593,6 +651,12 @@
                     <!-- USER -->
                     <span class="text-sm font-medium">
                         {{ Auth::user()->fullname ?? Auth::user()->username }}
+
+                        @if(Auth::user()->systemRole)
+                        <span class="text-xs text-gray-500 font-normal">
+                            ({{ Auth::user()->systemRole->name }})
+                        </span>
+                        @endif
                     </span>
 
                     <!-- LOGOUT -->

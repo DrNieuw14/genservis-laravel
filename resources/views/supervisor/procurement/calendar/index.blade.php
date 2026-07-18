@@ -26,7 +26,7 @@ Chronological timeline of PPMP lifecycle milestones.
 
     <form method="GET" class="flex items-center gap-3">
 
-        <label class="text-white font-semibold">Planning Year</label>
+        <label class="text-gray-700 font-semibold">Planning Year</label>
 
         <select name="year" onchange="this.form.submit()" class="border rounded px-4 py-2">
 

@@ -2,74 +2,69 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- PAGE HEADER -->
-    <div class="mb-8">
-        <h2 class="text-5xl font-bold text-white flex items-center gap-3">
+    <div class="mb-6">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             📄 My Leave Requests
         </h2>
 
-        <p class="text-white/80 mt-2 text-lg">
+        <p class="text-gray-500 mt-1 text-lg">
             Track your submitted leave requests and approval status.
         </p>
     </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 
-            <div class="bg-gradient-to-r from-yellow-500 to-yellow-400
-            text-white p-5 rounded-2xl shadow-xl
-            hover:scale-105 transition">
-                <h3 class="text-sm">Pending</h3>
-                <p class="text-4xl font-bold">
-                    {{ $leaves->where('status','Pending')->count() }}
-                </p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+
+        <div class="bg-yellow-500 text-white p-5 rounded-xl shadow-lg">
+            <div class="text-base">Pending</div>
+            <div class="text-4xl font-bold">
+                {{ $leaves->where('status','Pending')->count() }}
             </div>
-
-            <div class="bg-gradient-to-r from-green-600 to-emerald-500
-            text-white p-5 rounded-2xl shadow-xl
-            hover:scale-105 transition">
-                <h3 class="text-sm">Approved</h3>
-                <p class="text-4xl font-bold">
-                    {{ $leaves->where('status','Approved')->count() }}
-                </p>
-            </div>
-
-            <div class="bg-gradient-to-r from-red-600 to-red-500
-            text-white p-5 rounded-2xl shadow-xl
-            hover:scale-105 transition">
-                <h3 class="text-sm">Rejected</h3>
-                <p class="text-4xl font-bold">
-                    {{ $leaves->where('status','Rejected')->count() }}
-                </p>
-            </div>
-
         </div>
 
-    <!-- ✅ SUCCESS MESSAGE -->
+        <div class="bg-green-500 text-white p-5 rounded-xl shadow-lg">
+            <div class="text-base">Approved</div>
+            <div class="text-4xl font-bold">
+                {{ $leaves->where('status','Approved')->count() }}
+            </div>
+        </div>
+
+        <div class="bg-red-500 text-white p-5 rounded-xl shadow-lg">
+            <div class="text-base">Rejected</div>
+            <div class="text-4xl font-bold">
+                {{ $leaves->where('status','Rejected')->count() }}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SUCCESS MESSAGE -->
     @if(session('success'))
-        <div class="bg-green-500 text-white p-3 mb-4 rounded shadow">
+        <div class="bg-green-500 text-white p-3 mb-4 rounded shadow text-lg">
             {{ session('success') }}
         </div>
     @endif
 
     <!-- TABLE -->
-    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <table class="w-full text-sm">
+    <div class="border rounded-lg overflow-hidden">
+        <table class="w-full text-lg">
 
-            <thead class="bg-gradient-to-r from-green-600 to-blue-700 text-white">
+            <thead class="bg-gray-100">
                 <tr>
-                    <th class="p-3 text-left">Reason</th>
-                    <th class="p-3 text-left">Start Date</th>
-                    <th class="p-3 text-left">End Date</th>
-                    <th class="p-3 text-left">Status</th>
-                    <th class="p-3 text-left">Submitted</th>
-                    <th class="p-3 text-left">Approved Date</th>
+                    <th class="p-3 text-left text-gray-800">Reason</th>
+                    <th class="p-3 text-left text-gray-800">Start Date</th>
+                    <th class="p-3 text-left text-gray-800">End Date</th>
+                    <th class="p-3 text-left text-gray-800">Status</th>
+                    <th class="p-3 text-left text-gray-800">Submitted</th>
+                    <th class="p-3 text-left text-gray-800">Approved Date</th>
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
                 @forelse($leaves as $leave)
-                    <tr class="border-b hover:bg-gray-50 transition">
+                    <tr class="hover:bg-gray-50 transition">
 
                         <td class="p-3">
                             {{ $leave->reason }}

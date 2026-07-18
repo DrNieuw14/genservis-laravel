@@ -5,7 +5,7 @@
 {{-- ===========================================
     SCREEN REPORT
 =========================================== --}}
-<div class="max-w-7xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     {{-- ==========================================================
         OFFICIAL UNIVERSITY PRINT HEADER
@@ -83,26 +83,29 @@
 
     {{-- =========================
         REPORT HEADER
+        (h1 is intentionally kept — the print stylesheet below hides h1
+        specifically so the printed page shows only the letterhead's title,
+        not this one)
     ========================== --}}
-    <div class="flex justify-between items-start mb-8">
+    <div class="flex justify-between items-start mb-6">
 
         <div>
 
-            <h1 class="text-4xl font-bold text-white">
+            <h1 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
 
                 @yield('report-title')
 
             </h1>
 
-            <p class="text-blue-100 text-lg mt-2">
+            <p class="text-gray-500 text-lg mt-1">
 
                 @yield('report-description')
 
             </p>
 
-            <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/20 print:bg-white print:text-black print:border-gray-400">
+            <div class="mt-6 border border-gray-200 rounded-xl p-5 bg-gray-50 print:bg-white print:text-black print:border-gray-400">
 
-                <div class="grid grid-cols-2 gap-4 text-sm text-white">
+                <div class="grid grid-cols-2 gap-4 text-base text-gray-700">
 
                     <div>
 
@@ -166,7 +169,7 @@
 
         </div>
 
-        
+
 
         <div>
 
@@ -195,13 +198,13 @@
         EXECUTIVE SUMMARY
     ========================== --}}
 
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+    <div class="border border-blue-200 rounded-lg p-6 mb-6 bg-blue-50">
 
-        <h2 class="text-2xl font-bold text-blue-800 mb-4">
+        <h3 class="text-xl font-bold text-blue-800 mb-4">
 
             Executive Assessment
 
-        </h2>
+        </h3>
 
         @yield('executive-summary')
 
@@ -212,15 +215,15 @@
         REPORT TABLE
     ========================== --}}
 
-    <div class="bg-white rounded-lg shadow mb-8">
+    <div class="border rounded-lg mb-6 overflow-hidden">
 
-        <div class="border-b p-5">
+        <div class="border-b p-5 bg-gray-50">
 
-            <h2 class="text-2xl font-bold">
+            <h3 class="text-xl font-bold text-gray-800">
 
                 @yield('table-title')
 
-            </h2>
+            </h3>
 
         </div>
 
@@ -233,13 +236,13 @@
         RECOMMENDATIONS
     ========================== --}}
 
-    <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-6 mb-8">
+    <div class="border border-yellow-300 rounded-lg p-6 mb-6 bg-yellow-50">
 
-        <h2 class="text-2xl font-bold text-yellow-800 mb-4">
+        <h3 class="text-xl font-bold text-yellow-800 mb-4">
 
             Recommendation
 
-        </h2>
+        </h3>
 
         @yield('recommendation')
 
@@ -250,7 +253,7 @@
         SIGNATURES
     ========================== --}}
 
-    <div class="bg-white rounded-lg shadow p-8">
+    <div class="border rounded-lg p-8">
 
         <div class="grid grid-cols-3 gap-10 text-center">
 

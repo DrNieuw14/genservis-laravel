@@ -2,39 +2,43 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto mt-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- HEADER -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-6">
 
-        <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             📦 Materials Inventory
         </h2>
 
-        <a href="{{ route('materials.create') }}"
-           class="bg-gradient-to-r from-green-500 to-blue-600 text-white px-5 py-3 rounded-xl shadow-lg hover:scale-105 transition">
+        <div class="flex flex-wrap gap-3">
 
-            ➕ Add Material
-        </a>
+            <a href="{{ route('materials.create') }}"
+               class="bg-gradient-to-r from-green-500 to-blue-600 text-white px-5 py-3 rounded-xl shadow-lg hover:scale-105 transition">
 
-        <a href="{{ route('materials.import.form') }}"
-            class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-xl shadow-lg">
+                ➕ Add Material
+            </a>
 
-            📥 Import Inventory
+            <a href="{{ route('materials.import.form') }}"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-xl shadow-lg">
 
-        </a>
+                📥 Import Inventory
 
-        <a href="{{ route('supervisor.inventory.movements.index') }}"
-            class="bg-white text-blue-700 px-5 py-3 rounded-xl shadow-lg hover:scale-105 transition font-semibold">
+            </a>
 
-            📊 Inventory Logs
-        </a>
+            <a href="{{ route('supervisor.inventory.movements.index') }}"
+                class="bg-gray-100 text-blue-700 px-5 py-3 rounded-xl hover:bg-gray-200 transition font-semibold">
+
+                📊 Inventory Logs
+            </a>
+
+        </div>
 
     </div>
 
     @if(session('success'))
 
-        <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-xl mb-6">
+        <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-xl mb-6 text-lg">
             {{ session('success') }}
         </div>
 
@@ -42,7 +46,7 @@
 
     @if(session('error'))
 
-        <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-6">
+        <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-6 text-lg">
             {{ session('error') }}
         </div>
 
@@ -53,10 +57,10 @@
     <!-- TOTAL -->
     <a href="{{ route('materials.index') }}"
     class="
-    rounded-2xl shadow-xl p-5 block hover:scale-105 transition
+    rounded-2xl p-5 block hover:scale-105 transition
     {{ !request('status')
-        ? 'bg-blue-600 text-white ring-4 ring-white'
-        : 'bg-white'
+        ? 'bg-blue-600 text-white shadow-xl ring-4 ring-blue-200'
+        : 'bg-gray-50 border border-gray-200 text-gray-800'
     }}">
         <h3 class="text-sm">Total Materials</h3>
         <p class="text-3xl font-bold mt-2">
@@ -69,7 +73,7 @@
     class="
     rounded-2xl shadow-xl p-5 hover:scale-105 transition block
     {{ request('status') == 'low'
-        ? 'bg-yellow-600 text-white ring-4 ring-white'
+        ? 'bg-yellow-600 text-white ring-4 ring-gray-300'
         : 'bg-yellow-500 text-white'
     }}">
         <h3 class="text-sm">Low Stock</h3>
@@ -81,7 +85,7 @@
     class="
     rounded-2xl shadow-xl p-5 hover:scale-105 transition block
     {{ request('status') == 'critical'
-        ? 'bg-red-700 text-white ring-4 ring-white animate-pulse'
+        ? 'bg-red-700 text-white ring-4 ring-gray-300 animate-pulse'
         : 'bg-red-600 text-white'
     }}">
         <h3 class="text-sm">Critical Stock</h3>
@@ -93,7 +97,7 @@
     class="
     rounded-2xl shadow-xl p-5 hover:scale-105 transition block
     {{ request('status') == 'out'
-        ? 'bg-gray-900 text-white ring-4 ring-white'
+        ? 'bg-gray-900 text-white ring-4 ring-gray-300'
         : 'bg-slate-700 text-white'
     }}">
         <h3 class="text-sm">Out of Stock</h3>
@@ -105,7 +109,7 @@
     class="
     rounded-2xl shadow-xl p-5 hover:scale-105 transition block
     {{ request('status') == 'expiring'
-        ? 'bg-orange-700 text-white ring-4 ring-white'
+        ? 'bg-orange-700 text-white ring-4 ring-gray-300'
         : 'bg-orange-500 text-white'
     }}">
         <h3 class="text-sm">Expiring Soon</h3>
@@ -117,7 +121,7 @@
     class="
     rounded-2xl shadow-xl p-5 hover:scale-105 transition block
     {{ request('status') == 'expired'
-        ? 'bg-red-900 text-white ring-4 ring-white'
+        ? 'bg-red-900 text-white ring-4 ring-gray-300'
         : 'bg-red-800 text-white'
     }}">
         <h3 class="text-sm">Expired Batches</h3>
@@ -133,7 +137,7 @@
         @foreach($categorySummary as $category)
 
             <a href="{{ route('materials.index', ['category_id' => $category->id]) }}"
-                class="bg-white rounded-xl shadow-md p-4 text-center hover:shadow-xl hover:scale-105 transition block
+                class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center hover:shadow-md hover:scale-105 transition block
                 {{ request('category_id') == $category->id ? 'ring-4 ring-blue-500' : '' }}">
 
                 <div class="text-sm font-semibold text-gray-600">
@@ -153,8 +157,8 @@
         @endforeach
 
     </div>
-    <div class="bg-white rounded-2xl shadow-xl p-4 mb-6">
-       
+    <div class="border rounded-lg p-4 bg-gray-50 mb-6">
+
         <form method="GET" action="{{ route('materials.index') }}">
 
             <div class="flex flex-col md:flex-row gap-3">
@@ -309,13 +313,13 @@
     </form>
 
     <!-- TABLE -->
-    <div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
+    <div class="border rounded-lg overflow-hidden">
 
 
         <table class="min-w-full">
 
 
-            <thead class="bg-gradient-to-r from-green-500 to-blue-600 text-white">
+            <thead class="bg-gray-100">
 
                 <tr>
 

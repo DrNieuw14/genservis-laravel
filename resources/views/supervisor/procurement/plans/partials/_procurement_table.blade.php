@@ -27,6 +27,7 @@
                         <th class="px-4 py-3 text-left">Material</th>
                         <th class="px-4 py-3 text-left">Classification</th>
                         <th class="px-4 py-3 text-left">Mode of Procurement</th>
+                        <th class="px-4 py-3 text-left">Added By</th>
                         <th class="px-4 py-3 text-left">Unit</th>
                         <th class="px-4 py-3 text-right">Unit Cost</th>
                         <th class="px-4 py-3 text-center">Q1</th>
@@ -36,6 +37,7 @@
                         <th class="px-4 py-3 text-center">Annual Qty</th>
                         <th class="px-4 py-3 text-right">Amount</th>
                         <th class="px-4 py-3 text-center">Action</th>
+                        <th class="px-4 py-3 text-center">Approval</th>
                     </tr>
                 </thead>
             
@@ -59,6 +61,10 @@
 
                     <td class="px-4 py-3 text-sm">
                         {{ $item->procurement_method ?? '—' }}
+                    </td>
+
+                    <td class="px-4 py-3 text-sm">
+                        {{ optional($item->creator)->fullname ?? optional($item->creator)->name ?? '—' }}
                     </td>
 
                     <td class="px-4 py-3">
@@ -100,6 +106,7 @@
 
                             @csrf
                             @method('DELETE')
+                            <input type="hidden" name="reason" id="deleteReason{{ $item->id }}">
 
                             <button
                                 type="button"
@@ -113,12 +120,59 @@
                         </form>
                     </td>
 
+                    <td class="px-4 py-3 text-center">
+
+                        @if(auth()->user()->hasPermission('view-ppmp'))
+
+                            <form
+                                action="{{ route('procurement.plans.items.toggle-approval', $item->id) }}"
+                                method="POST"
+                                class="inline">
+
+                                @csrf
+
+                                @if($item->is_approved)
+
+                                    <button
+                                        type="submit"
+                                        class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm hover:bg-green-200">
+
+                                        ✔ Approved
+
+                                    </button>
+
+                                @else
+
+                                    <button
+                                        type="submit"
+                                        class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-sm hover:bg-yellow-200">
+
+                                        ⏳ Pending
+
+                                    </button>
+
+                                @endif
+
+                            </form>
+
+                        @else
+
+                            @if($item->is_approved)
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">✔ Approved</span>
+                            @else
+                                <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-sm">⏳ Pending</span>
+                            @endif
+
+                        @endif
+
+                    </td>
+
                 </tr>
 
                 @empty
 
                 <tr>
-                    <td colspan="12" class="text-center text-gray-500 py-10">
+                    <td colspan="14" class="text-center text-gray-500 py-10">
                         No Procurement Items Yet
                     </td>
                 </tr>

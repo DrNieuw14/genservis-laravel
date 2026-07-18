@@ -12,13 +12,7 @@
 
         <div class="flex gap-2">
 
-            <a
-                href="{{ route('walkin.history') }}"
-                class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
-
-                ← Back
-
-            </a>
+            <x-back-button :href="route('walkin.history')" />
 
             <a
                 href="{{ route('walkin.print', $request->id) }}"

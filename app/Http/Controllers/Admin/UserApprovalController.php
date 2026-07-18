@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Helpers\ActivityLogger;
 use App\Models\Personnel;
+use App\Models\Notification;
 
 use App\Models\EmploymentType;
 use App\Models\Department;
@@ -101,6 +102,15 @@ class UserApprovalController extends Controller
         $user->update([
             'role_id' => $defaultRole->id,
             'status'  => 'approved',
+        ]);
+
+        Notification::create([
+            'user_id' => $user->id,
+            'type'    => 'user_onboarding',
+            'title'   => 'Onboarding Approved',
+            'message' => 'Your employee onboarding has been completed and your account is now active.',
+            'url'     => route('personnel.dashboard', [], false),
+            'is_read' => 0,
         ]);
 
         ActivityLogger::log(

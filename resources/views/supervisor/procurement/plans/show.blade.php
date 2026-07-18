@@ -1,14 +1,8 @@
-<x-app-layout>
+@extends('layouts.app')
 
-<x-slot name="header">
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Procurement Planning
-    </h2>
-</x-slot>
+@section('content')
 
-<div class="py-6">
-
-<div class="max-w-7xl mx-auto px-6">
+<div class="w-full min-w-0">
 
 @if(session('success'))
 
@@ -64,18 +58,42 @@ Working Document
 
 @if(auth()->user()->hasPermission('submit-ppmp'))
 
+@php
+    $approvedItemCount = $plan->items->where('is_approved', true)->count();
+    $totalItemCount = $plan->items->count();
+    $allItemsApproved = $totalItemCount > 0 && $approvedItemCount === $totalItemCount;
+@endphp
+
 <form id="submitPlanForm" action="{{ route('procurement.plans.submit', $plan->id) }}" method="POST" class="inline">
 @csrf
 </form>
 
-<button
-type="button"
-onclick="confirmSubmitPlan()"
-class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded">
+<div>
 
-✅ Submit for Approval
+    <button
+    type="button"
+    @if($allItemsApproved) onclick="confirmSubmitPlan()" @endif
+    @disabled(! $allItemsApproved)
+    class="px-5 py-2 rounded
+        {{ $allItemsApproved
+            ? 'bg-green-600 hover:bg-green-700 text-white'
+            : 'bg-gray-200 text-gray-500 cursor-not-allowed' }}">
 
-</button>
+    ✅ Submit for Approval
+
+    </button>
+
+    @unless($allItemsApproved)
+
+    <p class="text-xs text-gray-500 mt-1">
+
+        {{ $approvedItemCount }} of {{ $totalItemCount }} item(s) approved - all items must be approved first.
+
+    </p>
+
+    @endunless
+
+</div>
 
 @endif
 
@@ -283,6 +301,9 @@ Allocated Budget
 <!-- Procurement Items -->
 @include('supervisor.procurement.plans.partials._procurement_table')
 
+<!-- Item History -->
+@include('supervisor.procurement.plans.partials._item_history')
+
 
 
 <!-- Procurement Modal -->
@@ -304,7 +325,10 @@ Allocated Budget
              "{{ route('procurement.plans.items.update', ':id') }}",
 
         materialDetails:
-            "{{ route('procurement.materials.details', ':id') }}"
+            "{{ route('procurement.materials.details', ':id') }}",
+
+        quickCreateMaterial:
+            "{{ route('procurement.materials.quick-create', $plan->id) }}"
 
     };
 
@@ -333,6 +357,21 @@ Allocated Budget
     function initializeProcurementWorkspace()
         {
             registerMaterialSelection();
+
+            new TomSelect('#material_id', {
+                create: false,
+                sortField: { field: 'text', direction: 'asc' },
+            });
+
+            new TomSelect('#newMaterialClassification', {
+                create: false,
+                sortField: { field: 'text', direction: 'asc' },
+            });
+
+            new TomSelect('#assignClassificationSelect', {
+                create: false,
+                sortField: { field: 'text', direction: 'asc' },
+            });
         }
 
     function registerMaterialSelection()
@@ -369,6 +408,11 @@ Allocated Budget
             document
                 .getElementById('materialInfoCard')
                 .classList.add('hidden');
+
+            document
+                .getElementById('assignClassificationCard')
+                .classList.add('hidden');
+
                 return;
             }
 
@@ -401,7 +445,106 @@ Allocated Budget
                 .getElementById('materialInfoCard')
                 .classList.remove('hidden');
 
+            const classificationCard = document.getElementById('assignClassificationCard');
+
+            if (material.classification_id) {
+
+                classificationCard.classList.add('hidden');
+
+                document.getElementById('assignClassificationSelect').tomselect?.clear();
+
+            } else {
+
+                classificationCard.classList.remove('hidden');
+
+            }
+
             } catch (error) {
+
+                console.error(error);
+
+            }
+        }
+
+    function toggleNewMaterialForm()
+        {
+            document
+                .getElementById('newMaterialForm')
+                .classList.toggle('hidden');
+
+            document
+                .getElementById('newMaterialError')
+                .classList.add('hidden');
+        }
+
+    async function createNewMaterial()
+        {
+            const errorEl = document.getElementById('newMaterialError');
+
+            errorEl.classList.add('hidden');
+
+            const payload = {
+                name: document.getElementById('newMaterialName').value,
+                category_id: document.getElementById('newMaterialCategory').value,
+                unit_id: document.getElementById('newMaterialUnit').value,
+                classification_id: document.getElementById('newMaterialClassification').value,
+            };
+
+            try {
+
+                const response = await fetch(window.procurementRoutes.quickCreateMaterial, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
+                            || document.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!response.ok) {
+
+                    const errorData = await response.json().catch(() => null);
+
+                    const message = errorData?.message
+                        || Object.values(errorData?.errors ?? {}).flat().join(' ')
+                        || 'Unable to create material.';
+
+                    errorEl.innerText = message;
+
+                    errorEl.classList.remove('hidden');
+
+                    return;
+
+                }
+
+                const material = await response.json();
+
+                const materialSelect = document.getElementById('material_id');
+                const materialTom = materialSelect.tomselect;
+
+                if (materialTom) {
+                    materialTom.addOption({ value: material.id, text: material.name });
+                    materialTom.refreshOptions(false);
+                    materialTom.setValue(material.id);
+                } else {
+                    const option = document.createElement('option');
+                    option.value = material.id;
+                    option.innerText = material.name;
+                    materialSelect.appendChild(option);
+                    materialSelect.value = material.id;
+                }
+
+                toggleNewMaterialForm();
+
+                await loadMaterialDetails(material.id);
+
+            } catch (error) {
+
+                errorEl.innerText = 'Unable to create material.';
+
+                errorEl.classList.remove('hidden');
 
                 console.error(error);
 
@@ -477,9 +620,17 @@ Allocated Budget
 
             document.getElementById('formMethod').value = 'POST';
 
+            document.getElementById('material_id').tomselect?.clear();
+
             document
                 .getElementById('materialInfoCard')
                 ?.classList.add('hidden');
+
+            document
+                .getElementById('assignClassificationCard')
+                ?.classList.add('hidden');
+
+            document.getElementById('assignClassificationSelect').tomselect?.clear();
 
             updateProcurementSummary();
         }
@@ -500,6 +651,8 @@ Allocated Budget
                 window.procurementRoutes.storeItem;
 
             document.getElementById('formMethod').value = 'POST';
+
+            document.getElementById('editReasonField').classList.add('hidden');
         }
 
     function openAddMaterialModal()
@@ -656,9 +809,21 @@ Allocated Budget
 
                 title: 'Delete Procurement Item?',
 
-                html:
-                    '<strong>' + materialName + '</strong><br><br>' +
-                    'This action cannot be undone.',
+                html: '<strong>' + materialName + '</strong>',
+
+                input: 'textarea',
+
+                inputLabel: 'Reason for deleting this item (required)',
+
+                inputPlaceholder: 'Let the person who added this item know why it was removed...',
+
+                inputValidator: (value) => {
+
+                    if (!value || !value.trim()) {
+                        return 'A reason is required.';
+                    }
+
+                },
 
                 icon: 'warning',
 
@@ -675,6 +840,8 @@ Allocated Budget
             }).then((result) => {
 
                 if (result.isConfirmed) {
+
+                    document.getElementById('deleteReason' + itemId).value = result.value;
 
                     document
                         .getElementById('deleteForm' + itemId)
@@ -701,6 +868,8 @@ Allocated Budget
                     .replace(':id', item.id);
 
             document.getElementById('formMethod').value = 'PUT';
+
+            document.getElementById('editReasonField').classList.remove('hidden');
         }
 
     function populateProcurementModal(item)
@@ -708,8 +877,13 @@ Allocated Budget
             document.getElementById('procurementItemId').value =
                 item.id;
 
-            document.getElementById('material_id').value =
-                item.material_id;
+            const materialTom = document.getElementById('material_id').tomselect;
+
+            if (materialTom) {
+                materialTom.setValue(item.material_id);
+            } else {
+                document.getElementById('material_id').value = item.material_id;
+            }
 
             document.getElementById('estimated_unit_cost').value =
                 item.estimated_unit_cost;
@@ -763,6 +937,44 @@ Allocated Budget
 
 </script>
 
+<!-- Tom Select CSS -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+
+<style>
+
+    .ts-control {
+        border-radius: 0.375rem !important;
+        border: 1px solid #d1d5db !important;
+        padding: 0.5rem 0.75rem !important;
+        box-shadow: none !important;
+    }
+
+    .ts-control input {
+        font-size: 14px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .ts-wrapper.single .ts-control {
+        background: white !important;
+    }
+
+    .ts-control:focus-within {
+        border-color: #60a5fa !important;
+        box-shadow: 0 0 0 2px rgba(96,165,250,0.3) !important;
+    }
+
+    .ts-dropdown {
+        border-radius: 0.375rem !important;
+        border: 1px solid #d1d5db !important;
+        overflow: hidden;
+    }
+
+</style>
+
+<!-- Tom Select JS -->
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-</x-app-layout>
+@endsection

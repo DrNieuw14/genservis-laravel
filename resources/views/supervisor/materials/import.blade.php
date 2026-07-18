@@ -2,16 +2,16 @@
 
 @section('content')
 
-<div class="max-w-4xl mx-auto mt-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- HEADER -->
     <div class="mb-6">
 
-        <h2 class="text-3xl font-bold text-white">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             📥 Import Inventory
         </h2>
 
-        <p class="text-white/80 mt-2">
+        <p class="text-gray-500 mt-1 text-lg">
             Upload Excel or CSV inventory records into GenServis.
         </p>
 
@@ -20,7 +20,7 @@
     <!-- SUCCESS -->
     @if(session('success'))
 
-        <div class="bg-green-500 text-white p-4 rounded-xl mb-6">
+        <div class="bg-green-500 text-white p-4 rounded-xl mb-6 text-lg">
 
             {{ session('success') }}
 
@@ -31,7 +31,7 @@
     <!-- ERRORS -->
     @if ($errors->any())
 
-        <div class="bg-red-500 text-white p-4 rounded-xl mb-6">
+        <div class="bg-red-500 text-white p-4 rounded-xl mb-6 text-lg">
 
             <ul>
 
@@ -46,9 +46,6 @@
         </div>
 
     @endif
-
-    <!-- CARD -->
-    <div class="bg-white rounded-2xl shadow-xl p-8">
 
         <form method="POST"
               action="{{ route('materials.import.store') }}"
@@ -82,8 +79,6 @@
             </button>
 
         </form>
-
-    </div>
 
 </div>
 

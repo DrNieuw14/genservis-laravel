@@ -20,6 +20,29 @@ class ProcurementPlanController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | Department Scoping
+        |--------------------------------------------------------------------------
+        | A user without view-ppmp (e.g. Department Chair / Unit Head) only sees
+        | their own department's plans.
+        */
+
+        $user = Auth::user();
+
+        $scopedDepartment = null;
+
+        if (! $user->hasPermission('view-ppmp')) {
+
+            // Personnel has both a department_id FK and a legacy plain-string
+            // 'department' column, so ->department (property access) resolves to
+            // the string column, not the department() relation. Look it up explicitly.
+            $scopedDepartment = Department::find($user->personnel?->department_id);
+
+            $query->where('department_id', $user->personnel?->department_id ?? 0);
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
         | Search
         |--------------------------------------------------------------------------
         */
@@ -60,7 +83,7 @@ class ProcurementPlanController extends Controller
 
         return view(
             'supervisor.procurement.plans.index',
-            compact('plans')
+            compact('plans', 'scopedDepartment')
         );
     }
 
@@ -104,7 +127,7 @@ class ProcurementPlanController extends Controller
         ]);
 
         return redirect()
-            ->route('procurement.plans.show', $plan->id)
+            ->route('procurement.plans.index')
             ->with('success', 'Procurement Plan created successfully.');
     }
 
@@ -113,8 +136,18 @@ class ProcurementPlanController extends Controller
         $plan = ProcurementPlan::with([
             'department',
             'items.unit',
-            'items.material.classification'
+            'items.material.classification',
+            'items.creator',
+            'itemLogs' => fn ($query) => $query->with('performer')->latest(),
         ])->findOrFail($id);
+
+        $user = Auth::user();
+
+        if (! $user->hasPermission('view-ppmp') && $plan->department_id !== $user->personnel?->department_id) {
+
+            abort(403);
+
+        }
 
         $materials = \App\Models\Material::with([
             'category',
@@ -123,11 +156,23 @@ class ProcurementPlanController extends Controller
         ->orderBy('name')
         ->get();
 
+        $categories = \App\Models\Category::all();
+
+        $units = \App\Models\Unit::all();
+
+        $classifications = \App\Models\ProcurementClassification::where('is_active', true)
+            ->orderBy('main_category')
+            ->orderBy('sub_category_c')
+            ->get();
+
         return view(
             'supervisor.procurement.plans.show',
             compact(
                 'plan',
-                'materials'
+                'materials',
+                'categories',
+                'units',
+                'classifications'
             )
         );
     }
@@ -211,6 +256,12 @@ class ProcurementPlanController extends Controller
             return redirect()
                 ->route('procurement.plans.show', $plan->id)
                 ->with('error', 'Add at least one procurement item before submitting.');
+        }
+
+        if ($plan->items()->where('is_approved', false)->exists()) {
+            return redirect()
+                ->route('procurement.plans.show', $plan->id)
+                ->with('error', 'All items must be marked approved before this plan can be submitted.');
         }
 
         $plan->update([

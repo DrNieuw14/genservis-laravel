@@ -2,188 +2,180 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <!-- ========================================================= -->
     <!-- PAGE HEADER -->
-    <!-- ========================================================= -->
-    <div class="mb-8">
+    <div class="mb-6">
 
-        <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             📜 Activity Logs
-        </h1>
+        </h2>
 
-        <p class="text-gray-200 mt-2">
+        <p class="text-gray-500 mt-1 text-lg">
             Audit trail of actions taken across the system.
         </p>
 
     </div>
 
-    <!-- ========================================================= -->
     <!-- SUMMARY CARDS -->
-    <!-- ========================================================= -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
 
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-            <p class="text-sm text-gray-500">Total Logged Activities</p>
-            <h2 class="text-3xl font-bold mt-2">{{ $totalLogs }}</h2>
+        <div class="bg-blue-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Total Logged Activities</div>
+            <div class="text-4xl font-bold">{{ $totalLogs }}</div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-            <p class="text-sm text-gray-500">Today</p>
-            <h2 class="text-3xl font-bold mt-2 text-blue-600">{{ $todayLogs }}</h2>
+        <div class="bg-green-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Today</div>
+            <div class="text-4xl font-bold">{{ $todayLogs }}</div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-            <p class="text-sm text-gray-500">Distinct Users</p>
-            <h2 class="text-3xl font-bold mt-2 text-green-600">{{ $distinctUsers }}</h2>
+        <div class="bg-purple-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Distinct Users</div>
+            <div class="text-4xl font-bold">{{ $distinctUsers }}</div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-            <p class="text-sm text-gray-500">Most Active Module</p>
-            <h2 class="text-xl font-bold mt-2 text-purple-600">{{ $mostActiveModule }}</h2>
+        <div class="bg-orange-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Most Active Module</div>
+            <div class="text-2xl font-bold mt-1">{{ $mostActiveModule }}</div>
         </div>
 
     </div>
 
-    <!-- ========================================================= -->
     <!-- FILTERS -->
-    <!-- ========================================================= -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+    <form method="GET" action="{{ route('admin.activity-logs.index') }}" class="mb-6">
 
-        <form method="GET" action="{{ route('admin.activity-logs.index') }}">
+        <div class="flex flex-col md:flex-row gap-4">
 
-            <div class="flex flex-col md:flex-row gap-4">
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search description, action, or user..."
+                class="flex-1 rounded-lg border border-gray-300 px-4 py-3 text-lg focus:ring-green-500 focus:border-green-500">
 
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Search description, action, or user..."
-                    class="flex-1 rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            <select name="module"
+                    class="rounded-lg border border-gray-300 px-4 py-3 text-lg focus:ring-green-500 focus:border-green-500">
 
-                <select name="module"
-                        class="rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+                <option value="">All Modules</option>
 
-                    <option value="">All Modules</option>
+                @foreach($modules as $module)
 
-                    @foreach($modules as $module)
+                    <option value="{{ $module }}"
+                        {{ request('module') == $module ? 'selected' : '' }}>
 
-                        <option value="{{ $module }}"
-                            {{ request('module') == $module ? 'selected' : '' }}>
+                        {{ $module }}
 
-                            {{ $module }}
+                    </option>
 
-                        </option>
+                @endforeach
 
-                    @endforeach
+            </select>
 
-                </select>
+            <input
+                type="date"
+                name="date_from"
+                value="{{ request('date_from') }}"
+                class="rounded-lg border border-gray-300 px-4 py-3 text-lg focus:ring-green-500 focus:border-green-500">
 
-                <input
-                    type="date"
-                    name="date_from"
-                    value="{{ request('date_from') }}"
-                    class="rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            <input
+                type="date"
+                name="date_to"
+                value="{{ request('date_to') }}"
+                class="rounded-lg border border-gray-300 px-4 py-3 text-lg focus:ring-green-500 focus:border-green-500">
 
-                <input
-                    type="date"
-                    name="date_to"
-                    value="{{ request('date_to') }}"
-                    class="rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            <button
+                type="submit"
+                class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition font-semibold text-lg">
 
-                <button
-                    type="submit"
-                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition">
+                🔍 Filter
 
-                    🔍 Filter
+            </button>
 
-                </button>
+        </div>
 
-            </div>
+    </form>
 
-        </form>
-
-    </div>
-
-    <!-- ========================================================= -->
     <!-- LOGS TABLE -->
-    <!-- ========================================================= -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div class="border rounded-lg overflow-hidden">
 
-        <table class="min-w-full">
+        <div class="overflow-x-auto">
 
-            <thead class="bg-green-700 text-white">
+            <table class="w-full text-lg">
 
-                <tr>
+                <thead class="bg-gray-100">
 
-                    <th class="px-6 py-3 text-left">Date / Time</th>
-                    <th class="px-6 py-3 text-left">User</th>
-                    <th class="px-6 py-3 text-left">Module</th>
-                    <th class="px-6 py-3 text-left">Action</th>
-                    <th class="px-6 py-3 text-left">Description</th>
-                    <th class="px-6 py-3 text-left">IP Address</th>
+                    <tr>
 
-                </tr>
+                        <th class="px-6 py-3 text-left text-gray-800">Date / Time</th>
+                        <th class="px-6 py-3 text-left text-gray-800">User</th>
+                        <th class="px-6 py-3 text-left text-gray-800">Module</th>
+                        <th class="px-6 py-3 text-left text-gray-800">Action</th>
+                        <th class="px-6 py-3 text-left text-gray-800">Description</th>
+                        <th class="px-6 py-3 text-left text-gray-800">IP Address</th>
 
-            </thead>
+                    </tr>
 
-            <tbody>
+                </thead>
 
-            @forelse($logs as $log)
+                <tbody class="divide-y divide-gray-200">
 
-                <tr class="border-b hover:bg-gray-50">
+                @forelse($logs as $log)
 
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        {{ $log->created_at->format('M d, Y h:i A') }}
-                    </td>
+                    <tr class="hover:bg-gray-50">
 
-                    <td class="px-6 py-4">
-                        {{ $log->user?->fullname ?? $log->user?->username ?? 'Unknown User' }}
-                    </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ $log->created_at->format('M d, Y h:i A') }}
+                        </td>
 
-                    <td class="px-6 py-4">
+                        <td class="px-6 py-4">
+                            {{ $log->user?->fullname ?? $log->user?->username ?? 'Unknown User' }}
+                        </td>
 
-                        <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
-                            {{ $log->module }}
-                        </span>
+                        <td class="px-6 py-4">
 
-                    </td>
+                            <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-base font-semibold">
+                                {{ $log->module }}
+                            </span>
 
-                    <td class="px-6 py-4">
-                        {{ $log->action }}
-                    </td>
+                        </td>
 
-                    <td class="px-6 py-4 text-gray-600">
-                        {{ $log->description }}
-                    </td>
+                        <td class="px-6 py-4">
+                            {{ $log->action }}
+                        </td>
 
-                    <td class="px-6 py-4 text-gray-500">
-                        {{ $log->ip_address }}
-                    </td>
+                        <td class="px-6 py-4 text-gray-600">
+                            {{ $log->description }}
+                        </td>
 
-                </tr>
+                        <td class="px-6 py-4 text-gray-500">
+                            {{ $log->ip_address }}
+                        </td>
 
-            @empty
+                    </tr>
 
-                <tr>
+                @empty
 
-                    <td colspan="6"
-                        class="text-center py-10 text-gray-500">
+                    <tr>
 
-                        No activity logs found.
+                        <td colspan="6"
+                            class="text-center py-10 text-gray-500 text-lg">
 
-                    </td>
+                            No activity logs found.
 
-                </tr>
+                        </td>
 
-            @endforelse
+                    </tr>
 
-            </tbody>
+                @endforelse
 
-        </table>
+                </tbody>
 
-        <div class="p-6">
+            </table>
+
+        </div>
+
+        <div class="p-6 bg-white border-t">
 
             {{ $logs->links() }}
 

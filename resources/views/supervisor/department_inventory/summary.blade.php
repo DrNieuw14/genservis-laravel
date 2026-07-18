@@ -2,29 +2,29 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto mt-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <h2 class="text-3xl font-bold text-white mb-6">
+    <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3 mb-6">
         📊 Department Inventory Summary
     </h2>
 
-    <div class="bg-white rounded-2xl shadow overflow-hidden">
+    <div class="border rounded-lg overflow-hidden">
 
-        <table class="w-full">
+        <table class="w-full text-lg">
 
-            <thead class="bg-gradient-to-r from-green-500 to-blue-600 text-white">
+            <thead class="bg-gray-100">
 
                 <tr>
 
-                    <th class="p-4 text-left">
+                    <th class="p-4 text-left text-gray-800">
                         Department
                     </th>
 
-                    <th class="p-4 text-left">
+                    <th class="p-4 text-left text-gray-800">
                         Material
                     </th>
 
-                    <th class="p-4 text-left">
+                    <th class="p-4 text-left text-gray-800">
                         Total Quantity
                     </th>
 
@@ -32,11 +32,11 @@
 
             </thead>
 
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
 
                 @forelse($summary as $row)
 
-                <tr class="border-b hover:bg-gray-50">
+                <tr class="hover:bg-gray-50 transition">
 
                     <td class="p-4">
                         {{ $row->department->department_name ?? 'N/A' }}

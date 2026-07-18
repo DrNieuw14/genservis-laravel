@@ -2,187 +2,154 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto mt-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-<!-- HEADER -->
-<div class="flex justify-between items-center mb-6">
+    <!-- HEADER -->
+    <div class="mb-6">
 
-    <h2 class="text-3xl font-bold text-white flex items-center gap-2">
-        👥 User Approvals
-    </h2>
-
-</div>
-
-@if(session('success'))
-    <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-xl mb-6">
-        {{ session('success') }}
-    </div>
-@endif
-
-<!-- STATS -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
-    <!-- PENDING -->
-    <div class="bg-white rounded-2xl shadow-xl p-6">
-
-        <h3 class="text-gray-500 text-sm">
-            Pending Users
-        </h3>
-
-        <p class="text-3xl font-bold text-yellow-500 mt-2">
-            {{ $pendingCount }}
-        </p>
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+            👥 User Approvals
+        </h2>
 
     </div>
 
-    <!-- APPROVED -->
-    <div class="bg-white rounded-2xl shadow-xl p-6">
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-xl mb-6 text-lg">
+            {{ session('success') }}
+        </div>
+    @endif
 
-        <h3 class="text-gray-500 text-sm">
-            Approved Users
-        </h3>
+    <!-- STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
 
-        <p class="text-3xl font-bold text-green-600 mt-2">
-            {{ $approvedCount }}
-        </p>
+        <!-- PENDING -->
+        <div class="bg-yellow-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Pending Users</div>
+            <div class="text-4xl font-bold">{{ $pendingCount }}</div>
+        </div>
+
+        <!-- APPROVED -->
+        <div class="bg-green-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Approved Users</div>
+            <div class="text-4xl font-bold">{{ $approvedCount }}</div>
+        </div>
+
+        <!-- REJECTED -->
+        <div class="bg-red-500 text-white rounded-xl p-5 shadow-lg">
+            <div class="text-base">Rejected Users</div>
+            <div class="text-4xl font-bold">{{ $rejectedCount }}</div>
+        </div>
 
     </div>
 
-    <!-- REJECTED -->
-    <div class="bg-white rounded-2xl shadow-xl p-6">
+    <!-- TABLE -->
+    <div class="border rounded-lg overflow-hidden">
 
-        <h3 class="text-gray-500 text-sm">
-            Rejected Users
-        </h3>
+        <div class="overflow-x-auto">
 
-        <p class="text-3xl font-bold text-red-600 mt-2">
-            {{ $rejectedCount }}
-        </p>
+            <table class="w-full text-lg">
+
+                <thead class="bg-gray-100">
+
+                    <tr>
+
+                        <th class="p-4 text-left text-gray-800">
+                            Name
+                        </th>
+
+                        <th class="p-4 text-left text-gray-800">
+                            Username
+                        </th>
+
+                        <th class="p-4 text-center text-gray-800">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody class="divide-y divide-gray-200">
+
+                    @forelse($users as $user)
+
+                    <tr class="hover:bg-gray-50 transition">
+
+                        <td class="p-4 font-medium">
+                            {{ $user->fullname ?? $user->name }}
+                        </td>
+
+                        <td class="p-4">
+                            {{ $user->username }}
+                        </td>
+
+                        <td class="p-4">
+
+                            <div class="flex justify-center gap-2">
+
+                                <form id="approve-user-{{ $user->id }}"
+                                    method="POST"
+                                    action="{{ route('admin.users.approve', $user->id) }}">
+                                    @csrf
+
+                                    <a href="{{ route('admin.users.onboarding', $user) }}"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow inline-flex items-center">
+
+                                        📝 Complete Onboarding
+
+                                    </a>
+
+                                </form>
+
+                                <form id="reject-user-{{ $user->id }}"
+                                    method="POST"
+                                    action="{{ route('admin.users.reject', $user->id) }}">
+                                    @csrf
+
+                                    <button type="button"
+                                        onclick="confirmUserReject({{ $user->id }})"
+                                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow">
+
+                                        ❌ Reject
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    @empty
+
+                    <tr>
+
+                        <td colspan="3"
+                            class="text-center text-gray-500 py-10 text-lg">
+
+                            No pending user registrations.
+
+                        </td>
+
+                    </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
-
-</div>
-
-<!-- TABLE -->
-<div class="bg-white shadow-2xl rounded-2xl overflow-hidden">
-
-    <table class="min-w-full">
-
-        <thead class="bg-gradient-to-r from-green-500 to-blue-600 text-white">
-
-            <tr>
-
-                <th class="p-4 text-left">
-                    Name
-                </th>
-
-                <th class="p-4 text-left">
-                    Username
-                </th>
-
-                <th class="p-4 text-center">
-                    Actions
-                </th>
-
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            @forelse($users as $user)
-
-            <tr class="border-b hover:bg-gray-50 transition">
-
-                <td class="p-4 font-medium">
-                    {{ $user->fullname ?? $user->name }}
-                </td>
-
-                <td class="p-4">
-                    {{ $user->username }}
-                </td>
-
-                <td class="p-4">
-
-                    <div class="flex justify-center gap-2">
-
-                        <form id="approve-user-{{ $user->id }}"
-                            method="POST"
-                            action="{{ route('admin.users.approve', $user->id) }}">
-                            @csrf
-
-                            <a href="{{ route('admin.users.onboarding', $user) }}"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow inline-flex items-center">
-
-                                📝 Complete Onboarding
-
-                            </a>
-
-                        </form>
-
-                        <form id="reject-user-{{ $user->id }}"
-                            method="POST"
-                            action="{{ route('admin.users.reject', $user->id) }}">
-                            @csrf
-
-                            <button type="button"
-                                onclick="confirmUserReject({{ $user->id }})"
-                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow">
-
-                                ❌ Reject
-
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                </td>
-
-            </tr>
-
-            @empty
-
-            <tr>
-
-                <td colspan="3"
-                    class="text-center text-gray-500 py-10">
-
-                    No pending user registrations.
-
-                </td>
-
-            </tr>
-
-            @endforelse
-
-        </tbody>
-
-    </table>
-
-</div>
-```
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-//--function confirmUserApprove(id) {
-/*    Swal.fire({
-        title: 'Approve User?',
-        text: "This will allow the user to access the system.",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#16a34a',
-        confirmButtonText: 'Approve'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('approve-user-' + id).submit();
-        }
-    });
-}
-*/
 function confirmUserReject(id) {
     Swal.fire({
         title: 'Reject User?',

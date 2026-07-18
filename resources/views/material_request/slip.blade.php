@@ -125,6 +125,13 @@
 
         <br><br>
 
+        @if($request->room)
+        <strong>Room / Location:</strong>
+        {{ $request->room }}
+
+        <br><br>
+        @endif
+
         <strong>Purpose:</strong>
         {{ $request->purpose }}
 

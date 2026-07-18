@@ -2,34 +2,29 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto py-8 px-4">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- HEADER -->
     <div class="flex justify-between items-center mb-6">
 
         <div>
 
-            <h1 class="text-3xl font-bold text-white flex items-center gap-2">
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
                 📦 Material Details
-            </h1>
+            </h2>
 
-            <p class="text-gray-200 mt-1">
+            <p class="text-gray-500 mt-1 text-lg">
                 Complete inventory profile and audit history
             </p>
 
         </div>
 
-        <a href="{{ route('materials.index') }}"
-           class="bg-gray-700 hover:bg-gray-800 text-white px-5 py-3 rounded-xl shadow">
-
-            ← Back to Inventory
-
-        </a>
+        <x-back-button :href="route('materials.index')">Back to Inventory</x-back-button>
 
     </div>
 
     <!-- MATERIAL PROFILE -->
-    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+    <div class="border rounded-lg p-5 bg-gray-50 mb-6">
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -118,7 +113,7 @@
     </div>
 
     <!-- RECENT INVENTORY MOVEMENTS -->
-    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+    <div class="border rounded-lg p-5 bg-gray-50 mb-6">
 
         <h2 class="text-2xl font-bold text-gray-800 mb-4">
             📊 Recent Inventory Movements
@@ -213,7 +208,7 @@
     </div>
 
     <!-- RESTOCK HISTORY -->
-    <div class="bg-white rounded-2xl shadow-xl p-6">
+    <div class="border rounded-lg p-5 bg-gray-50 mb-6">
 
         <h2 class="text-2xl font-bold text-gray-800 mb-4">
             📦 Restock History
@@ -289,7 +284,7 @@
     </div>
 
     <!-- INVENTORY BATCHES -->
-    <div class="bg-white rounded-2xl shadow-xl p-6 mt-6">
+    <div class="border rounded-lg p-5 bg-gray-50 mb-6">
 
         <h2 class="text-2xl font-bold text-gray-800 mb-2">
             📦 Inventory Batches
@@ -455,18 +450,16 @@
 
     </div>
 
-</div>
+    <!-- RECENT MATERIAL DISTRIBUTION -->
+    <div class="border rounded-lg p-5 bg-gray-50">
 
-<!-- RECENT MATERIAL DISTRIBUTION -->
-<div class="bg-white rounded-2xl shadow-xl p-6 mt-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">
+            👥 Recent Material Distribution
+        </h3>
 
-    <h2 class="text-2xl font-bold text-gray-800 mb-2">
-        👥 Recent Material Distribution
-    </h2>
-
-    <p class="text-gray-500 mb-4">
-        Shows personnel who received this material through approved requests.
-    </p>
+        <p class="text-gray-500 mb-4">
+            Shows personnel who received this material through approved requests.
+        </p>
 
     <div class="overflow-x-auto">
 

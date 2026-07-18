@@ -2,18 +2,16 @@
 
 @section('content')
 
-<div class="max-w-5xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <!-- ========================================================= -->
     <!-- PAGE HEADER -->
-    <!-- ========================================================= -->
-    <div class="mb-8">
+    <div class="mb-6">
 
-        <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             ⚙️ System Settings
-        </h1>
+        </h2>
 
-        <p class="text-gray-200 mt-2">
+        <p class="text-gray-500 mt-1 text-lg">
             Maintenance mode and outgoing email configuration.
         </p>
 
@@ -21,7 +19,7 @@
 
     @if(session('success'))
 
-        <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-lg mb-8">
+        <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-lg mb-6 text-lg">
             {{ session('success') }}
         </div>
 
@@ -29,20 +27,18 @@
 
     @if(session('error'))
 
-        <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-8">
+        <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-6 text-lg">
             {{ session('error') }}
         </div>
 
     @endif
 
-    <!-- ========================================================= -->
     <!-- MAINTENANCE MODE -->
-    <!-- ========================================================= -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+    <div class="border rounded-lg p-5 bg-gray-50 mb-6">
 
-        <h2 class="text-xl font-semibold text-gray-800 mb-2">
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">
             🛠️ Maintenance Mode
-        </h2>
+        </h3>
 
         <p class="text-gray-500 mb-6">
             When enabled, everyone except users with System Settings access sees a
@@ -90,14 +86,12 @@
 
     </div>
 
-    <!-- ========================================================= -->
     <!-- EMAIL SETTINGS -->
-    <!-- ========================================================= -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+    <div class="border rounded-lg p-5 bg-gray-50">
 
-        <h2 class="text-xl font-semibold text-gray-800 mb-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-6">
             📧 Email Settings
-        </h2>
+        </h3>
 
         <form method="POST" action="{{ route('admin.system-settings.email') }}">
 

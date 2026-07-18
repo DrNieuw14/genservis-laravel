@@ -2,38 +2,35 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <div class="flex items-center justify-between mb-6">
 
-        <h1 class="text-4xl font-bold text-white">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             📦 {{ $department->department_name }}
-        </h1>
+        </h2>
 
-        <a href="{{ route('department.inventory.balance') }}"
-           class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
-            ← Back
-        </a>
+        <x-back-button :href="route('department.inventory.balance')" />
 
     </div>
 
-    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div class="border rounded-lg overflow-hidden">
 
-        <table class="w-full">
+        <table class="w-full text-lg">
 
-            <thead>
+            <thead class="bg-gray-100">
 
-                <tr class="bg-gradient-to-r from-blue-500 to-green-600 text-white">
+                <tr>
 
-                    <th class="p-4 text-left">
+                    <th class="p-4 text-left text-gray-800">
                         Material
                     </th>
 
-                    <th class="p-4 text-left">
+                    <th class="p-4 text-left text-gray-800">
                         Quantity
                     </th>
 
-                    <th class="p-4 text-left">
+                    <th class="p-4 text-left text-gray-800">
                         Released Date
                     </th>
 
@@ -41,11 +38,11 @@
 
             </thead>
 
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
 
                 @forelse($materials as $item)
 
-                    <tr class="border-b">
+                    <tr class="hover:bg-gray-50 transition">
 
                         <td class="p-4">
                             {{ $item->material->name ?? 'Unknown Material' }}

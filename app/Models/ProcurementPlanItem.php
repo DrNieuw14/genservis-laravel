@@ -39,11 +39,16 @@ class ProcurementPlanItem extends Model
         'source_of_fund',
 
         'remarks',
+
+        'created_by',
+
+        'is_approved',
     ];
 
     protected $casts = [
         'estimated_unit_cost' => 'decimal:2',
         'annual_cost' => 'decimal:2',
+        'is_approved' => 'boolean',
     ];
 
     /*
@@ -65,6 +70,11 @@ class ProcurementPlanItem extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     /*
