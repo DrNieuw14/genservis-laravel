@@ -35,7 +35,7 @@
         @endif
 
         <!-- FORM -->
-        <form action="{{ route('materials.store') }}" method="POST">
+        <form action="{{ route('materials.store') }}" method="POST" enctype="multipart/form-data">
 
             @csrf
 
@@ -53,6 +53,36 @@
                            class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400"
                            placeholder="Enter material name"
                            required>
+
+                </div>
+
+                <!-- IMAGE -->
+                <div class="md:col-span-2">
+
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        Item Photo
+                    </label>
+
+                    <p class="text-sm text-gray-500 mb-2">
+                        Helps requesters visually confirm this is the item they need
+                        (e.g. "Pilot Permanent Marker (Black)"). Optional.
+                    </p>
+
+                    <div class="flex items-center gap-4">
+
+                        <img
+                            id="image-preview"
+                            src=""
+                            class="hidden w-24 h-24 object-cover rounded-xl border"
+                            alt="Preview">
+
+                        <input type="file"
+                               name="image"
+                               accept="image/*"
+                               onchange="previewMaterialImage(this)"
+                               class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400">
+
+                    </div>
 
                 </div>
 
@@ -226,5 +256,23 @@
         </form>
 
 </div>
+
+<script>
+
+    function previewMaterialImage(input)
+    {
+        const preview = document.getElementById('image-preview');
+
+        if (!input.files || !input.files[0]) {
+            preview.classList.add('hidden');
+            preview.src = '';
+            return;
+        }
+
+        preview.src = URL.createObjectURL(input.files[0]);
+        preview.classList.remove('hidden');
+    }
+
+</script>
 
 @endsection

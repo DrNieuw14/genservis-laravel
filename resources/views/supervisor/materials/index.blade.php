@@ -327,6 +327,8 @@
                         <input type="checkbox" id="select-all-checkbox" class="w-4 h-4">
                     </th>
 
+                    <th class="p-4 text-left">Photo</th>
+
                     <th class="p-4 text-left">Name</th>
 
                     <th class="p-4 text-left">Department</th>
@@ -354,6 +356,25 @@
 
                         <td class="p-4">
                             <input type="checkbox" class="material-checkbox w-4 h-4" value="{{ $material->id }}">
+                        </td>
+
+                        <td class="p-4">
+
+                            @if($material->image_url)
+
+                                <img
+                                    src="{{ $material->image_url }}"
+                                    alt="{{ $material->name }}"
+                                    class="w-12 h-12 object-cover rounded-lg border">
+
+                            @else
+
+                                <div class="w-12 h-12 flex items-center justify-center rounded-lg border bg-gray-50 text-gray-300 text-xl">
+                                    📦
+                                </div>
+
+                            @endif
+
                         </td>
 
                         <td class="p-4 font-medium">
@@ -468,7 +489,7 @@
 
                     <tr>
 
-                        <td colspan="8"
+                        <td colspan="9"
                             class="text-center text-gray-500 py-8">
 
                             No materials found

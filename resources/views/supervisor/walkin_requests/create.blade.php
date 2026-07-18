@@ -206,6 +206,8 @@
 
                     </select>
 
+                    <img class="material-thumb hidden w-12 h-12 object-cover rounded-lg border mt-1" alt="">
+
                 </td>
 
                 <td class="p-2">
@@ -293,6 +295,7 @@ function addRow()
                 required>
                 <option value="">🔍 Click to search materials...</option>
             </select>
+            <img class="material-thumb hidden w-12 h-12 object-cover rounded-lg border mt-1" alt="">
         </td>
 
         <td class="p-2">
@@ -654,6 +657,27 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         populateMaterialSelect(tom);
+
+        element.addEventListener('change', function () {
+
+            const thumb = element.closest('td').querySelector('.material-thumb');
+
+            if (!thumb) {
+                return;
+            }
+
+            const material = materialsById[element.value];
+
+            if (material && material.image_url) {
+                thumb.src = material.image_url;
+                thumb.alt = material.name;
+                thumb.classList.remove('hidden');
+            } else {
+                thumb.classList.add('hidden');
+                thumb.src = '';
+            }
+
+        });
 
         return tom;
     }

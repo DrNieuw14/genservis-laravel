@@ -81,12 +81,12 @@
         <div>
 
             <p class="text-gray-500 text-sm">
-                System Role
+                System Role(s)
             </p>
 
             <h3 class="font-semibold">
 
-                {{ $employee->user?->systemRole?->name ?? 'Unassigned' }}
+                {{ $employee->user?->allRoles()->pluck('name')->join(', ') ?: 'Unassigned' }}
 
             </h3>
 

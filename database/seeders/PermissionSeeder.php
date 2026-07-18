@@ -33,6 +33,8 @@ class PermissionSeeder extends Seeder
                     ['name' => 'View Employee Profile', 'slug' => 'view-employee-profile'],
                     ['name' => 'Edit Employee Profile', 'slug' => 'edit-employee-profile'],
 
+                    ['name' => 'View Utility & Maintenance Staff', 'slug' => 'view-utility-staff'],
+
                 ]
             ],
 
@@ -105,6 +107,25 @@ class PermissionSeeder extends Seeder
                     ['name' => 'View Purchase Forecast', 'slug' => 'view-purchase-forecast'],
                     ['name' => 'View Procurement Calendar', 'slug' => 'view-procurement-calendar'],
                     ['name' => 'Manage Own Department PPMP Items', 'slug' => 'manage-own-department-ppmp-items'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Job Requests
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Job Requests',
+
+                'permissions' => [
+
+                    ['name' => 'View Job Requests', 'slug' => 'view-job-requests'],
+                    ['name' => 'Approve Physical Plant Job Requests', 'slug' => 'approve-job-requests-physical-plant'],
+                    ['name' => 'Approve Utility Job Requests', 'slug' => 'approve-job-requests-utility'],
+                    ['name' => 'Assign Job Request Personnel', 'slug' => 'assign-job-request-personnel'],
 
                 ]
             ],

@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonnelController;
+use App\Http\Controllers\JobRequestController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Supervisor\MaterialController;
@@ -63,6 +64,82 @@ Route::middleware(['auth'])->group(function () {
     )->name('material-request.slip');
 
     Route::post('/material-request', [MaterialRequestController::class, 'store']);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| JOB REQUESTS (PPLS-QF-02) — any logged-in employee can submit one;
+| approval and personnel assignment are permission-gated further below.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/job-requests/create', [JobRequestController::class, 'create'])
+        ->name('job-requests.create');
+
+    Route::post('/job-requests', [JobRequestController::class, 'store'])
+        ->name('job-requests.store');
+
+    Route::get('/job-requests/history', [JobRequestController::class, 'history'])
+        ->name('job-requests.history');
+
+    Route::get('/job-requests/my-assigned', [JobRequestController::class, 'myAssignedJobs'])
+        ->name('job-requests.my-assigned');
+
+    // Authorization is done inside the controller (must be one of the
+    // assigned personnel) rather than a permission, since the workers
+    // themselves (e.g. Rony) don't hold assign-job-request-personnel.
+    Route::post('/job-requests/{id}/mark-work-done', [JobRequestController::class, 'markWorkDone'])
+        ->name('job-requests.mark-work-done');
+
+});
+
+Route::middleware(['auth', 'permission:approve-job-requests-physical-plant,approve-job-requests-utility'])->group(function () {
+
+    Route::get('/job-requests', [JobRequestController::class, 'index'])
+        ->name('job-requests.index');
+
+    // KEEP BEFORE job-requests.show — {id} below would otherwise swallow
+    // this static path as a route-model-binding lookup.
+    Route::get('/job-requests/reports', [JobRequestController::class, 'report'])
+        ->name('job-requests.reports');
+
+    Route::get('/job-requests/reports/print', [JobRequestController::class, 'reportPrint'])
+        ->name('job-requests.reports.print');
+
+    Route::post('/job-requests/{id}/approve', [JobRequestController::class, 'approve'])
+        ->name('job-requests.approve');
+
+    Route::post('/job-requests/{id}/reject', [JobRequestController::class, 'reject'])
+        ->name('job-requests.reject');
+
+});
+
+Route::middleware(['auth', 'permission:assign-job-request-personnel'])->group(function () {
+
+    Route::get('/job-requests/{id}/assign', [JobRequestController::class, 'assignForm'])
+        ->name('job-requests.assign');
+
+    Route::post('/job-requests/{id}/assign', [JobRequestController::class, 'assignStore'])
+        ->name('job-requests.assign.store');
+
+    Route::post('/job-requests/{id}/complete', [JobRequestController::class, 'markCompleted'])
+        ->name('job-requests.complete');
+
+});
+
+// KEEP LAST — {id} below would otherwise swallow any static job-requests
+// path (e.g. /job-requests/reports) registered after it as a
+// route-model-binding lookup.
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/job-requests/{id}', [JobRequestController::class, 'show'])
+        ->name('job-requests.show');
+
+    Route::get('/job-requests/{id}/print', [JobRequestController::class, 'print'])
+        ->name('job-requests.print');
 
 });
 
@@ -587,6 +664,21 @@ Route::middleware(['auth'])->group(function () {
             [MaterialController::class, 'departmentSummaryReport'
         ])->name('inventory.department');
 
+        Route::get(
+            '/inventory/reports/purchase-recommendations',
+            [MaterialController::class, 'purchaseRecommendations']
+        )->name('inventory.purchase-recommendations');
+
+        Route::get(
+            '/inventory/reports/frequently-requested',
+            [MaterialController::class, 'frequentlyRequestedReport']
+        )->name('inventory.frequently-requested');
+
+        Route::get(
+            '/inventory/reports/non-movable',
+            [MaterialController::class, 'nonMovableReport']
+        )->name('inventory.non-movable');
+
     });
 
     Route::middleware('permission:print-reports')->group(function () {
@@ -615,6 +707,15 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/inventory/reports/department-summary/print', [MaterialController::class, 'departmentSummaryReportPrint'])
             ->name('inventory.department.print');
+
+        Route::get('/inventory/reports/purchase-recommendations/print', [MaterialController::class, 'purchaseRecommendationsPrint'])
+            ->name('inventory.purchase-recommendations.print');
+
+        Route::get('/inventory/reports/frequently-requested/print', [MaterialController::class, 'frequentlyRequestedReportPrint'])
+            ->name('inventory.frequently-requested.print');
+
+        Route::get('/inventory/reports/non-movable/print', [MaterialController::class, 'nonMovableReportPrint'])
+            ->name('inventory.non-movable.print');
 
     });
 
@@ -664,8 +765,26 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('employees', EmployeeController::class)
             ->only([
                 'index',
-                'show',
             ]);
+
+    });
+
+    // KEEP BEFORE employees.show — {employee} below would otherwise swallow
+    // this static path as a route-model-binding lookup.
+    Route::middleware('permission:view-utility-staff')->group(function () {
+
+        Route::get('/employees/utility-staff', [EmployeeController::class, 'utilityStaff'])
+            ->name('employees.utility-staff');
+
+    });
+
+    // Individual profiles are also reachable by scoped supervisors (e.g. the
+    // General Services Officer's utility/maintenance staff list) who hold
+    // view-employee-profile without the full Employee Master permission.
+    Route::middleware('permission:view-employees,view-employee-profile')->group(function () {
+
+        Route::get('/employees/{employee}', [EmployeeController::class, 'show'])
+            ->name('employees.show');
 
     });
 

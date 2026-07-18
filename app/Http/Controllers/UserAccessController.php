@@ -16,6 +16,7 @@ class UserAccessController extends Controller
     {
         $query = User::with([
             'systemRole',
+            'additionalRoles',
             'personnel.departmentRecord',
             'personnel.positionRecord',
             'personnel.employmentType',
@@ -64,17 +65,18 @@ class UserAccessController extends Controller
     {
         $user->load([
             'systemRole.permissions',
+            'additionalRoles.permissions',
             'personnel.departmentRecord',
             'personnel.positionRecord',
             'personnel.employmentType',
         ]);
 
-        $permissions = $user->systemRole
-            ? $user->systemRole->permissions
-                ->where('status', true)
-                ->sortBy('name')
-                ->groupBy('module')
-            : collect();
+        $permissions = $user->allRoles()
+            ->flatMap(fn ($role) => $role->permissions)
+            ->where('status', true)
+            ->unique('id')
+            ->sortBy('name')
+            ->groupBy('module');
 
         return view('admin.user-access.show', [
 
@@ -87,7 +89,7 @@ class UserAccessController extends Controller
 
     public function edit(User $user)
     {
-        $user->load(['systemRole', 'personnel']);
+        $user->load(['systemRole', 'additionalRoles', 'personnel']);
 
         return view('admin.user-access.edit', [
 
@@ -102,17 +104,28 @@ class UserAccessController extends Controller
     {
         $validated = $request->validate([
             'role_id' => 'required|exists:roles,id',
+            'additional_role_ids' => 'nullable|array',
+            'additional_role_ids.*' => 'exists:roles,id',
         ]);
 
         $user->update([
             'role_id' => $validated['role_id'],
         ]);
 
+        // The primary role can't also be listed as an additional role —
+        // it's already covered above, and double-listing would just be
+        // redundant pivot rows.
+        $additionalRoleIds = collect($validated['additional_role_ids'] ?? [])
+            ->reject(fn ($id) => (int) $id === (int) $validated['role_id'])
+            ->values();
+
+        $user->additionalRoles()->sync($additionalRoleIds);
+
         // TODO: Add Activity Log
 
         return redirect()
             ->route('admin.user-access.show', $user)
-            ->with('success', 'Role assigned successfully.');
+            ->with('success', 'Roles assigned successfully.');
     }
 
     public function updateStatus(Request $request, User $user)

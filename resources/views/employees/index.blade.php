@@ -5,15 +5,23 @@
 <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- Header -->
-    <div class="mb-6">
+    <div class="flex justify-between items-start mb-6">
 
-        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
-            👥 Employee Master
-        </h2>
+        <div>
 
-        <p class="text-gray-500 mt-1 text-lg">
-            Central repository of employee information across the GenServis ERP.
-        </p>
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+                {{ $pageTitle ?? '👥 Employee Master' }}
+            </h2>
+
+            <p class="text-gray-500 mt-1 text-lg">
+                {{ $pageDescription ?? 'Central repository of employee information across the GenServis ERP.' }}
+            </p>
+
+        </div>
+
+        @isset($backRoute)
+            <x-back-button :href="$backRoute" />
+        @endisset
 
     </div>
 
@@ -99,11 +107,23 @@
 
                     <td class="px-6 py-4 text-center">
 
-                        <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm">
+                        <div class="flex flex-wrap justify-center gap-1">
 
-                            {{ $employee->user?->systemRole?->name ?? 'Unassigned' }}
+                            @forelse($employee->user?->allRoles() ?? [] as $role)
 
-                        </span>
+                                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm">
+                                    {{ $role->name }}
+                                </span>
+
+                            @empty
+
+                                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm">
+                                    Unassigned
+                                </span>
+
+                            @endforelse
+
+                        </div>
 
                     </td>
 

@@ -32,7 +32,7 @@
                     text-white text-sm font-medium
                     rounded-lg shadow transition">
 
-                ✏️ Assign Role
+                ✏️ Assign Roles
 
             </a>
 
@@ -143,23 +143,26 @@
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">System Role</p>
+                <p class="text-sm text-gray-500">System Role(s)</p>
 
-                <div class="mt-1">
+                <div class="mt-1 flex flex-wrap gap-2">
 
-                    @if($user->systemRole)
+                    @forelse($user->allRoles() as $role)
 
                         <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
-                            {{ $user->systemRole->name }}
+                            {{ $role->name }}
+                            @if($user->role_id === $role->id)
+                                <span class="text-blue-400">· primary</span>
+                            @endif
                         </span>
 
-                    @else
+                    @empty
 
                         <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs">
                             Unassigned
                         </span>
 
-                    @endif
+                    @endforelse
 
                 </div>
 
@@ -331,7 +334,7 @@
             🛡️ Permissions
         </h3>
 
-        @if($user->systemRole && $permissions->isNotEmpty())
+        @if($permissions->isNotEmpty())
 
             <div class="space-y-6">
 

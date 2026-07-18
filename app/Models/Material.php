@@ -8,6 +8,7 @@ class Material extends Model
 {
     protected $fillable = [
     'name',
+    'image',
     'quantity',
     'threshold',
     'category_id',
@@ -16,6 +17,13 @@ class Material extends Model
     'classification_id',
     'created_by'
     ];
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image
+            ? asset('storage/' . $this->image)
+            : null;
+    }
 
     // 🔗 Relationships
 

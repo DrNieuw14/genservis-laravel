@@ -17,7 +17,8 @@ use App\Models\WalkinRequestItem;
 use App\Models\ProcurementClassification;
 use App\Models\ProcurementPlan;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;  
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Imports\MaterialImport;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -317,10 +318,16 @@ class MaterialController extends Controller
             'unit_id' => 'required',
             'quantity' => 'required|integer|min:0',
             'classification_id' => 'nullable|exists:procurement_classifications,id',
+            'image' => 'nullable|image|max:2048',
         ]);
+
+        $imagePath = $request->hasFile('image')
+            ? $request->file('image')->store('materials', 'public')
+            : null;
 
         $material = Material::create([
             'name' => $request->name,
+            'image' => $imagePath,
             'department_id' => $request->department_id,
             'category_id' => $request->category_id,
             'unit_id' => $request->unit_id,
@@ -410,12 +417,32 @@ class MaterialController extends Controller
             'classification_id' => 'nullable|exists:procurement_classifications,id',
 
             'threshold' => 'required|integer|min:0',
+            'image' => 'nullable|image|max:2048',
+            'remove_image' => 'nullable|boolean',
         ]);
 
         $material = Material::findOrFail($id);
 
+        $imagePath = $material->image;
+
+        if ($request->hasFile('image')) {
+
+            if ($material->image) {
+                Storage::disk('public')->delete($material->image);
+            }
+
+            $imagePath = $request->file('image')->store('materials', 'public');
+
+        } elseif ($request->boolean('remove_image') && $material->image) {
+
+            Storage::disk('public')->delete($material->image);
+
+            $imagePath = null;
+        }
+
         $material->update([
             'name' => $request->name,
+            'image' => $imagePath,
             'department_id' => $request->department_id,
             'category_id' => $request->category_id,
             'unit_id' => $request->unit_id,
@@ -1657,6 +1684,165 @@ class MaterialController extends Controller
             'totalQuantity',
             'departmentsWithIssues'
         );
+    }
+
+    public function purchaseRecommendations()
+    {
+        return view(
+            'supervisor.reports.purchase_recommendations',
+            $this->purchaseRecommendationsData()
+        );
+    }
+
+    public function purchaseRecommendationsPrint()
+    {
+        return view(
+            'supervisor.reports.purchase_recommendations_print',
+            $this->purchaseRecommendationsData()
+        );
+    }
+
+    /**
+     * What a procurement officer needs to buy right now: low/critical/out
+     * of stock materials, plus anything about to expire this month.
+     */
+    private function purchaseRecommendationsData(): array
+    {
+        $needsPurchase = $this->allMaterialsWithStatus()
+            ->whereIn('stock_status', ['out_of_stock', 'critical', 'low'])
+            ->sortBy(fn ($m) => $m->threshold > 0 ? $m->quantity / $m->threshold : 0)
+            ->values();
+
+        $expiringThisMonth = MaterialRestockLog::with(['material.department', 'material.category'])
+            ->where('has_expiration', 1)
+            ->where('quantity_remaining', '>', 0)
+            ->whereMonth('expiration_date', now()->month)
+            ->whereYear('expiration_date', now()->year)
+            ->orderBy('expiration_date')
+            ->get();
+
+        return [
+            'needsPurchase' => $needsPurchase,
+            'needsPurchaseCount' => $needsPurchase->count(),
+            'expiringThisMonth' => $expiringThisMonth,
+            'expiringThisMonthCount' => $expiringThisMonth->count(),
+            'monthLabel' => now()->format('F Y'),
+        ];
+    }
+
+    public function frequentlyRequestedReport()
+    {
+        return view(
+            'supervisor.reports.frequently_requested',
+            $this->frequentlyRequestedData()
+        );
+    }
+
+    public function frequentlyRequestedReportPrint()
+    {
+        return view(
+            'supervisor.reports.frequently_requested_print',
+            $this->frequentlyRequestedData()
+        );
+    }
+
+    /**
+     * Materials with the highest combined demand from Material Requests and
+     * Walk-In Issuances — the items that matter most to keep well stocked.
+     */
+    private function frequentlyRequestedData(): array
+    {
+        $requestDemand = MaterialRequestItem::selectRaw('material_id, SUM(quantity) as qty, COUNT(DISTINCT request_id) as tx')
+            ->groupBy('material_id')
+            ->get()
+            ->keyBy('material_id');
+
+        $walkinDemand = WalkinRequestItem::selectRaw('material_id, SUM(quantity) as qty, COUNT(DISTINCT walkin_request_id) as tx')
+            ->groupBy('material_id')
+            ->get()
+            ->keyBy('material_id');
+
+        $demandMaterialIds = $requestDemand->keys()->merge($walkinDemand->keys())->unique();
+
+        $frequentlyRequested = Material::with(['department', 'category'])
+            ->whereIn('id', $demandMaterialIds)
+            ->get()
+            ->map(function ($material) use ($requestDemand, $walkinDemand) {
+
+                $material->total_requested_qty =
+                    ($requestDemand->get($material->id)?->qty ?? 0) +
+                    ($walkinDemand->get($material->id)?->qty ?? 0);
+
+                $material->total_transactions =
+                    ($requestDemand->get($material->id)?->tx ?? 0) +
+                    ($walkinDemand->get($material->id)?->tx ?? 0);
+
+                return $material;
+            })
+            ->sortByDesc('total_transactions')
+            ->take(20)
+            ->values();
+
+        $totalMaterials = Material::count();
+
+        return [
+            'frequentlyRequested' => $frequentlyRequested,
+            'frequentlyRequestedCount' => $frequentlyRequested->count(),
+            'totalTransactions' => $frequentlyRequested->sum('total_transactions'),
+            'totalQtyRequested' => $frequentlyRequested->sum('total_requested_qty'),
+            'topItem' => $frequentlyRequested->first(),
+            'totalMaterials' => $totalMaterials,
+        ];
+    }
+
+    public function nonMovableReport()
+    {
+        return view(
+            'supervisor.reports.non_movable',
+            $this->nonMovableData()
+        );
+    }
+
+    public function nonMovableReportPrint()
+    {
+        return view(
+            'supervisor.reports.non_movable_print',
+            $this->nonMovableData()
+        );
+    }
+
+    /**
+     * Materials with zero Material Request or Walk-In Issuance activity —
+     * candidates for reassignment rather than repurchase.
+     */
+    private function nonMovableData(): array
+    {
+        $nonMovable = Material::with(['department', 'category'])
+            ->whereDoesntHave('requestItems')
+            ->whereDoesntHave('walkinItems')
+            ->orderBy('name')
+            ->get();
+
+        $totalMaterials = Material::count();
+
+        $nonMovableCount = $nonMovable->count();
+
+        $nonMovablePercentage = $totalMaterials > 0
+            ? round(($nonMovableCount / $totalMaterials) * 100, 2)
+            : 0;
+
+        $departmentsAffected = $nonMovable
+            ->pluck('department.department_name')
+            ->filter()
+            ->unique()
+            ->count();
+
+        return [
+            'nonMovable' => $nonMovable,
+            'nonMovableCount' => $nonMovableCount,
+            'nonMovablePercentage' => $nonMovablePercentage,
+            'departmentsAffected' => $departmentsAffected,
+        ];
     }
 
     public function details(Material $material)

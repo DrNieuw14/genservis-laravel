@@ -31,6 +31,7 @@ class WalkinRequestController extends Controller
         $materialsForJs = $materials->map(fn ($m) => [
             'id' => $m->id,
             'name' => $m->name,
+            'image_url' => $m->image_url,
             'stock' => $m->quantity,
         ])->values();
 

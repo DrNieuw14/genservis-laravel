@@ -161,23 +161,27 @@
                         <!-- Role -->
                         <td class="px-6 py-4">
 
-                            @if($user->systemRole)
+                            <div class="flex flex-wrap gap-1">
 
-                                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-base font-semibold">
+                                @forelse($user->allRoles() as $role)
 
-                                    {{ $user->systemRole->name }}
+                                    <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-base font-semibold">
 
-                                </span>
+                                        {{ $role->name }}
 
-                            @else
+                                    </span>
 
-                                <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-base">
+                                @empty
 
-                                    Unassigned
+                                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-base">
 
-                                </span>
+                                        Unassigned
 
-                            @endif
+                                    </span>
+
+                                @endforelse
+
+                            </div>
 
                         </td>
 

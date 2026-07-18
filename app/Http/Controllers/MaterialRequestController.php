@@ -37,6 +37,7 @@ class MaterialRequestController extends Controller
             return [
                 'id' => $material->id,
                 'name' => $material->name,
+                'image_url' => $material->image_url,
                 'stock' => $material->quantity,
                 'category_id' => $material->category_id,
                 'category_name' => $material->category->name ?? 'N/A',
@@ -250,10 +251,7 @@ class MaterialRequestController extends Controller
         }
 
         // 🔔 Notify whoever processes material requests (Inventory Custodian, Administrator, etc.)
-        $processors = User::whereHas('systemRole.permissions', function ($query) {
-            $query->where('slug', 'process-material-requests')
-                ->where('status', true);
-        })->get();
+        $processors = User::withPermission('process-material-requests')->get();
 
         foreach ($processors as $processor) {
 

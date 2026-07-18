@@ -133,6 +133,50 @@
 
             @endif
 
+            @if(auth()->user()->hasPermission('approve-job-requests-physical-plant')
+                || auth()->user()->hasPermission('approve-job-requests-utility')
+                || auth()->user()->hasPermission('view-utility-staff'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Job Request Management
+            </div>
+
+            @if(auth()->user()->hasPermission('approve-job-requests-physical-plant') || auth()->user()->hasPermission('approve-job-requests-utility'))
+
+            <!-- Job Request Approvals -->
+
+            <a href="{{ route('job-requests.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('job-requests.index') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                🛠️ Job Request Approvals
+
+            </a>
+
+            <a href="{{ route('job-requests.reports') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('job-requests.reports*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                📊 Job Request Reports
+
+            </a>
+
+            @endif
+
+            @if(auth()->user()->hasPermission('view-utility-staff'))
+
+            <a href="{{ route('employees.utility-staff') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('employees.utility-staff') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                🧰 Utility & Maintenance Staff
+
+            </a>
+
+            @endif
+
+            @endif
+
             <!-- Walk-In Issuance -->
 
             @if(auth()->user()->hasPermission('create-walkin-requests'))
@@ -622,6 +666,32 @@
 
                 @endif
 
+                @if(in_array(Auth::user()->role, ['personnel', 'supervisor']))
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2 mt-3">
+                        Job Request Services
+                    </div>
+
+                    <a href="{{ route('job-requests.create') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('job-requests.create') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        🛠️ Job Request
+                    </a>
+
+                    <a href="{{ route('job-requests.history') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('job-requests.history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📜 My Job Requests
+                    </a>
+
+                    <a href="{{ route('job-requests.my-assigned') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('job-requests.my-assigned') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        🔧 My Assigned Jobs
+                    </a>
+
+                @endif
+
             </nav>
 
         </aside>
@@ -697,7 +767,10 @@
 
                         @if(Auth::user()->systemRole)
                         <span class="text-xs text-gray-500 font-normal">
-                            ({{ Auth::user()->systemRole->name }})
+                            ({{ Auth::user()->systemRole->name }}@if(Auth::user()->additionalRoles->isNotEmpty()) <span
+                                class="underline decoration-dotted cursor-help"
+                                title="{{ Auth::user()->additionalRoles->pluck('name')->join(', ') }}"
+                            >+{{ Auth::user()->additionalRoles->count() }} more</span>@endif)
                         </span>
                         @endif
                     </span>

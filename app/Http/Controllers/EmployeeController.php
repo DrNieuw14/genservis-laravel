@@ -13,6 +13,7 @@ class EmployeeController extends Controller
 
         $employees = Personnel::with([
             'user.systemRole',
+            'user.additionalRoles',
             'employmentType',
             'departmentRecord',
             'positionRecord',
@@ -31,6 +32,46 @@ class EmployeeController extends Controller
         ));
     }
 
+    /**
+     * Scoped roster for the General Services Officer: utility personnel
+     * (Utility Worker, Groundskeeper) plus electrical/maintenance staff,
+     * without granting the broader Employee Master permission.
+     */
+    public function utilityStaff(Request $request)
+    {
+        $search = $request->search;
+
+        $employees = Personnel::with([
+            'user.systemRole',
+            'user.additionalRoles',
+            'employmentType',
+            'departmentRecord',
+            'positionRecord',
+        ])
+            ->where(function ($query) {
+                $query->whereHas('employmentType', fn ($q) => $q->where('name', 'Utility Personnel'))
+                    ->orWhereHas('positionRecord', fn ($q) => $q
+                        ->where('position_name', 'like', '%lectric%')
+                        ->orWhere('position_name', 'like', '%aintenance%'));
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->where(fn ($q) => $q
+                    ->where('employee_id', 'like', "%{$search}%")
+                    ->orWhere('fullname', 'like', "%{$search}%"));
+            })
+            ->orderBy('fullname')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('employees.index', [
+            'employees' => $employees,
+            'search' => $search,
+            'pageTitle' => '🧰 Utility & Maintenance Staff',
+            'pageDescription' => 'Utility personnel and electrical/maintenance staff under General Services.',
+            'backRoute' => route('personnel.dashboard'),
+        ]);
+    }
+
     public function show(Personnel $employee)
     {
         $employee->load([
@@ -41,6 +82,7 @@ class EmployeeController extends Controller
             |--------------------------------------------------------------------------
             */
             'user.systemRole',
+            'user.additionalRoles',
             'employmentType',
             'departmentRecord',
             'positionRecord',

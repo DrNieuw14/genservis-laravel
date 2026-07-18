@@ -182,7 +182,13 @@
 
                                 </select>
 
-                                <p class="material-meta text-base text-gray-500 mt-1"></p>
+                                <div class="flex items-start gap-2 mt-1">
+
+                                    <img class="material-thumb hidden w-12 h-12 object-cover rounded-lg border flex-shrink-0" alt="">
+
+                                    <p class="material-meta text-base text-gray-500"></p>
+
+                                </div>
 
                             </td>
 
@@ -610,6 +616,8 @@
 
             const meta = row.querySelector('.material-meta');
 
+            const thumb = row.querySelector('.material-thumb');
+
             if (!meta) {
                 return;
             }
@@ -617,7 +625,26 @@
             if (!material) {
                 meta.innerHTML = '';
                 quantityInput.max = 0;
+
+                if (thumb) {
+                    thumb.classList.add('hidden');
+                    thumb.src = '';
+                }
+
                 return;
+            }
+
+            if (thumb) {
+
+                if (material.image_url) {
+                    thumb.src = material.image_url;
+                    thumb.alt = material.name;
+                    thumb.classList.remove('hidden');
+                } else {
+                    thumb.classList.add('hidden');
+                    thumb.src = '';
+                }
+
             }
 
             let status = 'Available';
@@ -668,7 +695,13 @@
 
                 </select>
 
-                <p class="material-meta text-base text-gray-500 mt-1"></p>
+                <div class="flex items-start gap-2 mt-1">
+
+                    <img class="material-thumb hidden w-12 h-12 object-cover rounded-lg border flex-shrink-0" alt="">
+
+                    <p class="material-meta text-base text-gray-500"></p>
+
+                </div>
 
             </td>
 

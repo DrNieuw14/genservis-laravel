@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Job Request Form
+    </title>
+
+    <script>
+
+        window.onload = function () {
+
+            window.print();
+
+        }
+
+    </script>
+
+    <style>
+
+        body{
+
+            font-family: Arial, Helvetica, sans-serif;
+            font-size:13px;
+            color:#000;
+            margin:30px;
+
+        }
+
+        table{
+
+            width:100%;
+            border-collapse:collapse;
+
+        }
+
+        .form-table td{
+
+            border:1px solid #000;
+            padding:8px;
+            vertical-align:top;
+
+        }
+
+        .label{
+
+            font-weight:bold;
+            width:180px;
+            background:#f3f4f6;
+
+        }
+
+        .header-table td{
+
+            border:none;
+
+        }
+
+        .text-center{
+
+            text-align:center;
+
+        }
+
+        h1,h2,h3,h4{
+
+            margin:3px;
+
+        }
+
+        .form-code{
+
+            text-align:right;
+            font-size:11px;
+            font-weight:bold;
+
+        }
+
+        .signature-table td{
+
+            border:none;
+            width:50%;
+            text-align:center;
+            vertical-align:bottom;
+
+        }
+
+        .signature-name{
+
+            height:16px;
+
+        }
+
+        .signature-line{
+
+            border-top:1px solid #000;
+            margin-top:8px;
+            padding-top:4px;
+
+        }
+
+        @page{
+
+            size:A4 portrait;
+            margin:15mm;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="form-code">
+    PPLS-QF-02
+</div>
+
+<table class="header-table">
+
+<tr>
+
+<td width="90">
+
+<img
+src="{{ asset('images/logo.png') }}"
+width="80">
+
+</td>
+
+<td class="text-center">
+
+<div>Republic of the Philippines</div>
+
+<h2>CAVITE STATE UNIVERSITY</h2>
+
+<div>Carmona Campus</div>
+
+<div>Carmona City, Cavite</div>
+
+</td>
+
+<td width="90"></td>
+
+</tr>
+
+</table>
+
+<hr>
+
+<h2 class="text-center">
+    JOB REQUEST FORM
+</h2>
+
+<table class="form-table" style="margin-top:15px;">
+
+<tr>
+    <td class="label">Reference No.</td>
+    <td>{{ $jobRequest->reference_no }}</td>
+    <td class="label">Date</td>
+    <td>{{ $jobRequest->created_at->format('d F Y') }}</td>
+</tr>
+
+<tr>
+    <td class="label">Requesting Party</td>
+    <td colspan="3">{{ $jobRequest->requesting_party }}</td>
+</tr>
+
+<tr>
+    <td class="label">Office/Unit/Project</td>
+    <td colspan="3">{{ $jobRequest->office_unit_project }}</td>
+</tr>
+
+<tr>
+    <td class="label">Nature of Request</td>
+    <td colspan="3">{{ $jobRequest->nature_of_request }}</td>
+</tr>
+
+<tr>
+    <td class="label">Work Summary</td>
+    <td colspan="3">{{ $jobRequest->work_summary }}</td>
+</tr>
+
+<tr>
+    <td class="label">Work Category</td>
+    <td>{{ $jobRequest->work_category ?? '-' }}</td>
+    <td class="label">Target Date</td>
+    <td>{{ $jobRequest->target_date?->format('d F Y') ?? '-' }}</td>
+</tr>
+
+<tr>
+    <td class="label">Assigned Personnel</td>
+    <td colspan="3">
+        @forelse($jobRequest->assignedPersonnel as $index => $person)
+            {{ $index + 1 }}. {{ strtoupper($person->fullname) }}@if(!$loop->last)<br>@endif
+        @empty
+            -
+        @endforelse
+    </td>
+</tr>
+
+<tr>
+    <td class="label">Remarks</td>
+    <td colspan="3">{{ $jobRequest->remarks ?? '-' }}</td>
+</tr>
+
+</table>
+
+<table class="signature-table" style="margin-top:60px;">
+
+<tr>
+
+<td>
+    <div class="signature-name"><strong>{{ strtoupper($jobRequest->approver->fullname ?? $jobRequest->approver->name ?? '') }}</strong></div>
+    <div class="signature-line">
+        Approved By — {{ $jobRequest->approverRoleLabel() }}
+    </div>
+</td>
+
+<td>
+    <div class="signature-name">&nbsp;</div>
+    <div class="signature-line">
+        Noted By — Requesting Party
+    </div>
+</td>
+
+</tr>
+
+</table>
+
+</body>
+
+</html>

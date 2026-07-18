@@ -47,6 +47,12 @@ class Personnel extends Model
         return $this->hasMany(WalkinRequest::class);
     }
 
+    // ✅ Job Requests assigned to this person as work crew
+    public function assignedJobRequests()
+    {
+        return $this->belongsToMany(JobRequest::class, 'job_request_personnel');
+    }
+
     /**
      * Employment Type
      */

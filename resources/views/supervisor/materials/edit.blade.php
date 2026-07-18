@@ -2,43 +2,52 @@
 
 @section('content')
 
-<div class="max-w-4xl mx-auto mt-8">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <div class="bg-white rounded-2xl shadow-2xl p-8">
+    <!-- PAGE TITLE -->
+    <div class="mb-6">
 
-        <!-- TITLE -->
-        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
             ✏️ Edit Material
         </h2>
 
-        <!-- ERRORS -->
-        @if ($errors->any())
+        <p class="text-gray-500 mt-1 text-lg">
+            Update inventory material details.
+        </p>
 
-            <div class="bg-red-500 text-white p-4 rounded-xl mb-6">
+    </div>
 
-                <ul class="list-disc ml-5">
+    <!-- ERRORS -->
+    @if ($errors->any())
 
-                    @foreach ($errors->all() as $error)
+        <div class="bg-red-500 text-white p-4 rounded-xl mb-6">
 
-                        <li>{{ $error }}</li>
+            <ul class="list-disc ml-5">
 
-                    @endforeach
+                @foreach ($errors->all() as $error)
 
-                </ul>
+                    <li>{{ $error }}</li>
 
-            </div>
+                @endforeach
 
-        @endif
+            </ul>
 
-        <!-- FORM -->
-        <form action="{{ route('materials.update', $material->id) }}"
-              method="POST">
+        </div>
 
-            @csrf
-            @method('PUT')
+    @endif
+
+    <!-- FORM -->
+    <form action="{{ route('materials.update', $material->id) }}"
+          method="POST"
+          enctype="multipart/form-data">
+
+        @csrf
+        @method('PUT')
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <!-- NAME -->
-            <div class="mb-5">
+            <div>
 
                 <label class="block text-gray-700 font-semibold mb-2">
                     Material Name
@@ -47,19 +56,61 @@
                 <input type="text"
                        name="name"
                        value="{{ $material->name }}"
-                       class="w-full border rounded-xl p-3">
+                       class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400">
+
+            </div>
+
+            <!-- IMAGE -->
+            <div class="md:col-span-2">
+
+                <label class="block text-gray-700 font-semibold mb-2">
+                    Item Photo
+                </label>
+
+                <p class="text-sm text-gray-500 mb-2">
+                    Helps requesters visually confirm this is the item they need. Optional.
+                </p>
+
+                <div class="flex items-center gap-4">
+
+                    <img
+                        id="image-preview"
+                        src="{{ $material->image_url ?? '' }}"
+                        class="{{ $material->image_url ? '' : 'hidden' }} w-24 h-24 object-cover rounded-xl border"
+                        alt="Preview">
+
+                    <div class="flex-1">
+
+                        <input type="file"
+                               name="image"
+                               accept="image/*"
+                               onchange="previewMaterialImage(this)"
+                               class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400">
+
+                        @if($material->image_url)
+
+                            <label class="inline-flex items-center gap-2 mt-2 text-sm text-red-600">
+                                <input type="checkbox" name="remove_image" value="1">
+                                Remove current photo
+                            </label>
+
+                        @endif
+
+                    </div>
+
+                </div>
 
             </div>
 
             <!-- CATEGORY -->
-            <div class="mb-5">
+            <div>
 
                 <label class="block text-gray-700 font-semibold mb-2">
                     Category
                 </label>
 
                 <select name="category_id"
-                        class="w-full border rounded-xl p-3">
+                        class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400">
 
                     @foreach($categories as $category)
 
@@ -77,14 +128,14 @@
             </div>
 
             <!-- UNIT -->
-            <div class="mb-5">
+            <div>
 
                 <label class="block text-gray-700 font-semibold mb-2">
                     Unit
                 </label>
 
                 <select name="unit_id"
-                        class="w-full border rounded-xl p-3">
+                        class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400">
 
                     @foreach($units as $unit)
 
@@ -102,14 +153,14 @@
             </div>
 
             <!-- DEPARTMENT -->
-            <div class="mb-5">
+            <div>
 
                 <label class="block text-gray-700 font-semibold mb-2">
                     Department
                 </label>
 
                 <select name="department_id"
-                        class="w-full border rounded-xl p-3">
+                        class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400">
 
                     @foreach($departments as $department)
 
@@ -127,14 +178,14 @@
             </div>
 
             <!-- PROCUREMENT CLASSIFICATION -->
-            <div class="mb-5">
+            <div class="md:col-span-2">
 
                 <label class="block text-gray-700 font-semibold mb-2">
                     Procurement Classification
                 </label>
 
                 <select name="classification_id"
-                        class="w-full border rounded-xl p-3">
+                        class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400">
 
                     <option value="">-- Unclassified --</option>
 
@@ -158,7 +209,7 @@
             </div>
 
             <!-- CURRENT STOCK -->
-            <div class="mb-5">
+            <div>
 
                 <label class="block text-gray-700 font-semibold mb-2">
                     Current Stock
@@ -177,7 +228,7 @@
             </div>
 
             <!-- THRESHOLD -->
-            <div class="mb-6">
+            <div>
 
                 <label class="block text-gray-700 font-semibold mb-2">
                     Low Stock Threshold
@@ -186,22 +237,51 @@
                 <input type="number"
                        name="threshold"
                        value="{{ $material->threshold }}"
-                       class="w-full border rounded-xl p-3">
+                       class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-yellow-400">
 
             </div>
 
-            <!-- BUTTON -->
-            <button
-                class="bg-gradient-to-r from-green-500 to-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition">
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="flex gap-4 mt-8">
+
+            <button type="submit"
+                    class="bg-gradient-to-r from-green-500 to-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition">
 
                 💾 Update Material
 
             </button>
 
-        </form>
+            <a href="{{ route('materials.index') }}"
+               class="bg-gray-300 text-gray-800 px-6 py-3 rounded-xl hover:bg-gray-400 transition">
 
-    </div>
+                Cancel
+
+            </a>
+
+        </div>
+
+    </form>
 
 </div>
+
+<script>
+
+    function previewMaterialImage(input)
+    {
+        const preview = document.getElementById('image-preview');
+
+        if (!input.files || !input.files[0]) {
+            preview.classList.add('hidden');
+            preview.src = '';
+            return;
+        }
+
+        preview.src = URL.createObjectURL(input.files[0]);
+        preview.classList.remove('hidden');
+    }
+
+</script>
 
 @endsection

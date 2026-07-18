@@ -2,25 +2,25 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- Header -->
 
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex justify-between items-start mb-6">
 
         <div>
 
-            <h1 class="text-4xl font-bold text-white mt-4">
-                Inventory Summary Report
-            </h1>
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+                📋 Inventory Summary Report
+            </h2>
 
-            <p class="text-blue-100 text-lg mt-3 max-w-4xl leading-relaxed">
+            <p class="text-gray-500 text-lg mt-2 max-w-4xl leading-relaxed">
                 Full Inventory Status and Stock Level Overview
             </p>
 
-            <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/20">
+            <div class="mt-6 border border-gray-200 rounded-xl p-5 bg-gray-50">
 
-                <div class="grid grid-cols-2 gap-4 text-sm text-white">
+                <div class="grid grid-cols-2 gap-4 text-base text-gray-700">
 
                     <div>
                         <span class="font-semibold">Report No.</span>
@@ -167,7 +167,7 @@
 
     </div>
 
-    <div class="bg-white rounded-lg shadow mt-8">
+    <div class="border rounded-lg bg-gray-50 mt-8">
 
         <div class="border-b p-5">
             <h2 class="text-2xl font-bold">SECTION I. Critical Stock Materials</h2>
@@ -210,7 +210,7 @@
 
     </div>
 
-    <div class="bg-white rounded-lg shadow mt-8">
+    <div class="border rounded-lg bg-gray-50 mt-8">
 
         <div class="border-b p-5">
             <h2 class="text-2xl font-bold">SECTION II. Low Stock Materials</h2>
@@ -253,7 +253,7 @@
 
     </div>
 
-    <div class="bg-white rounded-lg shadow mt-8">
+    <div class="border rounded-lg bg-gray-50 mt-8">
 
         <div class="border-b p-5">
             <h2 class="text-2xl font-bold">SECTION III. Out of Stock Materials</h2>
@@ -296,7 +296,7 @@
 
     </div>
 
-    <div class="bg-white rounded-lg shadow mt-8">
+    <div class="border rounded-lg bg-gray-50 mt-8">
 
         <div class="border-b p-5">
             <h2 class="text-2xl font-bold">SECTION IV. Material Expiration</h2>
@@ -343,7 +343,7 @@
 
     </div>
 
-    <div class="bg-white rounded-lg shadow mt-8">
+    <div class="border rounded-lg bg-gray-50 mt-8">
 
         <div class="border-b p-5">
             <h2 class="text-2xl font-bold">SECTION V. Expired Inventory Batches</h2>
@@ -390,7 +390,7 @@
 
     </div>
 
-    <div class="bg-white rounded-lg shadow mt-8">
+    <div class="border rounded-lg bg-gray-50 mt-8">
 
         <div class="border-b p-5">
             <h2 class="text-2xl font-bold">SECTION VI. Department Inventory Summary</h2>
@@ -432,7 +432,7 @@
 
     </div>
 
-    <div class="bg-white rounded-lg shadow mt-8">
+    <div class="border rounded-lg bg-gray-50 mt-8">
 
         <div class="border-b p-5">
             <h2 class="text-2xl font-bold">SECTION VII. Complete Inventory Listing</h2>
@@ -494,7 +494,7 @@
 
     </div>
 
-    <div class="bg-white rounded-lg shadow mt-8">
+    <div class="border rounded-lg bg-gray-50 mt-8">
 
         <div class="border-b p-5">
             <h2 class="text-2xl font-bold">SECTION VIII. Department Inventory Breakdown</h2>
@@ -562,7 +562,7 @@
     REPORT SIGNATURES
     =============================== -->
 
-    <div class="bg-white rounded-lg shadow mt-8 p-8">
+    <div class="border rounded-lg bg-gray-50 mt-8 p-8">
 
         <div class="grid grid-cols-3 gap-12 text-center">
 

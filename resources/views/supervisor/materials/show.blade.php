@@ -31,9 +31,28 @@
             <!-- LEFT -->
             <div>
 
-                <h2 class="text-2xl font-bold text-blue-700 mb-4">
-                    {{ $material->name }}
-                </h2>
+                <div class="flex items-center gap-4 mb-4">
+
+                    @if($material->image_url)
+
+                        <img
+                            src="{{ $material->image_url }}"
+                            alt="{{ $material->name }}"
+                            class="w-20 h-20 object-cover rounded-xl border">
+
+                    @else
+
+                        <div class="w-20 h-20 flex items-center justify-center rounded-xl border bg-gray-50 text-gray-300 text-3xl">
+                            📦
+                        </div>
+
+                    @endif
+
+                    <h2 class="text-2xl font-bold text-blue-700">
+                        {{ $material->name }}
+                    </h2>
+
+                </div>
 
                 <div class="space-y-3 text-gray-700">
 

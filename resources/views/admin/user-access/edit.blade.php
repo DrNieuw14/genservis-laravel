@@ -10,7 +10,7 @@
         <div>
 
             <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
-                ✏️ Assign Role
+                ✏️ Assign Roles
             </h2>
 
             <p class="text-gray-500 mt-1 text-lg">
@@ -26,23 +26,23 @@
 
     <div class="mb-6">
 
-            <p class="text-sm text-gray-500">Current System Role</p>
+            <p class="text-sm text-gray-500">Current Roles</p>
 
-            <div class="mt-1">
+            <div class="mt-1 flex flex-wrap gap-2">
 
-                @if($user->systemRole)
+                @forelse($user->allRoles() as $role)
 
                     <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
-                        {{ $user->systemRole->name }}
+                        {{ $role->name }}
                     </span>
 
-                @else
+                @empty
 
                     <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs">
                         Unassigned
                     </span>
 
-                @endif
+                @endforelse
 
             </div>
 
@@ -58,8 +58,12 @@
             <div>
 
                 <label class="block text-sm font-medium text-gray-700">
-                    Select System Role
+                    Primary System Role
                 </label>
+
+                <p class="text-sm text-gray-500 mt-1 mb-2">
+                    The account's main role — used as its default badge across the system.
+                </p>
 
                 <select
                     name="role_id"
@@ -85,6 +89,55 @@
                 </select>
 
                 @error('role_id')
+
+                    <p class="text-sm text-red-600 mt-2">
+                        {{ $message }}
+                    </p>
+
+                @enderror
+
+            </div>
+
+            <div class="mt-8">
+
+                <label class="block text-sm font-medium text-gray-700">
+                    Additional Roles
+                </label>
+
+                <p class="text-sm text-gray-500 mt-1 mb-3">
+                    Optional — stack more roles on top of the primary one when an account genuinely
+                    covers more than one function (e.g. both General Services Officer and Property
+                    Custodian). The account gets every permission from every role checked here.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 border rounded-lg p-4 bg-gray-50">
+
+                    @php
+                        $selectedAdditional = collect(
+                            old('additional_role_ids', $user->additionalRoles->pluck('id')->all())
+                        )->map(fn ($id) => (int) $id);
+                    @endphp
+
+                    @foreach($roles as $role)
+
+                        <label class="flex items-center gap-2 text-sm text-gray-700">
+
+                            <input
+                                type="checkbox"
+                                name="additional_role_ids[]"
+                                value="{{ $role->id }}"
+                                {{ $selectedAdditional->contains($role->id) ? 'checked' : '' }}
+                                class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+
+                            {{ $role->name }}
+
+                        </label>
+
+                    @endforeach
+
+                </div>
+
+                @error('additional_role_ids')
 
                     <p class="text-sm text-red-600 mt-2">
                         {{ $message }}

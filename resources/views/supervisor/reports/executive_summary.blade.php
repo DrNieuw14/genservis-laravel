@@ -2,25 +2,25 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto">
+<div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- Header -->
 
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex justify-between items-start mb-6">
 
         <div>
 
-            <h1 class="text-4xl font-bold text-white mt-4">
-                Executive Inventory Summary
-            </h1>
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+                📄 Executive Inventory Summary
+            </h2>
 
-            <p class="text-blue-100 text-lg mt-3 max-w-4xl leading-relaxed">
+            <p class="text-gray-500 text-lg mt-2 max-w-4xl leading-relaxed">
                 Inventory Performance and Management Assessment
             </p>
 
-            <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/20">
+            <div class="mt-6 border border-gray-200 rounded-xl p-5 bg-gray-50">
 
-                <div class="grid grid-cols-2 gap-4 text-sm text-white">
+                <div class="grid grid-cols-2 gap-4 text-base text-gray-700">
 
                     <div>
                         <span class="font-semibold">Report No.</span>
@@ -199,7 +199,7 @@
 
     <!-- Top Critical Materials -->
 
-    <div class="bg-white rounded-lg shadow">
+    <div class="border rounded-lg bg-gray-50">
 
         <div class="border-b p-5">
 
@@ -329,13 +329,11 @@
 
     </div>
 
-</div>
+    <!-- ==========================================
+         Inventory Distribution
+    ========================================== -->
 
-<!-- ==========================================
-     Inventory Distribution
-========================================== -->
-
-<div class="bg-white rounded-lg shadow mt-8">
+<div class="border rounded-lg bg-gray-50 mt-8">
 
     <div class="border-b p-5">
 
@@ -522,7 +520,7 @@
      Department Impact Analysis
 ========================================== -->
 
-<div class="bg-white rounded-lg shadow mt-8">
+<div class="border rounded-lg bg-gray-50 mt-8">
 
     <div class="border-b p-5">
 
@@ -649,6 +647,8 @@
         </table>
 
     </div>
+
+</div>
 
 </div>
 

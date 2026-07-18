@@ -247,5 +247,66 @@ class RolePermissionSeeder extends Seeder
             );
 
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | General Services Officer
+        |--------------------------------------------------------------------------
+        |
+        | Oversees utility personnel and electrical/maintenance staff.
+        |
+        */
+
+        $gso = Role::where('name', 'General Services Officer')->first();
+
+        if ($gso) {
+
+            $gso->permissions()->sync(
+
+                Permission::whereIn('slug', [
+
+                    'view-utility-staff',
+                    'view-employee-profile',
+
+                    'view-job-requests',
+                    'approve-job-requests-utility',
+                    'assign-job-request-personnel',
+
+                ])->pluck('id')->toArray()
+
+            );
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Physical Plant and Services
+        |--------------------------------------------------------------------------
+        |
+        | Approves job requests involving rehabilitation/repair of school
+        | infrastructure, and assigns the maintenance crew to carry it out.
+        |
+        */
+
+        $pps = Role::where('name', 'Physical Plant and Services')->first();
+
+        if ($pps) {
+
+            $pps->permissions()->sync(
+
+                Permission::whereIn('slug', [
+
+                    'view-utility-staff',
+                    'view-employee-profile',
+
+                    'view-job-requests',
+                    'approve-job-requests-physical-plant',
+                    'assign-job-request-personnel',
+
+                ])->pluck('id')->toArray()
+
+            );
+
+        }
     }
 }
