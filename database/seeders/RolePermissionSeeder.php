@@ -272,6 +272,8 @@ class RolePermissionSeeder extends Seeder
                     'approve-job-requests-utility',
                     'assign-job-request-personnel',
 
+                    'manage-utility-schedule',
+
                 ])->pluck('id')->toArray()
 
             );

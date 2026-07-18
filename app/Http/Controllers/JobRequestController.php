@@ -243,14 +243,9 @@ class JobRequestController extends Controller
 
         // Same utility/maintenance staff pool used for both categories —
         // rehabilitation jobs are carried out by the same crew as utility
-        // help requests (see EmployeeController::utilityStaff()).
+        // help requests (see Personnel::scopeUtilityStaff()).
         $staff = Personnel::with(['departmentRecord', 'positionRecord'])
-            ->where(function ($query) {
-                $query->whereHas('employmentType', fn ($q) => $q->where('name', 'Utility Personnel'))
-                    ->orWhereHas('positionRecord', fn ($q) => $q
-                        ->where('position_name', 'like', '%lectric%')
-                        ->orWhere('position_name', 'like', '%aintenance%'));
-            })
+            ->utilityStaff()
             ->orderBy('fullname')
             ->get();
 

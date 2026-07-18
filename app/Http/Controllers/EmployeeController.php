@@ -48,12 +48,7 @@ class EmployeeController extends Controller
             'departmentRecord',
             'positionRecord',
         ])
-            ->where(function ($query) {
-                $query->whereHas('employmentType', fn ($q) => $q->where('name', 'Utility Personnel'))
-                    ->orWhereHas('positionRecord', fn ($q) => $q
-                        ->where('position_name', 'like', '%lectric%')
-                        ->orWhere('position_name', 'like', '%aintenance%'));
-            })
+            ->utilityStaff()
             ->when($search, function ($query) use ($search) {
                 $query->where(fn ($q) => $q
                     ->where('employee_id', 'like', "%{$search}%")

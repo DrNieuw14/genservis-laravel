@@ -177,6 +177,30 @@
 
             @endif
 
+            @if(auth()->user()->hasPermission('manage-utility-schedule'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Utility Scheduling
+            </div>
+
+            <a href="{{ route('utility-schedule.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('utility-schedule.index') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                📅 Utility Schedule
+
+            </a>
+
+            <a href="{{ route('utility-schedule.attendance-report') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('utility-schedule.attendance-report*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                📊 Attendance Report
+
+            </a>
+
+            @endif
+
             <!-- Walk-In Issuance -->
 
             @if(auth()->user()->hasPermission('create-walkin-requests'))
@@ -600,51 +624,9 @@
                      material-request flows don't apply to their designation. --}}
                 @php
                     $isSelfServicePersonnel = Auth::user()->role === 'personnel' && !auth()->user()->hasPermission('view-materials');
-                    $showFullPersonnelServices = $isSelfServicePersonnel && !auth()->user()->hasPermission('manage-own-department-ppmp-items');
+                    $isUtilityStaffMember = Auth::user()->personnel
+                        && \App\Models\Personnel::utilityStaff()->where('id', Auth::user()->personnel->id)->exists();
                 @endphp
-
-                {{-- Department Chairs manage their department's PPMP, not their own
-                     attendance/scheduling/leave through this panel — only Inventory
-                     Services (Material Request) applies to their designation. --}}
-                @if($showFullPersonnelServices)
-
-                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
-                        Personnel Services
-                    </div>
-
-                    <a href="/attendance"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->is('attendance*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        ⏱ Attendance
-                    </a>
-
-                    <a href="/schedule"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->is('schedule*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        📅 Scheduling
-                    </a>
-
-                    <div class="border-t my-3"></div>
-
-                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
-                        Leave Services
-                    </div>
-
-                    <a href="/leave"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->is('leave') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        📝 Apply Leave
-                    </a>
-
-                    <a href="/leave/history"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->is('leave/history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        📄 Leave History
-                    </a>
-
-                    <div class="border-t my-3"></div>
-
-                @endif
 
                 @if($isSelfServicePersonnel)
 
@@ -688,6 +670,23 @@
                     class="block px-4 py-3 rounded-xl transition
                     {{ request()->routeIs('job-requests.my-assigned') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
                         🔧 My Assigned Jobs
+                    </a>
+
+                @endif
+
+                {{-- Utility & Maintenance Staff only (e.g. Rony, Aldrin) —
+                     not every personnel/supervisor account, since a
+                     duty roster only applies to this specific pool. --}}
+                @if($isUtilityStaffMember)
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2 mt-3">
+                        Utility Scheduling
+                    </div>
+
+                    <a href="{{ route('utility-schedule.my') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('utility-schedule.my') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📅 My Schedule
                     </a>
 
                 @endif

@@ -53,6 +53,29 @@ class Personnel extends Model
         return $this->belongsToMany(JobRequest::class, 'job_request_personnel');
     }
 
+    // ✅ Utility duty roster entries
+    public function utilitySchedules()
+    {
+        return $this->hasMany(UtilitySchedule::class);
+    }
+
+    /**
+     * Utility & Maintenance Staff pool — Utility Personnel employment type,
+     * or anyone in an electrical/maintenance position. Shared by
+     * EmployeeController::utilityStaff(), JobRequestController::assignForm(),
+     * and UtilityScheduleController so the pool's definition only lives in
+     * one place.
+     */
+    public function scopeUtilityStaff($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereHas('employmentType', fn ($eq) => $eq->where('name', 'Utility Personnel'))
+                ->orWhereHas('positionRecord', fn ($pq) => $pq
+                    ->where('position_name', 'like', '%lectric%')
+                    ->orWhere('position_name', 'like', '%aintenance%'));
+        });
+    }
+
     /**
      * Employment Type
      */

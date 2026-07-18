@@ -10,6 +10,7 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\JobRequestController;
+use App\Http\Controllers\UtilityScheduleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Supervisor\MaterialController;
@@ -140,6 +141,56 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/job-requests/{id}/print', [JobRequestController::class, 'print'])
         ->name('job-requests.print');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| UTILITY SCHEDULING — Mark (General Services Officer) builds the duty
+| roster; workers (e.g. Rony, Aldrin) only see their own schedule.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-utility-schedule'])->group(function () {
+
+    Route::get('/utility-schedule', [UtilityScheduleController::class, 'index'])
+        ->name('utility-schedule.index');
+
+    Route::get('/utility-schedule/print', [UtilityScheduleController::class, 'print'])
+        ->name('utility-schedule.print');
+
+    Route::post('/utility-schedule', [UtilityScheduleController::class, 'store'])
+        ->name('utility-schedule.store');
+
+    Route::put('/utility-schedule/{id}', [UtilityScheduleController::class, 'update'])
+        ->name('utility-schedule.update');
+
+    Route::delete('/utility-schedule/{id}', [UtilityScheduleController::class, 'destroy'])
+        ->name('utility-schedule.destroy');
+
+    Route::post('/utility-schedule/duplicate-week', [UtilityScheduleController::class, 'duplicateWeek'])
+        ->name('utility-schedule.duplicate-week');
+
+    Route::get('/utility-schedule/attendance-report', [UtilityScheduleController::class, 'attendanceReport'])
+        ->name('utility-schedule.attendance-report');
+
+    Route::get('/utility-schedule/attendance-report/print', [UtilityScheduleController::class, 'attendanceReportPrint'])
+        ->name('utility-schedule.attendance-report.print');
+
+});
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/utility-schedule/my', [UtilityScheduleController::class, 'mySchedule'])
+        ->name('utility-schedule.my');
+
+    // Authorization is done inside the controller (must be the assigned
+    // worker), same pattern as Job Request's mark-work-done route.
+    Route::post('/utility-schedule/{id}/check-in', [UtilityScheduleController::class, 'checkIn'])
+        ->name('utility-schedule.check-in');
+
+    Route::post('/utility-schedule/{id}/check-out', [UtilityScheduleController::class, 'checkOut'])
+        ->name('utility-schedule.check-out');
 
 });
 
