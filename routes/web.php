@@ -3,6 +3,9 @@
 use App\Http\Controllers\Admin\UserApprovalController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\ForcePasswordChangeController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonnelController;
@@ -72,12 +75,36 @@ Route::middleware('guest')->group(function () {
     Route::post('register', [RegisteredUserController::class, 'store']);
     Route::get('login',     [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login',    [AuthenticatedSessionController::class, 'store']);
+
+    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
+        ->name('password.request');
+
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->name('password.email');
+
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+        ->name('password.reset');
+
+    Route::post('reset-password', [NewPasswordController::class, 'store'])
+        ->name('password.store');
 });
 
 // ── Logout ────────────────────────────────────────────────
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
+
+// ── Forced password change (accounts created with a system-generated
+// password, e.g. Quick Add Employee, must set their own before continuing) ──
+Route::middleware('auth')->group(function () {
+
+    Route::get('/force-password-change', [ForcePasswordChangeController::class, 'edit'])
+        ->name('password.force.edit');
+
+    Route::put('/force-password-change', [ForcePasswordChangeController::class, 'update'])
+        ->name('password.force.update');
+
+});
 
     Route::get('/supervisor/dashboard', function () {
         return view('supervisor.dashboard', [
@@ -260,6 +287,31 @@ Route::middleware(['auth'])->group(function () {
             '/admin/user-access/{user}/status',
             [UserAccessController::class, 'updateStatus']
         )->name('admin.user-access.update-status');
+
+    });
+
+    Route::middleware('permission:reset-user-passwords')->group(function () {
+
+        Route::get(
+            '/admin/reset-password',
+            [UserAccessController::class, 'resetPasswordIndex']
+        )->name('admin.reset-password.index');
+
+        Route::post(
+            '/admin/reset-password/{user}',
+            [UserAccessController::class, 'resetPassword']
+        )->name('admin.reset-password.store');
+
+    });
+
+    // Password-reset audit trail — super admin account only, regardless of
+    // permissions, so admin-level resets stay visible to nobody but root.
+    Route::middleware('role:supervisor')->group(function () {
+
+        Route::get(
+            '/admin/reset-password/logs',
+            [UserAccessController::class, 'resetPasswordLogs']
+        )->name('admin.reset-password.logs');
 
     });
 
@@ -703,6 +755,11 @@ Route::middleware(['auth'])->group(function () {
             [WalkinRequestController::class, 'history']
         )->name('walkin.history');
 
+        Route::get(
+            '/walkin-requests/employee/{personnel}',
+            [WalkinRequestController::class, 'employeeHistory']
+        )->name('walkin.employee-history');
+
     });
 
     Route::middleware('permission:create-walkin-requests')->group(function () {
@@ -716,6 +773,21 @@ Route::middleware(['auth'])->group(function () {
             '/walkin-requests/store',
             [WalkinRequestController::class, 'store']
         )->name('walkin.store');
+
+        Route::post(
+            '/walkin-requests/quick-add-employee',
+            [WalkinRequestController::class, 'quickAddEmployee']
+        )->name('walkin.quick-add-employee');
+
+        Route::get(
+            '/walkin-requests/generate-employee-id/{employmentType}',
+            [WalkinRequestController::class, 'getEmployeeId']
+        )->name('walkin.generate-employee-id');
+
+        Route::get(
+            '/walkin-requests/employment-type/{employmentType}/positions',
+            [WalkinRequestController::class, 'getPositions']
+        )->name('walkin.positions');
 
     });
 

@@ -43,7 +43,13 @@
                 </td>
 
                 <td class="p-2">
-                    {{ $request->requestor_name ?? '-' }}
+                    @if($request->personnel)
+                        <a href="{{ route('walkin.employee-history', $request->personnel_id) }}" class="text-blue-600 hover:underline" title="View everything this employee has requested">
+                            {{ $request->requestor_name ?? '-' }}
+                        </a>
+                    @else
+                        {{ $request->requestor_name ?? '-' }}
+                    @endif
                 </td>
 
                 <td class="p-2">

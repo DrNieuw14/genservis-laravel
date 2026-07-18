@@ -183,6 +183,7 @@ class PermissionSeeder extends Seeder
                     ['name' => 'Manage Roles', 'slug' => 'manage-roles'],
                     ['name' => 'Manage Permissions', 'slug' => 'manage-permissions'],
                     ['name' => 'Manage User Status', 'slug' => 'manage-user-status'],
+                    ['name' => 'Reset User Passwords', 'slug' => 'reset-user-passwords'],
 
                 ]
             ],

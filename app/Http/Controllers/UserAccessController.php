@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Models\ActivityLog;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserAccessController extends Controller
 {
@@ -132,5 +136,65 @@ class UserAccessController extends Controller
         return redirect()
             ->route('admin.user-access.show', $user)
             ->with('success', 'Account status updated to ' . ucfirst($validated['status']) . '.');
+    }
+
+    /**
+     * Reset Password screen — lets an Administrator or Inventory Custodian
+     * generate a new temporary password for anyone who forgot theirs,
+     * without needing the broader view-user-access permission.
+     */
+    public function resetPasswordIndex()
+    {
+        $users = User::with('personnel')
+            ->get(['id', 'name', 'username', 'role'])
+            ->reject(fn ($user) => $user->role === 'supervisor' && auth()->user()->role !== 'supervisor')
+            ->sortBy(fn ($user) => optional($user->personnel)->fullname ?? $user->name)
+            ->values();
+
+        return view('admin.user-access.reset-password', compact('users'));
+    }
+
+    public function resetPassword(User $user)
+    {
+        if ($user->role === 'supervisor' && auth()->user()->role !== 'supervisor') {
+            abort(403, 'The super admin account can only reset its own password.');
+        }
+
+        $temporaryPassword = Str::random(10);
+
+        $user->update([
+            'password' => Hash::make($temporaryPassword),
+            'must_change_password' => true,
+        ]);
+
+        ActivityLogger::log(
+            'Users',
+            'Reset User Password',
+            'Reset password for ' . (optional($user->personnel)->fullname ?? $user->name) . ' (' . $user->username . ').',
+            $user->id
+        );
+
+        return response()->json([
+            'fullname' => optional($user->personnel)->fullname ?? $user->name,
+            'username' => $user->username,
+            'temporary_password' => $temporaryPassword,
+        ]);
+    }
+
+    /**
+     * Password-reset audit trail — deliberately gated to the super admin
+     * account only (see routes/web.php), not the Administrator permission,
+     * so every admin-level password reset stays visible to one account
+     * nobody else can revoke or reassign.
+     */
+    public function resetPasswordLogs()
+    {
+        $logs = ActivityLog::with(['user', 'targetUser'])
+            ->where('module', 'Users')
+            ->where('action', 'Reset User Password')
+            ->latest()
+            ->paginate(25);
+
+        return view('admin.user-access.reset-password-logs', compact('logs'));
     }
 }

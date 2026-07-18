@@ -8,6 +8,7 @@ class ActivityLog extends Model
 {
     protected $fillable = [
         'user_id',
+        'target_user_id',
         'module',
         'action',
         'description',
@@ -17,5 +18,10 @@ class ActivityLog extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function targetUser()
+    {
+        return $this->belongsTo(User::class, 'target_user_id');
     }
 }

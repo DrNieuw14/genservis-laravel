@@ -53,19 +53,21 @@ class UserApprovalController extends Controller
         ]);
     }
 
-    protected function getDefaultRole()
+    protected function getDefaultRole(EmploymentType $employmentType)
     {
-        return Role::where('name', 'Employee')->first();
+        return Role::defaultForEmploymentType($employmentType);
     }
 
     public function completeOnboarding(Request $request, User $user)
     {
         $validated = $request->validate([
-            
+
             'employment_type_id' => 'required|exists:employment_types,id',
             'department_id'      => 'required|exists:departments,id',
             'position_id'        => 'required|exists:positions,id',
         ]);
+
+        $employmentType = EmploymentType::findOrFail($validated['employment_type_id']);
 
         $employeeId = $this->generateEmployeeId(
             $validated['employment_type_id']
@@ -90,7 +92,7 @@ class UserApprovalController extends Controller
             'status'             => 'Active',
         ]);
 
-        $defaultRole = $this->getDefaultRole();
+        $defaultRole = $this->getDefaultRole($employmentType);
 
         if (! $defaultRole) {
             return back()->with(
@@ -130,29 +132,7 @@ class UserApprovalController extends Controller
 
     protected function generateEmployeeId($employmentTypeId)
     {
-        $employmentType = EmploymentType::findOrFail($employmentTypeId);
-
-        $prefix = $employmentType->employee_prefix;
-
-        $lastEmployee = Personnel::where('employee_id', 'like', $prefix . '%')
-            ->orderByDesc('employee_id')
-            ->first();
-
-        if (!$lastEmployee) {
-            return $prefix . '001';
-        }
-
-        $lastNumber = (int) substr(
-            $lastEmployee->employee_id,
-            strlen($prefix)
-        );
-
-        return $prefix . str_pad(
-            $lastNumber + 1,
-            3,
-            '0',
-            STR_PAD_LEFT
-        );
+        return Personnel::generateEmployeeId($employmentTypeId);
     }
 
     public function getEmployeeId($employmentTypeId)

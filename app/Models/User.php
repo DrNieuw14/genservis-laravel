@@ -20,6 +20,7 @@ class User extends Authenticatable
         'email',
         'username',
         'password',
+        'must_change_password',
         'birthdate',
         'birth_month',
         'age',
@@ -37,6 +38,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'age' => 'integer',
+        'must_change_password' => 'boolean',
     ];
 
     /**

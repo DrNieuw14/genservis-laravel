@@ -27,14 +27,22 @@ class EmploymentTypePositionSeeder extends Seeder
                 'Assistant Professor I',
                 'Assistant Professor II',
                 'Assistant Professor III',
+                'Assistant Professor IV',
 
                 'Associate Professor I',
                 'Associate Professor II',
                 'Associate Professor III',
+                'Associate Professor IV',
+                'Associate Professor V',
 
                 'Professor I',
                 'Professor II',
                 'Professor III',
+                'Professor IV',
+                'Professor V',
+                'Professor VI',
+
+                'University Professor',
 
             ],
 
@@ -53,14 +61,20 @@ class EmploymentTypePositionSeeder extends Seeder
                 'Assistant Professor I',
                 'Assistant Professor II',
                 'Assistant Professor III',
+                'Assistant Professor IV',
 
                 'Associate Professor I',
                 'Associate Professor II',
                 'Associate Professor III',
+                'Associate Professor IV',
+                'Associate Professor V',
 
                 'Professor I',
                 'Professor II',
                 'Professor III',
+                'Professor IV',
+                'Professor V',
+                'Professor VI',
 
                 'Lecturer',
                 'Laboratory Instructor',
@@ -110,6 +124,8 @@ class EmploymentTypePositionSeeder extends Seeder
 
                 'Research Assistant',
 
+                'Nurse',
+
             ],
 
             /*
@@ -123,21 +139,6 @@ class EmploymentTypePositionSeeder extends Seeder
                 'Utility Worker',
                 'Groundskeeper',
                 'Maintenance Worker',
-
-            ],
-
-            /*
-            |--------------------------------------------------------------------------
-            | Job Order
-            |--------------------------------------------------------------------------
-            */
-
-            'Job Order' => [
-
-                'Office Assistant',
-                'Driver',
-                'Security Aide',
-                'Office Helper',
 
             ],
 

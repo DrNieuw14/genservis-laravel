@@ -89,4 +89,36 @@ class Personnel extends Model
         return $this->hasMany(EmployeeEducation::class);
     }
 
+    /**
+     * Next sequential employee ID for an employment type's prefix
+     * (e.g. REG001, REG002, ...). Shared by employee onboarding and
+     * any quick-add-employee flow so numbering never diverges.
+     */
+    public static function generateEmployeeId($employmentTypeId)
+    {
+        $employmentType = EmploymentType::findOrFail($employmentTypeId);
+
+        $prefix = $employmentType->employee_prefix;
+
+        $lastEmployee = self::where('employee_id', 'like', $prefix . '%')
+            ->orderByDesc('employee_id')
+            ->first();
+
+        if (!$lastEmployee) {
+            return $prefix . '001';
+        }
+
+        $lastNumber = (int) substr(
+            $lastEmployee->employee_id,
+            strlen($prefix)
+        );
+
+        return $prefix . str_pad(
+            $lastNumber + 1,
+            3,
+            '0',
+            STR_PAD_LEFT
+        );
+    }
+
 }

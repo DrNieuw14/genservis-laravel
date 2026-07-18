@@ -18,7 +18,6 @@ class EmploymentTypeSeeder extends Seeder
             ['name' => 'Administrative Personnel'],
             ['name' => 'Non-Teaching Personnel'],
             ['name' => 'Utility Personnel'],
-            ['name' => 'Job Order'],
             ['name' => 'Contractual Personnel'],
         ]);
     }

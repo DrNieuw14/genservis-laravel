@@ -411,11 +411,22 @@
         <!-- SYSTEM ADMINISTRATION -->
         <!-- ===================================================== -->
 
+        @if(auth()->user()->hasPermission('manage-roles')
+            || auth()->user()->hasPermission('view-employees')
+            || auth()->user()->hasPermission('view-user-access')
+            || auth()->user()->hasPermission('reset-user-passwords')
+            || auth()->user()->hasPermission('manage-permissions')
+            || auth()->user()->hasPermission('view-activity-logs')
+            || auth()->user()->hasPermission('manage-system-settings')
+            || auth()->user()->role === 'supervisor')
+
         <div class="mt-8 mb-2 px-3">
             <p class="text-xs font-bold uppercase tracking-wider text-gray-400">
                 System Administration
             </p>
         </div>
+
+        @endif
 
         @if(auth()->user()->hasPermission('manage-roles'))
 
@@ -456,6 +467,38 @@
 
             <span>👤</span>
             <span>User Access</span>
+
+        </a>
+
+        @endif
+
+        @if(auth()->user()->hasPermission('reset-user-passwords'))
+
+        <a href="{{ route('admin.reset-password.index') }}"
+
+        class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+        {{ request()->routeIs('admin.reset-password.*')
+            ? 'bg-green-100 text-green-700 font-semibold'
+            : 'hover:bg-gray-100 text-gray-700' }}">
+
+            <span>🔑</span>
+            <span>Reset Password</span>
+
+        </a>
+
+        @endif
+
+        @if(auth()->user()->role === 'supervisor')
+
+        <a href="{{ route('admin.reset-password.logs') }}"
+
+        class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+        {{ request()->routeIs('admin.reset-password.logs')
+            ? 'bg-green-100 text-green-700 font-semibold'
+            : 'hover:bg-gray-100 text-gray-700' }}">
+
+            <span>🗝️</span>
+            <span>Password Reset Logs</span>
 
         </a>
 

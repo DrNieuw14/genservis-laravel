@@ -19,14 +19,22 @@ class PositionSeeder extends Seeder
             ['position_name' => 'Assistant Professor I', 'position_code' => 'AP1'],
             ['position_name' => 'Assistant Professor II', 'position_code' => 'AP2'],
             ['position_name' => 'Assistant Professor III', 'position_code' => 'AP3'],
+            ['position_name' => 'Assistant Professor IV', 'position_code' => 'AP4'],
 
             ['position_name' => 'Associate Professor I', 'position_code' => 'ASP1'],
             ['position_name' => 'Associate Professor II', 'position_code' => 'ASP2'],
             ['position_name' => 'Associate Professor III', 'position_code' => 'ASP3'],
+            ['position_name' => 'Associate Professor IV', 'position_code' => 'ASP4'],
+            ['position_name' => 'Associate Professor V', 'position_code' => 'ASP5'],
 
             ['position_name' => 'Professor I', 'position_code' => 'PROF1'],
             ['position_name' => 'Professor II', 'position_code' => 'PROF2'],
             ['position_name' => 'Professor III', 'position_code' => 'PROF3'],
+            ['position_name' => 'Professor IV', 'position_code' => 'PROF4'],
+            ['position_name' => 'Professor V', 'position_code' => 'PROF5'],
+            ['position_name' => 'Professor VI', 'position_code' => 'PROF6'],
+
+            ['position_name' => 'University Professor', 'position_code' => 'UNIVPROF'],
 
             ['position_name' => 'Lecturer', 'position_code' => 'LECT'],
             ['position_name' => 'Laboratory Instructor', 'position_code' => 'LABINST'],
@@ -49,6 +57,7 @@ class PositionSeeder extends Seeder
             ['position_name' => 'Guidance Staff', 'position_code' => 'GUIDE'],
             ['position_name' => 'IT Officer', 'position_code' => 'IT'],
             ['position_name' => 'Research Assistant', 'position_code' => 'RA'],
+            ['position_name' => 'Nurse', 'position_code' => 'NURSE'],
 
             // Utility
             ['position_name' => 'Utility Worker', 'position_code' => 'UTIL'],

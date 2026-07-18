@@ -1,36 +1,20 @@
 <x-guest-layout>
 
     <!-- TITLE -->
-    <h2 class="text-2xl font-bold text-gray-800 mb-2">Reset Password</h2>
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Set a New Password</h2>
     <p class="text-sm text-gray-500 mb-6">
-        Enter your email address and choose a new password.
+        This account was created with a temporary password. Please set your
+        own password before continuing.
     </p>
 
-    <form method="POST" action="{{ route('password.store') }}">
+    <form method="POST" action="{{ route('password.force.update') }}">
         @csrf
+        @method('PUT')
 
-        <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
-
-        <!-- Email Address -->
-        <div class="mb-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input
-                id="email"
-                class="block mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500"
-                type="email"
-                name="email"
-                :value="old('email', $request->email)"
-                required
-                autofocus
-                autocomplete="username"
-            />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
+        <!-- NEW PASSWORD -->
         <div class="mb-4">
             <x-input-label for="password" :value="__('New Password')" />
+
             <x-text-input
                 id="password"
                 class="block mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500"
@@ -38,12 +22,13 @@
                 name="password"
                 placeholder="Enter a new password"
                 required
-                autocomplete="new-password"
+                autofocus
             />
+
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <!-- Confirm Password -->
+        <!-- CONFIRM PASSWORD -->
         <div class="mb-6">
             <x-input-label for="password_confirmation" :value="__('Confirm New Password')" />
 
@@ -54,15 +39,17 @@
                 name="password_confirmation"
                 placeholder="Re-enter the new password"
                 required
-                autocomplete="new-password"
             />
 
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
+        <!-- BUTTON -->
         <button type="submit"
             class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition shadow">
-            {{ __('Reset Password') }}
+            Set Password and Continue
         </button>
+
     </form>
+
 </x-guest-layout>

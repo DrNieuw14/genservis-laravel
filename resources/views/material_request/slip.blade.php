@@ -12,41 +12,51 @@
 
     <style>
 
+        /* Half a Letter sheet (5.5in x 8.5in) — this is a small slip, not a
+           full-page document, so it shouldn't print on a whole sheet */
+        @page{
+            size:5.5in 8.5in;
+            margin:8mm;
+        }
+
         body{
             font-family: Arial, sans-serif;
-            padding:40px;
+            padding:0;
             color:#222;
+            font-size:13px;
         }
 
         .header{
             text-align:center;
-            margin-bottom:30px;
+            margin-bottom:16px;
         }
 
         .title{
-            font-size:28px;
+            font-size:18px;
             font-weight:bold;
         }
 
         .subtitle{
             color:#555;
-            margin-top:5px;
+            margin-top:4px;
+            font-size:12px;
         }
 
         .section{
-            margin-top:25px;
+            margin-top:14px;
         }
 
         table{
             width:100%;
             border-collapse:collapse;
-            margin-top:15px;
+            margin-top:10px;
+            font-size:13px;
         }
 
         table th,
         table td{
             border:1px solid #ccc;
-            padding:10px;
+            padding:6px 8px;
             text-align:left;
         }
 
@@ -56,10 +66,10 @@
 
         .status{
             display:inline-block;
-            padding:6px 12px;
+            padding:4px 10px;
             border-radius:20px;
             color:white;
-            font-size:14px;
+            font-size:12px;
         }
 
         .approved{
@@ -76,16 +86,17 @@
         }
 
         .signature{
-            margin-top:80px;
+            margin-top:40px;
             display:flex;
             justify-content:space-between;
         }
 
         .line{
             border-top:1px solid #000;
-            width:250px;
+            width:150px;
             text-align:center;
             padding-top:5px;
+            font-size:12px;
         }
 
     </style>
