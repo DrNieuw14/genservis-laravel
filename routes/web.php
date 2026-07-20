@@ -11,6 +11,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\JobRequestController;
 use App\Http\Controllers\UtilityScheduleController;
+use App\Http\Controllers\ProjectEstimateController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Supervisor\MaterialController;
@@ -191,6 +192,64 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/utility-schedule/{id}/check-out', [UtilityScheduleController::class, 'checkOut'])
         ->name('utility-schedule.check-out');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| PROJECT DETAILED ESTIMATES — Mark's own tool for costing repair/
+| rehabilitation projects, modeled on the real PPLS estimate form.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-project-estimates'])->group(function () {
+
+    Route::get('/project-estimates', [ProjectEstimateController::class, 'index'])
+        ->name('project-estimates.index');
+
+    Route::get('/project-estimates/create', [ProjectEstimateController::class, 'create'])
+        ->name('project-estimates.create');
+
+    Route::post('/project-estimates', [ProjectEstimateController::class, 'store'])
+        ->name('project-estimates.store');
+
+    // KEEP BEFORE {id} routes below — {id} would otherwise swallow these
+    // static paths as a route-model-binding lookup.
+    Route::get('/project-estimates/reports', [ProjectEstimateController::class, 'report'])
+        ->name('project-estimates.reports');
+
+    Route::get('/project-estimates/reports/print', [ProjectEstimateController::class, 'reportPrint'])
+        ->name('project-estimates.reports.print');
+
+    Route::get('/project-estimates/{id}', [ProjectEstimateController::class, 'show'])
+        ->name('project-estimates.show');
+
+    Route::get('/project-estimates/{id}/edit', [ProjectEstimateController::class, 'edit'])
+        ->name('project-estimates.edit');
+
+    Route::put('/project-estimates/{id}', [ProjectEstimateController::class, 'update'])
+        ->name('project-estimates.update');
+
+    Route::delete('/project-estimates/{id}', [ProjectEstimateController::class, 'destroy'])
+        ->name('project-estimates.destroy');
+
+    Route::get('/project-estimates/{id}/print', [ProjectEstimateController::class, 'print'])
+        ->name('project-estimates.print');
+
+    Route::post('/project-estimates/{id}/items', [ProjectEstimateController::class, 'storeItem'])
+        ->name('project-estimates.items.store');
+
+    Route::put('/project-estimates/{id}/items/{itemId}', [ProjectEstimateController::class, 'updateItem'])
+        ->name('project-estimates.items.update');
+
+    Route::delete('/project-estimates/{id}/items/{itemId}', [ProjectEstimateController::class, 'destroyItem'])
+        ->name('project-estimates.items.destroy');
+
+    Route::post('/project-estimates/{id}/photos', [ProjectEstimateController::class, 'uploadPhotos'])
+        ->name('project-estimates.photos.store');
+
+    Route::delete('/project-estimates/{id}/photos/{photoId}', [ProjectEstimateController::class, 'destroyPhoto'])
+        ->name('project-estimates.photos.destroy');
 
 });
 

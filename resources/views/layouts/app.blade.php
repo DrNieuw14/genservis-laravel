@@ -201,6 +201,30 @@
 
             @endif
 
+            @if(auth()->user()->hasPermission('manage-project-estimates'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Project Estimates
+            </div>
+
+            <a href="{{ route('project-estimates.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('project-estimates.index') || request()->routeIs('project-estimates.show') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                🧾 Project Estimates
+
+            </a>
+
+            <a href="{{ route('project-estimates.reports') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('project-estimates.reports*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+
+                📊 Estimate Report
+
+            </a>
+
+            @endif
+
             <!-- Walk-In Issuance -->
 
             @if(auth()->user()->hasPermission('create-walkin-requests'))

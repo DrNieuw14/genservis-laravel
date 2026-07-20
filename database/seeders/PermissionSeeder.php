@@ -148,6 +148,22 @@ class PermissionSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
+            | Project Detailed Estimates
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Project Detailed Estimates',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Project Detailed Estimates', 'slug' => 'manage-project-estimates'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
             | Walk-In Issuance
             |--------------------------------------------------------------------------
             */
