@@ -454,7 +454,7 @@ class JobRequestController extends Controller
     public function print($id)
     {
         $jobRequest = JobRequest::with([
-            'user', 'personnel', 'department', 'approver', 'assignedPersonnel'
+            'user', 'personnel', 'department', 'approver', 'assignedPersonnel', 'photos.uploader'
         ])->findOrFail($id);
 
         return view('job_requests.print', compact('jobRequest'));

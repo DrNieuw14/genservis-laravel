@@ -41,7 +41,7 @@
             <!-- Dashboard -->
             <a href="/supervisor/dashboard"
             class="block px-3 py-2 rounded
-            {{ request()->is('supervisor/dashboard') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->is('supervisor/dashboard') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
                 🏠 Dashboard
             </a>
 
@@ -54,7 +54,7 @@
                  apply to this account) -->
             <a href="{{ route('personnel.dashboard') }}"
             class="block px-3 py-2 rounded
-            {{ request()->is('personnel/dashboard') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->is('personnel/dashboard') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
                 🏠 Dashboard
             </a>
 
@@ -68,19 +68,30 @@
 
                 <a href="{{ route('admin.users.pending') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->is('admin/users/pending') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->is('admin/users/pending') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
                     👥 User Approval
                 </a>
 
             @endif
 
-            @if(Auth::user()->role === 'supervisor')
+            @if(auth()->user()->hasPermission('approve-leave-requests'))
 
             <!-- Leave Requests -->
             <a href="{{ route('leave.requests') }}"
             class="block px-3 py-2 rounded
-            {{ request()->is('leave-requests') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->is('leave-requests') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
                 📄 Leave Requests
+            </a>
+
+            @endif
+
+            @if(auth()->user()->hasPermission('approve-dtr'))
+
+            <!-- DTR Approvals -->
+            <a href="{{ route('utility-dtr.hr.pending') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('utility-dtr.hr.pending') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                🏁 DTR Approvals
             </a>
 
             @endif
@@ -111,7 +122,7 @@
 
                 <a href="{{ route('materials.index') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->is('materials') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->is('materials') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                     📦 Materials Inventory
 
@@ -125,7 +136,7 @@
 
             <a href="/supervisor/material-requests"
             class="block px-3 py-2 rounded
-            {{ request()->is('supervisor/material-requests*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->is('supervisor/material-requests*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                 📋 Material Requests
 
@@ -146,16 +157,22 @@
             <!-- Job Request Approvals -->
 
             <a href="{{ route('job-requests.index') }}"
-            class="block px-3 py-2 rounded
-            {{ request()->routeIs('job-requests.index') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            class="flex items-center justify-between px-3 py-2 rounded
+            {{ request()->routeIs('job-requests.index') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
-                🛠️ Job Request Approvals
+                <span>🛠️ Job Request Approvals</span>
+
+                @if($pendingJobRequestCount > 0)
+                <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    {{ $pendingJobRequestCount }}
+                </span>
+                @endif
 
             </a>
 
             <a href="{{ route('job-requests.reports') }}"
             class="block px-3 py-2 rounded
-            {{ request()->routeIs('job-requests.reports*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->routeIs('job-requests.reports*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                 📊 Job Request Reports
 
@@ -167,7 +184,7 @@
 
             <a href="{{ route('employees.utility-staff') }}"
             class="block px-3 py-2 rounded
-            {{ request()->routeIs('employees.utility-staff') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->routeIs('employees.utility-staff') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                 🧰 Utility & Maintenance Staff
 
@@ -185,7 +202,7 @@
 
             <a href="{{ route('utility-schedule.index') }}"
             class="block px-3 py-2 rounded
-            {{ request()->routeIs('utility-schedule.index') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->routeIs('utility-schedule.index') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                 📅 Utility Schedule
 
@@ -193,9 +210,17 @@
 
             <a href="{{ route('utility-schedule.attendance-report') }}"
             class="block px-3 py-2 rounded
-            {{ request()->routeIs('utility-schedule.attendance-report*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->routeIs('utility-schedule.attendance-report*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                 📊 Attendance Report
+
+            </a>
+
+            <a href="{{ route('utility-dtr.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('utility-dtr.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🗓️ Monthly DTR
 
             </a>
 
@@ -209,7 +234,7 @@
 
             <a href="{{ route('project-estimates.index') }}"
             class="block px-3 py-2 rounded
-            {{ request()->routeIs('project-estimates.index') || request()->routeIs('project-estimates.show') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->routeIs('project-estimates.index') || request()->routeIs('project-estimates.show') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                 🧾 Project Estimates
 
@@ -217,9 +242,95 @@
 
             <a href="{{ route('project-estimates.reports') }}"
             class="block px-3 py-2 rounded
-            {{ request()->routeIs('project-estimates.reports*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->routeIs('project-estimates.reports*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                 📊 Estimate Report
+
+            </a>
+
+            @endif
+
+            @if(auth()->user()->hasPermission('manage-building-inspections'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Building Inspections
+            </div>
+
+            <a href="{{ route('building-inspections.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('building-inspections.index') || request()->routeIs('building-inspections.show') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🏢 Inspection Checklist
+
+            </a>
+
+            <a href="{{ route('building-inspections.reports') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('building-inspections.reports*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                📊 Inspection Report
+
+            </a>
+
+            @endif
+
+            @if(auth()->user()->hasPermission('approve-utility-leave'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Utility Leave
+            </div>
+
+            <a href="{{ route('utility-leave.index') }}"
+            class="flex items-center justify-between px-3 py-2 rounded
+            {{ request()->routeIs('utility-leave.index') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                <span>📄 Leave Requests</span>
+
+                @if($pendingUtilityLeaveCount > 0)
+                <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    {{ $pendingUtilityLeaveCount }}
+                </span>
+                @endif
+
+            </a>
+
+            <a href="{{ route('utility-leave.reports') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('utility-leave.reports*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                📊 Leave Report
+
+            </a>
+
+            @endif
+
+            @if(auth()->user()->hasPermission('manage-property-inventory'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Room Inventory
+            </div>
+
+            <a href="{{ route('property-inventory.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('property-inventory.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🏠 Room Inventory of Property
+
+            </a>
+
+            @endif
+
+            @if(auth()->user()->hasPermission('manage-energy-reports'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Energy Conservation
+            </div>
+
+            <a href="{{ route('energy-reports.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('energy-reports.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                💡 Energy Conservation Report
 
             </a>
 
@@ -231,7 +342,7 @@
 
                 <a href="{{ route('walkin.create') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->routeIs('walkin.create') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->routeIs('walkin.create') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                     🚶 Walk-In Issuance
 
@@ -243,7 +354,7 @@
 
                 <a href="{{ route('walkin.history') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->routeIs('walkin.history') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->routeIs('walkin.history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                     📋 Walk-In History
 
@@ -257,7 +368,7 @@
 
                 <a href="{{ route('materials.logs') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->is('materials/logs*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->is('materials/logs*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                     📜 Material Logs
 
@@ -271,7 +382,7 @@
 
                 <a href="{{ route('department.inventory') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->is('department-inventory') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->is('department-inventory') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                     🏢 Department Inventory
 
@@ -280,7 +391,7 @@
 
                 <a href="{{ route('department.inventory.balance') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->is('department-inventory-balance') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->is('department-inventory-balance') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                     📦 Department Balance
 
@@ -314,7 +425,7 @@
 
                 <a href="{{ route('materials.create') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->is('materials/create') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->is('materials/create') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                     ➕ Add Material
 
@@ -329,7 +440,7 @@
                 <a href="{{ route('categories.index') }}"
                 class="block px-3 py-2 rounded
                 {{ request()->is('categories*')
-                    ? 'bg-green-200 font-semibold'
+                    ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
                     : 'hover:bg-green-100' }}">
 
                     🗂️ Categories
@@ -344,7 +455,7 @@
 
                 <a href="{{ route('units.index') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->is('units*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->is('units*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                     📏 Units
 
@@ -358,7 +469,7 @@
 
                 <a href="{{ route('supervisor.departments.index') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->is('supervisor/departments*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->is('supervisor/departments*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                     🏢 Departments
 
@@ -372,7 +483,7 @@
 
                 <a href="{{ route('supervisor.inventory.movements.index') }}"
                 class="block px-3 py-2 rounded
-                {{ request()->is('supervisor/inventory-movements*') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+                {{ request()->is('supervisor/inventory-movements*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                     🔄 Inventory Movements
 
@@ -395,7 +506,7 @@
 
             <a href="{{ route('procurement.dashboard') }}"
             class="block px-3 py-2 rounded
-            {{ request()->routeIs('procurement.dashboard') ? 'bg-green-200 font-semibold' : 'hover:bg-green-100' }}">
+            {{ request()->routeIs('procurement.dashboard') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                 🏠 Dashboard
 
@@ -406,7 +517,7 @@
             <a href="{{ route('procurement.plans.index') }}"
             class="block px-3 py-2 rounded
             {{ request()->routeIs('procurement.plans.*')
-                ? 'bg-green-200 font-semibold'
+                ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
                 : 'hover:bg-green-100' }}">
 
                 📄 Annual PPMP
@@ -420,7 +531,7 @@
             <a href="{{ route('procurement.budget-monitoring') }}"
             class="block px-3 py-2 rounded
             {{ request()->routeIs('procurement.budget-monitoring*')
-                ? 'bg-green-200 font-semibold'
+                ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
                 : 'hover:bg-green-100' }}">
 
                 💰 Budget Monitoring
@@ -436,7 +547,7 @@
             <a href="{{ route('procurement.purchase-forecast') }}"
             class="block px-3 py-2 rounded
             {{ request()->routeIs('procurement.purchase-forecast*')
-                ? 'bg-green-200 font-semibold'
+                ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
                 : 'hover:bg-green-100' }}">
 
                 📈 Purchase Forecast
@@ -452,7 +563,7 @@
             <a href="{{ route('procurement.calendar') }}"
             class="block px-3 py-2 rounded
             {{ request()->routeIs('procurement.calendar*')
-                ? 'bg-green-200 font-semibold'
+                ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
                 : 'hover:bg-green-100' }}">
 
                 📅 Procurement Calendar
@@ -470,7 +581,7 @@
             <a href="{{ route('procurement.plans.index') }}"
             class="block px-3 py-2 rounded
             {{ request()->routeIs('procurement.plans.*')
-                ? 'bg-green-200 font-semibold'
+                ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
                 : 'hover:bg-green-100' }}">
 
                 📄 My Department PPMP
@@ -490,7 +601,7 @@
                 <a href="{{ route('reports.index') }}"
                 class="block px-3 py-2 rounded
                 {{ request()->is('reports*')
-                    ? 'bg-green-200 font-semibold'
+                    ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
                     : 'hover:bg-green-100' }}">
 
                     📊 Reports Center
@@ -685,9 +796,17 @@
                     </a>
 
                     <a href="{{ route('job-requests.history') }}"
-                    class="block px-4 py-3 rounded-xl transition
+                    class="flex items-center justify-between px-4 py-3 rounded-xl transition
                     {{ request()->routeIs('job-requests.history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        📜 My Job Requests
+
+                        <span>📜 My Job Requests</span>
+
+                        @if($myJobRequestsInProgressCount > 0)
+                        <span class="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                            {{ $myJobRequestsInProgressCount }}
+                        </span>
+                        @endif
+
                     </a>
 
                     <a href="{{ route('job-requests.my-assigned') }}"
@@ -711,6 +830,28 @@
                     class="block px-4 py-3 rounded-xl transition
                     {{ request()->routeIs('utility-schedule.my') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
                         📅 My Schedule
+                    </a>
+
+                    <a href="{{ route('utility-dtr.my') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('utility-dtr.my') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        🗓️ My DTR
+                    </a>
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2 mt-3">
+                        Leave Services
+                    </div>
+
+                    <a href="{{ route('leave.index') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('leave.index') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📝 Apply Leave
+                    </a>
+
+                    <a href="{{ route('leave.history') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('leave.history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📄 Leave History
                     </a>
 
                 @endif
@@ -785,18 +926,32 @@
                         </div>
                     </div>
                     <!-- USER -->
-                    <span class="text-sm font-medium">
-                        {{ Auth::user()->fullname ?? Auth::user()->username }}
+                    <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 text-sm font-medium hover:opacity-80">
 
-                        @if(Auth::user()->systemRole)
-                        <span class="text-xs text-gray-500 font-normal">
-                            ({{ Auth::user()->systemRole->name }}@if(Auth::user()->additionalRoles->isNotEmpty()) <span
-                                class="underline decoration-dotted cursor-help"
-                                title="{{ Auth::user()->additionalRoles->pluck('name')->join(', ') }}"
-                            >+{{ Auth::user()->additionalRoles->count() }} more</span>@endif)
-                        </span>
+                        @php $myPhotoUrl = Auth::user()->personnel?->photo_url; @endphp
+
+                        @if($myPhotoUrl)
+                            <img src="{{ $myPhotoUrl }}" alt="Profile" class="w-8 h-8 rounded-full object-cover border">
+                        @else
+                            <span class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-bold">
+                                {{ strtoupper(substr(Auth::user()->fullname ?? Auth::user()->username, 0, 1)) }}
+                            </span>
                         @endif
-                    </span>
+
+                        <span>
+                            {{ Auth::user()->fullname ?? Auth::user()->username }}
+
+                            @if(Auth::user()->systemRole)
+                            <span class="text-xs text-gray-500 font-normal">
+                                ({{ Auth::user()->systemRole->name }}@if(Auth::user()->additionalRoles->isNotEmpty()) <span
+                                    class="underline decoration-dotted cursor-help"
+                                    title="{{ Auth::user()->additionalRoles->pluck('name')->join(', ') }}"
+                                >+{{ Auth::user()->additionalRoles->count() }} more</span>@endif)
+                            </span>
+                            @endif
+                        </span>
+
+                    </a>
 
                     <!-- LOGOUT -->
                     <form method="POST" action="{{ route('logout') }}">

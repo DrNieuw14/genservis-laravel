@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\LeaveRequest;
 use App\Models\User;
 use App\Models\Notification;
+use App\Models\Personnel;
+use App\Models\JobRequest;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
@@ -31,8 +33,13 @@ class AppServiceProvider extends ServiceProvider
 
             $notifications = collect();
             $totalNotifications = 0;
+            $pendingJobRequestCount = 0;
+            $pendingUtilityLeaveCount = 0;
+            $myJobRequestsInProgressCount = 0;
 
             if (Auth::check()) {
+
+                $user = Auth::user();
 
                 $notifications = Notification::where('user_id', Auth::id())
                     ->where('is_read', 0)
@@ -43,11 +50,44 @@ class AppServiceProvider extends ServiceProvider
                 $totalNotifications = Notification::where('user_id', Auth::id())
                     ->where('is_read', 0)
                     ->count();
+
+                $jobRequestCategories = [];
+
+                if ($user->hasPermission('approve-job-requests-physical-plant')) {
+                    $jobRequestCategories[] = 'physical_plant';
+                }
+
+                if ($user->hasPermission('approve-job-requests-utility')) {
+                    $jobRequestCategories[] = 'utility';
+                }
+
+                if (!empty($jobRequestCategories)) {
+                    $pendingJobRequestCount = JobRequest::whereIn('category', $jobRequestCategories)
+                        ->where('status', 'pending')
+                        ->count();
+                }
+
+                if ($user->hasPermission('approve-utility-leave')) {
+                    $pendingUtilityLeaveCount = LeaveRequest::whereIn('personnel_id', Personnel::utilityStaff()->pluck('id'))
+                        ->where('status', 'Pending')
+                        ->count();
+                }
+
+                // Informational, not an action queue — how many of MY OWN
+                // submitted job requests are still moving (not yet
+                // completed or rejected). Matches JobRequestController::
+                // history()'s own scoping (by user_id).
+                $myJobRequestsInProgressCount = JobRequest::where('user_id', Auth::id())
+                    ->whereNotIn('status', ['completed', 'rejected'])
+                    ->count();
             }
 
             $view->with([
                 'notifications' => $notifications,
-                'totalNotifCount' => $totalNotifications
+                'totalNotifCount' => $totalNotifications,
+                'pendingJobRequestCount' => $pendingJobRequestCount,
+                'pendingUtilityLeaveCount' => $pendingUtilityLeaveCount,
+                'myJobRequestsInProgressCount' => $myJobRequestsInProgressCount,
             ]);
         });
 

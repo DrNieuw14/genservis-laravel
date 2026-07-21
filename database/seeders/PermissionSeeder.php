@@ -164,6 +164,109 @@ class PermissionSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
+            | Building Inspections
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Building Inspections',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Building Inspections', 'slug' => 'manage-building-inspections'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Utility Leave Requests
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Utility Leave Requests',
+
+                'permissions' => [
+
+                    ['name' => 'Approve Utility Leave', 'slug' => 'approve-utility-leave'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Leave Management — the general (all-employee) leave admin page,
+            | distinct from Utility Leave Requests above which is scoped to
+            | the Utility & Maintenance Staff pool only.
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Leave Management',
+
+                'permissions' => [
+
+                    ['name' => 'Approve Leave Requests', 'slug' => 'approve-leave-requests'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | DTR Approval — HR's final sign-off stage in the Utility DTR
+            | pipeline (Employee verifies -> Mark checks -> HR approves).
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'DTR Approval',
+
+                'permissions' => [
+
+                    ['name' => 'Approve DTR', 'slug' => 'approve-dtr'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Energy Conservation Report — monthly report to the DOE Main
+            | Campus, built from the real CvSU template. Energy Focal Person
+            | only.
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Energy Conservation Report',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Energy Reports', 'slug' => 'manage-energy-reports'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Room Inventory of Property — fixed/durable property (furniture,
+            | ICT equipment, appliances, etc.) tracked per room, distinct from
+            | the consumable Materials Inventory. Property Custodian only.
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Room Inventory of Property',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Property Inventory', 'slug' => 'manage-property-inventory'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
             | Walk-In Issuance
             |--------------------------------------------------------------------------
             */

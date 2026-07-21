@@ -30,4 +30,11 @@ class EmployeeProfile extends Model
     {
         return $this->belongsTo(Personnel::class);
     }
+
+    public function getPhotoUrlAttribute()
+    {
+        return $this->photo
+            ? asset('storage/' . $this->photo)
+            : null;
+    }
 }

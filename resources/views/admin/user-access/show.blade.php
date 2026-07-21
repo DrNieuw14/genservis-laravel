@@ -24,6 +24,20 @@
             <!-- Back -->
             <x-back-button :href="route('admin.user-access.index')" />
 
+            <!-- Edit Employment Info -->
+            @if($user->personnel && auth()->user()->hasPermission('edit-employees'))
+                <a
+                    href="{{ route('employees.edit', $user->personnel->id) }}"
+                    class="inline-flex items-center gap-2 px-4 py-2
+                        bg-blue-600 hover:bg-blue-700
+                        text-white text-sm font-medium
+                        rounded-lg shadow transition">
+
+                    ✏️ Edit Employment Info
+
+                </a>
+            @endif
+
             <!-- Assign Role -->
             <a
                 href="{{ route('admin.user-access.edit', $user) }}"
@@ -98,7 +112,7 @@
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">Employment Type</p>
+                <p class="text-sm text-gray-500">Employment Status</p>
                 <h3 class="font-semibold mt-1">
                     {{ optional(optional($user->personnel)->employmentType)->name ?? '-' }}
                 </h3>
@@ -368,6 +382,109 @@
 
             <p class="text-gray-500">
                 This user has no role assigned, so no permissions are granted.
+            </p>
+
+        @endif
+
+    </div>
+
+    <!-- CHANGE HISTORY -->
+    <div class="border rounded-lg p-5 bg-gray-50 mt-6">
+
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">
+            📜 Change History
+        </h3>
+
+        @if($history->isNotEmpty())
+
+            <div class="space-y-3">
+
+                @foreach($history as $entry)
+
+                    <div class="bg-white border rounded-lg p-4">
+
+                        <div class="flex justify-between items-start gap-4">
+
+                            <div>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                                    {{ $entry->action }}
+                                </span>
+
+                                <p class="text-gray-700 mt-2">
+                                    {{ $entry->description }}
+                                </p>
+                            </div>
+
+                            <div class="text-right text-xs text-gray-500 whitespace-nowrap">
+                                <div>{{ $entry->created_at->format('M d, Y g:i A') }}</div>
+                                <div>by {{ optional($entry->user)->fullname ?? optional($entry->user)->name ?? 'System' }}</div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @endforeach
+
+            </div>
+
+        @else
+
+            <p class="text-gray-500">
+                No changes recorded yet for this account.
+            </p>
+
+        @endif
+
+    </div>
+
+    <!-- ACTIONS PERFORMED -->
+    <div class="border rounded-lg p-5 bg-gray-50 mt-6">
+
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">
+            🛠️ Actions Performed by This Account
+        </h3>
+
+        @if($performedActions->isNotEmpty())
+
+            <div class="space-y-3">
+
+                @foreach($performedActions as $entry)
+
+                    <div class="bg-white border rounded-lg p-4">
+
+                        <div class="flex justify-between items-start gap-4">
+
+                            <div>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+                                    {{ $entry->action }}
+                                </span>
+
+                                <p class="text-gray-700 mt-2">
+                                    {{ $entry->description }}
+                                </p>
+
+                                <p class="text-xs text-gray-500 mt-1">
+                                    On: {{ optional(optional($entry->targetUser)->personnel)->fullname ?? optional($entry->targetUser)->name ?? 'Unknown' }}
+                                </p>
+                            </div>
+
+                            <div class="text-right text-xs text-gray-500 whitespace-nowrap">
+                                {{ $entry->created_at->format('M d, Y g:i A') }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @endforeach
+
+            </div>
+
+        @else
+
+            <p class="text-gray-500">
+                This account hasn't made any recorded changes to other accounts yet.
             </p>
 
         @endif

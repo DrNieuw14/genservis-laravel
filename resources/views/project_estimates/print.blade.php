@@ -191,13 +191,23 @@ width="80">
 
 <h2>CAVITE STATE UNIVERSITY</h2>
 
-<div>Carmona Campus</div>
+<div>CvSU Carmona Campus</div>
 
-<div>Carmona City, Cavite</div>
+<div>Carmona, Cavite</div>
+
+<div>(046) 487-6328</div>
+
+<div><a href="https://www.cvsu.edu.ph" style="color:#000;text-decoration:none;">www.cvsu.edu.ph</a></div>
 
 </td>
 
-<td width="90"></td>
+<td width="90">
+
+<img
+src="{{ asset('images/bagong-pilipinas.png') }}"
+width="80">
+
+</td>
 
 </tr>
 
@@ -318,7 +328,7 @@ width="80">
         <h2 class="text-center">ANNEX — PHOTO DOCUMENTATION</h2>
         <p class="text-center">{{ $estimate->reference_no }} — {{ $estimate->project_name }}</p>
 
-        @foreach(['receipt' => 'Receipts', 'work_done' => 'Work Done', 'other' => 'Other'] as $type => $groupLabel)
+        @foreach(['before' => 'Before (Current Status)', 'receipt' => 'Receipts', 'work_done' => 'Work Done', 'other' => 'Other'] as $type => $groupLabel)
 
             @php $groupPhotos = $estimate->photos->where('type', $type); @endphp
 

@@ -57,6 +57,30 @@ class RolePermissionSeeder extends Seeder
                     'view-reports',
                     'export-reports',
 
+                    // User Approval — onboarding new hires, approving/
+                    // rejecting self-registrations.
+                    'approve-users',
+                    'reject-users',
+                    'onboard-users',
+
+                    // User Access — viewing/assigning roles, activating or
+                    // suspending accounts, resetting forgotten passwords.
+                    // Deliberately NOT given manage-roles/manage-permissions
+                    // (role/permission *definitions* stay Administrator-only).
+                    'view-user-access',
+                    'assign-roles',
+                    'manage-user-status',
+                    'reset-user-passwords',
+
+                    // Leave Management — general (all-employee) leave admin,
+                    // a real HR function that was previously locked to the
+                    // legacy supervisor account only.
+                    'approve-leave-requests',
+
+                    // DTR Approval — final stage of the Utility DTR pipeline
+                    // (Employee verifies -> Mark checks -> HR approves).
+                    'approve-dtr',
+
                 ])->pluck('id')->toArray()
 
             );
@@ -274,6 +298,8 @@ class RolePermissionSeeder extends Seeder
 
                     'manage-utility-schedule',
                     'manage-project-estimates',
+                    'manage-building-inspections',
+                    'approve-utility-leave',
 
                 ])->pluck('id')->toArray()
 
@@ -305,6 +331,59 @@ class RolePermissionSeeder extends Seeder
                     'view-job-requests',
                     'approve-job-requests-physical-plant',
                     'assign-job-request-personnel',
+
+                ])->pluck('id')->toArray()
+
+            );
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Property Custodian
+        |--------------------------------------------------------------------------
+        |
+        | Maintains the Room Inventory of Property — fixed/durable property
+        | (furniture, ICT equipment, appliances) tracked per room, separate
+        | from the consumable Materials Inventory.
+        |
+        */
+
+        $propertyCustodian = Role::where('name', 'Property Custodian')->first();
+
+        if ($propertyCustodian) {
+
+            $propertyCustodian->permissions()->sync(
+
+                Permission::whereIn('slug', [
+
+                    'manage-property-inventory',
+
+                ])->pluck('id')->toArray()
+
+            );
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Energy Focal Person
+        |--------------------------------------------------------------------------
+        |
+        | Prepares the Monthly Energy Conservation Report to DOE Main
+        | Campus. Held by Mark as an additional role alongside GSO.
+        |
+        */
+
+        $energyFocalPerson = Role::where('name', 'Energy Focal Person')->first();
+
+        if ($energyFocalPerson) {
+
+            $energyFocalPerson->permissions()->sync(
+
+                Permission::whereIn('slug', [
+
+                    'manage-energy-reports',
 
                 ])->pluck('id')->toArray()
 

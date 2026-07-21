@@ -12,6 +12,10 @@
 
      @include('employees.partials.educational-background')
 
+    @if(auth()->user()->hasPermission('edit-employees'))
+        @include('employees.partials.change-history')
+    @endif
+
 </div>
 
 @endsection

@@ -149,6 +149,7 @@ class UserApprovalController extends Controller
         return response()->json(
             $employmentType->positions()
                 ->where('is_active', 1)
+                ->orderByRaw('positions.sort_order IS NULL, positions.sort_order')
                 ->orderBy('position_name')
                 ->get([
                     'positions.id',

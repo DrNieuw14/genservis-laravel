@@ -102,6 +102,55 @@
 
         }
 
+        .annex{
+
+            page-break-before:always;
+
+        }
+
+        .photo-grid{
+
+            display:flex;
+            flex-wrap:wrap;
+            gap:16px;
+            margin-top:10px;
+
+        }
+
+        .photo-card{
+
+            width:47%;
+            text-align:center;
+            margin-bottom:16px;
+            page-break-inside:avoid;
+
+        }
+
+        .photo-card img{
+
+            width:100%;
+            max-height:420px;
+            object-fit:contain;
+            border:1px solid #000;
+            background:#f5f5f5;
+
+        }
+
+        .photo-caption{
+
+            font-size:12px;
+            font-weight:bold;
+            margin-top:5px;
+
+        }
+
+        .photo-uploader{
+
+            font-size:11px;
+            color:#555;
+
+        }
+
         @page{
 
             size:A4 portrait;
@@ -137,13 +186,23 @@ width="80">
 
 <h2>CAVITE STATE UNIVERSITY</h2>
 
-<div>Carmona Campus</div>
+<div>CvSU Carmona Campus</div>
 
-<div>Carmona City, Cavite</div>
+<div>Carmona, Cavite</div>
+
+<div>(046) 487-6328</div>
+
+<div><a href="https://www.cvsu.edu.ph" style="color:#000;text-decoration:none;">www.cvsu.edu.ph</a></div>
 
 </td>
 
-<td width="90"></td>
+<td width="90">
+
+<img
+src="{{ asset('images/bagong-pilipinas.png') }}"
+width="80">
+
+</td>
 
 </tr>
 
@@ -230,6 +289,31 @@ width="80">
 </tr>
 
 </table>
+
+@if($jobRequest->photos->isNotEmpty())
+
+    <div class="annex">
+
+        <h2 class="text-center">ANNEX — PHOTO EVIDENCE OF WORK</h2>
+        <p class="text-center">{{ $jobRequest->reference_no }} — {{ $jobRequest->nature_of_request }}</p>
+
+        <div class="photo-grid">
+
+            @foreach($jobRequest->photos as $photo)
+
+                <div class="photo-card">
+                    <img src="{{ $photo->url }}" alt="Evidence photo">
+                    <div class="photo-caption">{{ $photo->created_at->format('M d, Y g:i A') }}</div>
+                    <div class="photo-uploader">{{ $photo->uploader->fullname ?? $photo->uploader->name ?? '-' }}</div>
+                </div>
+
+            @endforeach
+
+        </div>
+
+    </div>
+
+@endif
 
 </body>
 

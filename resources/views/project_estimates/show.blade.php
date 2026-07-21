@@ -53,6 +53,12 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="bg-red-500 text-white p-4 mb-6 rounded-lg text-lg">
+            {{ session('error') }}
+        </div>
+    @endif
+
     @if ($errors->any())
         <div class="bg-red-500 text-white p-4 mb-6 rounded-lg text-lg">
             <ul class="list-disc ml-5">
@@ -228,11 +234,16 @@
 
             <div class="flex flex-wrap items-end gap-4">
 
+                @php $hasBeforePhoto = $estimate->photos->where('type', 'before')->isNotEmpty(); @endphp
+
                 <div>
                     <label class="block mb-1 font-semibold text-sm">Type</label>
                     <select name="type" class="border rounded-lg p-3">
+                        <option value="before">📷 Before (Current Status)</option>
                         <option value="receipt">🧾 Receipt</option>
-                        <option value="work_done">🛠️ Work Done</option>
+                        <option value="work_done" @disabled(!$hasBeforePhoto)>
+                            🛠️ Work Done @if(!$hasBeforePhoto)(upload a Before photo first)@endif
+                        </option>
                         <option value="other">📎 Other</option>
                     </select>
                 </div>
@@ -249,6 +260,10 @@
             </div>
 
         </form>
+
+        <p class="text-gray-500 text-xs mt-2">
+            📷 Upload a "Before" photo of the current project status first — "Work Done" photos can't be added until one exists.
+        </p>
 
         @if($estimate->photos->isNotEmpty())
 
@@ -286,7 +301,7 @@
 
         @else
 
-            <p class="text-gray-500 text-sm mt-4">No attachments yet — upload receipts or work-done photos above.</p>
+            <p class="text-gray-500 text-sm mt-4">No attachments yet — start with a "Before" photo of the current project status.</p>
 
         @endif
 

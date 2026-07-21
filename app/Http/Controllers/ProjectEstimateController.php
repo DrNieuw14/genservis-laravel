@@ -156,15 +156,16 @@ class ProjectEstimateController extends Controller
         return back()->with('success', 'Item removed.');
     }
 
-    // 📸 Attachments — receipts, work-done evidence, or anything else worth
-    // keeping with the estimate. Optional, multiple files, each individually
-    // attributed to its uploader (mirrors Job Request's photo evidence).
+    // 📸 Attachments — before (current status prior to work), receipts,
+    // work-done evidence, or anything else worth keeping with the estimate.
+    // Optional, multiple files, each individually attributed to its
+    // uploader (mirrors Job Request's photo evidence).
     public function uploadPhotos(Request $request, $id)
     {
-        $estimate = ProjectEstimate::findOrFail($id);
+        $estimate = ProjectEstimate::with('photos')->findOrFail($id);
 
         $validated = $request->validate([
-            'type' => 'required|in:receipt,work_done,other',
+            'type' => 'required|in:before,receipt,work_done,other',
             'photos' => 'required|array',
             'photos.*' => 'image|max:5120',
         ], [
@@ -172,6 +173,13 @@ class ProjectEstimateController extends Controller
             'photos.*.image' => 'Each file must be a photo (JPG, PNG, etc.).',
             'photos.*.max' => 'Each photo must be 5MB or smaller.',
         ]);
+
+        // A "Work Done" photo only makes sense once there's a "Before" photo
+        // to compare it against — enforced here, not just hidden in the UI,
+        // since a direct POST could otherwise skip the client-side check.
+        if ($validated['type'] === 'work_done' && $estimate->photos->where('type', 'before')->isEmpty()) {
+            return back()->with('error', 'Upload a "Before" photo of the current project status first, before adding Work Done photos.');
+        }
 
         foreach ($request->file('photos', []) as $photo) {
 

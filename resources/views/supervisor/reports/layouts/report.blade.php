@@ -42,19 +42,38 @@
 
                     <p>
 
-                        Carmona Campus
+                        CvSU Carmona Campus
 
                     </p>
 
-                    <p class="font-semibold">
+                    <p>
 
-                        General Services Office
+                        Carmona, Cavite
+
+                    </p>
+
+                    <p>
+
+                        (046) 487-6328
+
+                    </p>
+
+                    <p>
+
+                        <a href="https://www.cvsu.edu.ph" style="color:#000;text-decoration:none;">www.cvsu.edu.ph</a>
 
                     </p>
 
                 </td>
 
-                <td style="width:110px"></td>
+                <td style="width:110px">
+
+                    <img
+                        src="{{ asset('images/bagong-pilipinas.png') }}"
+                        alt="Bagong Pilipinas"
+                        style="width:90px;height:90px;">
+
+                </td>
 
             </tr>
 

@@ -24,11 +24,34 @@
 
             </div>
 
-            <span class="px-4 py-2 rounded-full bg-green-100 text-green-700">
+            <div class="flex flex-col items-end gap-3">
 
-                {{ $employee->status }}
+                @if(auth()->user()->hasPermission('edit-employees'))
+                    <a href="{{ route('employees.edit', $employee->id) }}"
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
+                        ✏ Edit Employment Info
+                    </a>
+                @endif
 
-            </span>
+                <span class="px-4 py-2 rounded-full {{ $employee->status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600' }}">
+
+                    {{ $employee->status }}
+
+                </span>
+
+                <div class="text-center">
+
+                    <img src="{{ $qrDataUri }}" alt="QR Code" width="90" height="90">
+
+                    <a href="{{ route('employees.id-card', $employee->id) }}"
+                       target="_blank"
+                       class="block mt-1 text-sm text-blue-600 hover:underline">
+                        🖨 Print ID Card
+                    </a>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -67,7 +90,7 @@
         <div>
 
             <p class="text-gray-500 text-sm">
-                Employment Type
+                Employment Status
             </p>
 
             <h3 class="font-semibold">

@@ -31,6 +31,7 @@ class LeaveController extends Controller
     public function store(Request $request)
 {
     $request->validate([
+        'leave_type' => 'required|in:' . implode(',', \App\Models\LeaveRequest::LEAVE_TYPES),
         'reason' => 'required',
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date'
@@ -45,6 +46,7 @@ class LeaveController extends Controller
 
     $leave = LeaveRequest::create([
         'personnel_id' => $personnel->id,
+        'leave_type' => $request->leave_type,
         'reason' => $request->reason,
         'start_date' => $request->start_date,
         'end_date' => $request->end_date,
@@ -57,10 +59,14 @@ class LeaveController extends Controller
         'Submitted leave request from ' . ($personnel->fullname ?? 'Unknown Personnel')
     );
 
-    // 🔔 NOTIFY SUPERVISORS
-    $supervisors = \App\Models\User::where('role', 'supervisor')->get();
+    // 🔔 NOTIFY LEAVE APPROVERS (HR Officer / Administrator) — previously
+    // only ever reached the legacy role='supervisor' account, which meant
+    // whoever actually holds approve-leave-requests (e.g. HR) never heard
+    // about a new submission. Same fix already applied to the utility-leave
+    // branch below.
+    $approvers = \App\Models\User::withPermission('approve-leave-requests')->get();
 
-    foreach ($supervisors as $admin) {
+    foreach ($approvers as $admin) {
         $notif = Notification::create([
             'user_id' => $admin->id,
             'type' => 'leave',
@@ -71,6 +77,29 @@ class LeaveController extends Controller
         ]);
 
         event(new NewNotificationEvent($notif));
+    }
+
+    // 🔔 NOTIFY MARK (or whoever else holds approve-utility-leave) when the
+    // applicant is Utility & Maintenance Staff — the block above only ever
+    // reaches the legacy role='supervisor' account, which Mark isn't, so
+    // without this he'd never hear about a utility leave request at all.
+    if (Personnel::utilityStaff()->where('id', $personnel->id)->exists()) {
+
+        $approvers = \App\Models\User::withPermission('approve-utility-leave')->get();
+
+        foreach ($approvers as $approver) {
+
+            $notif = Notification::create([
+                'user_id' => $approver->id,
+                'type' => 'leave',
+                'title' => 'New Utility Leave Request',
+                'message' => ($personnel->fullname ?? Auth::user()->name) . ' applied for ' . $leave->leave_type . '.',
+                'url' => route('utility-leave.index', [], false),
+                'is_read' => 0
+            ]);
+
+            event(new NewNotificationEvent($notif));
+        }
     }
 
     // 🔔 NOTIFY USER
@@ -106,7 +135,7 @@ class LeaveController extends Controller
 
     public function adminIndex(Request $request)
     {
-        if (auth()->user()->role !== 'supervisor') {
+        if (!auth()->user()->hasPermission('approve-leave-requests')) {
             abort(403);
         }
 
@@ -132,6 +161,10 @@ class LeaveController extends Controller
 
     public function approve($id)
     {
+        if (!auth()->user()->hasPermission('approve-leave-requests')) {
+            abort(403);
+        }
+
         $leave = LeaveRequest::findOrFail($id);
 
         $leave->update([
@@ -160,6 +193,10 @@ class LeaveController extends Controller
 
     public function reject($id)
     {
+        if (!auth()->user()->hasPermission('approve-leave-requests')) {
+            abort(403);
+        }
+
         $leave = LeaveRequest::findOrFail($id);
 
         $leave->update([

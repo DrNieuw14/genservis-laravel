@@ -11,30 +11,32 @@ class PositionSeeder extends Seeder
     {
         $positions = [
 
-            // Faculty
-            ['position_name' => 'Instructor I', 'position_code' => 'INST1'],
-            ['position_name' => 'Instructor II', 'position_code' => 'INST2'],
-            ['position_name' => 'Instructor III', 'position_code' => 'INST3'],
+            // Faculty — Academic Rank ladder, sort_order fixes the display
+            // order (Instructor → Assistant → Associate → Professor →
+            // University Professor) instead of alphabetical.
+            ['position_name' => 'Instructor I', 'position_code' => 'INST1', 'sort_order' => 1],
+            ['position_name' => 'Instructor II', 'position_code' => 'INST2', 'sort_order' => 2],
+            ['position_name' => 'Instructor III', 'position_code' => 'INST3', 'sort_order' => 3],
 
-            ['position_name' => 'Assistant Professor I', 'position_code' => 'AP1'],
-            ['position_name' => 'Assistant Professor II', 'position_code' => 'AP2'],
-            ['position_name' => 'Assistant Professor III', 'position_code' => 'AP3'],
-            ['position_name' => 'Assistant Professor IV', 'position_code' => 'AP4'],
+            ['position_name' => 'Assistant Professor I', 'position_code' => 'AP1', 'sort_order' => 4],
+            ['position_name' => 'Assistant Professor II', 'position_code' => 'AP2', 'sort_order' => 5],
+            ['position_name' => 'Assistant Professor III', 'position_code' => 'AP3', 'sort_order' => 6],
+            ['position_name' => 'Assistant Professor IV', 'position_code' => 'AP4', 'sort_order' => 7],
 
-            ['position_name' => 'Associate Professor I', 'position_code' => 'ASP1'],
-            ['position_name' => 'Associate Professor II', 'position_code' => 'ASP2'],
-            ['position_name' => 'Associate Professor III', 'position_code' => 'ASP3'],
-            ['position_name' => 'Associate Professor IV', 'position_code' => 'ASP4'],
-            ['position_name' => 'Associate Professor V', 'position_code' => 'ASP5'],
+            ['position_name' => 'Associate Professor I', 'position_code' => 'ASP1', 'sort_order' => 8],
+            ['position_name' => 'Associate Professor II', 'position_code' => 'ASP2', 'sort_order' => 9],
+            ['position_name' => 'Associate Professor III', 'position_code' => 'ASP3', 'sort_order' => 10],
+            ['position_name' => 'Associate Professor IV', 'position_code' => 'ASP4', 'sort_order' => 11],
+            ['position_name' => 'Associate Professor V', 'position_code' => 'ASP5', 'sort_order' => 12],
 
-            ['position_name' => 'Professor I', 'position_code' => 'PROF1'],
-            ['position_name' => 'Professor II', 'position_code' => 'PROF2'],
-            ['position_name' => 'Professor III', 'position_code' => 'PROF3'],
-            ['position_name' => 'Professor IV', 'position_code' => 'PROF4'],
-            ['position_name' => 'Professor V', 'position_code' => 'PROF5'],
-            ['position_name' => 'Professor VI', 'position_code' => 'PROF6'],
+            ['position_name' => 'Professor I', 'position_code' => 'PROF1', 'sort_order' => 13],
+            ['position_name' => 'Professor II', 'position_code' => 'PROF2', 'sort_order' => 14],
+            ['position_name' => 'Professor III', 'position_code' => 'PROF3', 'sort_order' => 15],
+            ['position_name' => 'Professor IV', 'position_code' => 'PROF4', 'sort_order' => 16],
+            ['position_name' => 'Professor V', 'position_code' => 'PROF5', 'sort_order' => 17],
+            ['position_name' => 'Professor VI', 'position_code' => 'PROF6', 'sort_order' => 18],
 
-            ['position_name' => 'University Professor', 'position_code' => 'UNIVPROF'],
+            ['position_name' => 'University Professor', 'position_code' => 'UNIVPROF', 'sort_order' => 19],
 
             ['position_name' => 'Lecturer', 'position_code' => 'LECT'],
             ['position_name' => 'Laboratory Instructor', 'position_code' => 'LABINST'],
@@ -43,9 +45,17 @@ class PositionSeeder extends Seeder
             // Administrative
             ['position_name' => 'Administrative Aide I', 'position_code' => 'AA1'],
             ['position_name' => 'Administrative Aide II', 'position_code' => 'AA2'],
+            ['position_name' => 'Administrative Aide III', 'position_code' => 'AA3'],
+            ['position_name' => 'Administrative Aide IV', 'position_code' => 'AA4'],
+            ['position_name' => 'Administrative Aide VI', 'position_code' => 'AA6'],
             ['position_name' => 'Administrative Assistant I', 'position_code' => 'AAS1'],
+            ['position_name' => 'Administrative Assistant II', 'position_code' => 'AAS2'],
+            ['position_name' => 'Administrative Assistant III', 'position_code' => 'AAS3'],
             ['position_name' => 'Administrative Officer I', 'position_code' => 'AO1'],
             ['position_name' => 'Administrative Officer II', 'position_code' => 'AO2'],
+            ['position_name' => 'Administrative Officer III', 'position_code' => 'AO3'],
+            ['position_name' => 'Administrative Officer IV', 'position_code' => 'AO4'],
+            ['position_name' => 'Administrative Officer V', 'position_code' => 'AO5'],
             ['position_name' => 'HR Officer', 'position_code' => 'HRO'],
             ['position_name' => 'Accountant', 'position_code' => 'ACC'],
             ['position_name' => 'Cashier', 'position_code' => 'CASH'],
@@ -80,6 +90,7 @@ class PositionSeeder extends Seeder
                 ['position_name' => $position['position_name']],
                 [
                     'position_code' => $position['position_code'],
+                    'sort_order' => $position['sort_order'] ?? null,
                     'is_active' => 1,
                 ]
             );

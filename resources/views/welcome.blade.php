@@ -105,6 +105,13 @@
 
             </div>
 
+            <div class="mt-6">
+                <a href="{{ route('attendance-kiosk.index') }}"
+                   class="inline-block px-6 py-3 bg-yellow-400 text-green-900 font-semibold rounded-lg shadow hover:bg-yellow-300 transition">
+                    📷 Utility Attendance Scan
+                </a>
+            </div>
+
         </div>
 
     </section>

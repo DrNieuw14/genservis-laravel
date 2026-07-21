@@ -125,7 +125,7 @@
 
                 <td class="p-4">
                     <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs">
-                        Leave
+                        {{ $leave->leave_type ?? 'Leave' }}
                     </span>
                 </td>
 

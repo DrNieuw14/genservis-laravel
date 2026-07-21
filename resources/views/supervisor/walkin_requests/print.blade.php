@@ -116,33 +116,25 @@ width="80">
 
 <td class="text-center">
 
-<div>
+<div>Republic of the Philippines</div>
 
-Republic of the Philippines
+<h2>CAVITE STATE UNIVERSITY</h2>
 
-</div>
+<div>CvSU Carmona Campus</div>
 
-<h2>
+<div>Carmona, Cavite</div>
 
-CAVITE STATE UNIVERSITY
+<div>(046) 487-6328</div>
 
-</h2>
-
-<div>
-
-Carmona Campus
-
-</div>
-
-<h4>
-
-GENERAL SERVICES OFFICE
-
-</h4>
+<div><a href="https://www.cvsu.edu.ph" style="color:#000;text-decoration:none;">www.cvsu.edu.ph</a></div>
 
 </td>
 
 <td width="90">
+
+<img
+src="{{ asset('images/bagong-pilipinas.png') }}"
+width="80">
 
 </td>
 

@@ -31,6 +31,7 @@ class ProjectEstimatePhoto extends Model
     public function typeLabel(): string
     {
         return match ($this->type) {
+            'before' => '📷 Before',
             'receipt' => '🧾 Receipt',
             'work_done' => '🛠️ Work Done',
             default => '📎 Other',

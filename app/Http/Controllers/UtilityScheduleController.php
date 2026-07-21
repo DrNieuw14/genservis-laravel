@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobRequest;
+use App\Models\LeaveRequest;
 use App\Models\Notification;
 use App\Models\Personnel;
 use App\Models\UtilitySchedule;
@@ -145,6 +146,17 @@ class UtilityScheduleController extends Controller
             ? 'Schedule entry added.'
             : "Schedule added for {$count} of {$totalDays} day(s)"
                 . ($skipped > 0 ? " — {$skipped} already scheduled and skipped" : '') . '.';
+
+        // Informational only — doesn't block the schedule from being
+        // created, same "flag it, don't stop the user" approach as the
+        // overtime detection on check-out. Mark decides what to do next.
+        $leaveConflictDays = $createdEntries->filter(
+            fn ($entry) => LeaveRequest::hasApprovedLeaveOn($entry->personnel_id, $entry->schedule_date)
+        )->count();
+
+        if ($leaveConflictDays > 0) {
+            $message .= " ⚠️ {$leaveConflictDays} of those day(s) overlap this person's approved leave.";
+        }
 
         return back()->with('success', $message);
     }
@@ -315,17 +327,9 @@ class UtilityScheduleController extends Controller
 
         $this->authorizeOwnEntry($entry);
 
-        if ($entry->schedule_date->isFuture()) {
-            return back()->with('error', 'You can only check in once your scheduled date arrives (' . $entry->schedule_date->format('M d, Y') . ').');
-        }
+        $result = $entry->performCheckIn();
 
-        if ($entry->time_in) {
-            return back()->with('error', 'You already checked in for this schedule.');
-        }
-
-        $entry->update(['time_in' => now()]);
-
-        return back()->with('success', 'Checked in at ' . now()->format('g:i A') . '.');
+        return back()->with($result['success'] ? 'success' : 'error', $result['message']);
     }
 
     public function checkOut(Request $request, $id)
@@ -334,30 +338,13 @@ class UtilityScheduleController extends Controller
 
         $this->authorizeOwnEntry($entry);
 
-        if (!$entry->time_in) {
-            return back()->with('error', 'Check in first before checking out.');
-        }
-
-        if ($entry->time_out) {
-            return back()->with('error', 'You already checked out for this schedule.');
-        }
-
         $validated = $request->validate([
             'overtime_reason' => 'nullable|string|max:255',
         ]);
 
-        $entry->time_out = now();
-        $entry->overtime_minutes = $entry->computeOvertimeMinutes();
-        $entry->overtime_reason = $entry->overtime_minutes > 0 ? ($validated['overtime_reason'] ?? null) : null;
-        $entry->save();
+        $result = $entry->performCheckOut($validated['overtime_reason'] ?? null);
 
-        $message = 'Checked out at ' . now()->format('g:i A') . '.';
-
-        if ($entry->overtime_minutes > 0) {
-            $message .= ' (' . $entry->overtime_minutes . ' min overtime recorded)';
-        }
-
-        return back()->with('success', $message);
+        return back()->with($result['success'] ? 'success' : 'error', $result['message']);
     }
 
     private function authorizeOwnEntry(UtilitySchedule $entry): void
@@ -418,6 +405,7 @@ class UtilityScheduleController extends Controller
             'lateCount' => $statusCounts->get('late', 0),
             'noShowCount' => $statusCounts->get('no_show', 0),
             'incompleteCount' => $statusCounts->get('incomplete', 0),
+            'onLeaveCount' => $statusCounts->get('on_leave', 0),
             'totalOvertimeMinutes' => $entries->sum('overtime_minutes'),
         ];
     }

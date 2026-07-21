@@ -99,10 +99,10 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {{-- Employment Type --}}
+                    {{-- Employment Status --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Employment Type
+                            Employment Status
                         </label>
 
                         <select
@@ -111,9 +111,21 @@
                             class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
                             required>
 
-                            <option selected disabled>Select Employment Type</option>
+                            <option selected disabled>Select Employment Status</option>
 
-                            @foreach($employmentTypes as $type)
+                            @php $plantillaTypes = $employmentTypes->filter(fn($t) => str_starts_with($t->name, 'Plantilla')); @endphp
+
+                            @if($plantillaTypes->isNotEmpty())
+                                <optgroup label="Plantilla">
+                                    @foreach($plantillaTypes as $type)
+                                        <option value="{{ $type->id }}">
+                                            {{ str_contains($type->name, 'Temporary') ? 'Temporary' : 'Regular' }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endif
+
+                            @foreach($employmentTypes->reject(fn($t) => str_starts_with($t->name, 'Plantilla')) as $type)
                                 <option value="{{ $type->id }}">
                                     {{ $type->name }}
                                 </option>
@@ -169,7 +181,7 @@
                             required>
 
                             <option value="">
-                                Select Employment Type First
+                                Select Employment Status First
                             </option>
 
                         </select>

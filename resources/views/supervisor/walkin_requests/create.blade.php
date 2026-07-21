@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
 
@@ -7,7 +7,7 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <h2 class="text-3xl font-bold text-gray-800">
-                📦 Walk-In Material Issuance
+                ðŸ“¦ Walk-In Material Issuance
             </h2>
 
             <p class="text-gray-500 mt-1">
@@ -53,7 +53,7 @@
         <div class="border border-blue-200 bg-blue-50 rounded-xl p-5 mb-6">
 
             <h3 class="text-lg font-semibold text-blue-700 mb-4">
-                🏢 Source & Destination
+                ðŸ¢ Source & Destination
             </h3>
 
             <div class="grid grid-cols-2 gap-6">
@@ -89,7 +89,7 @@
         <div class="border rounded-lg p-5 mb-6 bg-gray-50">
 
     <h3 class="text-lg font-semibold text-green-700 mb-4">
-        📝 Issuance Information
+        ðŸ“ Issuance Information
     </h3>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -104,7 +104,7 @@
                     type="button"
                     onclick="openQuickAddModal()"
                     class="text-sm text-blue-600 hover:text-blue-800 font-semibold">
-                    ➕ Add New Employee
+                    âž• Add New Employee
                 </button>
             </div>
 
@@ -201,7 +201,7 @@
                         required>
 
                         <option value="">
-                            🔍 Click to search materials...
+                            ðŸ” Click to search materials...
                         </option>
 
                     </select>
@@ -245,7 +245,7 @@
         onclick="addRow()"
         class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
 
-        ➕ Add Material
+        âž• Add Material
 
     </button>
 
@@ -259,14 +259,14 @@
                 onclick="showConfirmationModal()"
                 class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow">
 
-                📤 Issue Material
+                ðŸ“¤ Issue Material
 
             </button>
 
             <a href="{{ route('walkin.history') }}"
                class="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-lg shadow">
 
-                📋 View History
+                ðŸ“‹ View History
 
             </a>
 
@@ -293,7 +293,7 @@ function addRow()
                 name="material_id[]"
                 class="material-select w-full"
                 required>
-                <option value="">🔍 Click to search materials...</option>
+                <option value="">ðŸ” Click to search materials...</option>
             </select>
             <img class="material-thumb hidden w-12 h-12 object-cover rounded-lg border mt-1" alt="">
         </td>
@@ -596,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // ✅ MATERIAL SEARCH (Tom Select) — single source of truth, mirrors
+    // âœ… MATERIAL SEARCH (Tom Select) â€” single source of truth, mirrors
     // the Material Request form's picker so behavior stays consistent
     const allMaterials = @json($materialsForJs);
 
@@ -615,7 +615,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         tom.addOption({
             value: '',
-            text: '🔍 Click to search materials...'
+            text: 'ðŸ” Click to search materials...'
         });
 
         allMaterials.forEach(function (m) {
@@ -625,7 +625,7 @@ document.addEventListener('DOMContentLoaded', function () {
             let disabled = false;
 
             if (m.stock <= 0) {
-                text += ' — Out of Stock';
+                text += ' â€” Out of Stock';
                 disabled = true;
             }
 
@@ -693,7 +693,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('quickAddEmployeeId').value = '';
 
         document.getElementById('quickAddPosition').innerHTML =
-            '<option value="">Select Employment Type First</option>';
+            '<option value="">Select Employment Status First</option>';
 
         document.getElementById('quickAddError').classList.add('hidden');
 
@@ -725,7 +725,7 @@ document.addEventListener('DOMContentLoaded', function () {
             data.temporary_password;
 
         document.getElementById('copyCredentialsBtn').textContent =
-            '📋 Copy Credentials';
+            'ðŸ“‹ Copy Credentials';
 
         document.getElementById('employeeCreatedModal')
             .classList.remove('hidden');
@@ -757,10 +757,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const btn = document.getElementById('copyCredentialsBtn');
 
-            btn.textContent = '✔ Copied!';
+            btn.textContent = 'âœ” Copied!';
 
             setTimeout(() => {
-                btn.textContent = '📋 Copy Credentials';
+                btn.textContent = 'ðŸ“‹ Copy Credentials';
             }, 1500);
 
         });
@@ -785,7 +785,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!employmentTypeId) {
             employeeIdField.value = '';
             positionField.innerHTML =
-                '<option value="">Select Employment Type First</option>';
+                '<option value="">Select Employment Status First</option>';
             return;
         }
 
@@ -888,7 +888,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .finally(() => {
             submitBtn.disabled = false;
-            submitBtn.textContent = '✔ Create Employee';
+            submitBtn.textContent = 'âœ” Create Employee';
         });
 
     });
@@ -905,7 +905,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6">
 
         <h2 class="text-2xl font-bold text-yellow-600 mb-4">
-            ⚠ Confirm Material Issuance
+            âš  Confirm Material Issuance
         </h2>
 
         <div class="space-y-2 text-gray-700">
@@ -1063,12 +1063,12 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6">
 
         <h2 class="text-2xl font-bold text-gray-800 mb-1">
-            ➕ Add New Employee
+            âž• Add New Employee
         </h2>
 
         <p class="text-gray-500 mb-4">
             Not in the list? Create their employee record so this
-            issuance — and any future one — can be traced back to them.
+            issuance â€” and any future one â€” can be traced back to them.
         </p>
 
         <div
@@ -1115,7 +1115,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 <div>
                     <label class="block mb-1 font-semibold text-sm">
-                        Employment Type
+                        Employment Status
                     </label>
                     <select
                         id="quickAddEmploymentType"
@@ -1124,10 +1124,22 @@ document.addEventListener('DOMContentLoaded', function () {
                         required>
 
                         <option value="" selected disabled>
-                            Select Employment Type
+                            Select Employment Status
                         </option>
 
-                        @foreach($employmentTypes as $type)
+                        @php $quickAddPlantillaTypes = $employmentTypes->filter(fn($t) => str_starts_with($t->name, 'Plantilla')); @endphp
+
+                        @if($quickAddPlantillaTypes->isNotEmpty())
+                            <optgroup label="Plantilla">
+                                @foreach($quickAddPlantillaTypes as $type)
+                                    <option value="{{ $type->id }}">
+                                        {{ str_contains($type->name, 'Temporary') ? 'Temporary' : 'Regular' }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endif
+
+                        @foreach($employmentTypes->reject(fn($t) => str_starts_with($t->name, 'Plantilla')) as $type)
                             <option value="{{ $type->id }}">
                                 {{ $type->name }}
                             </option>
@@ -1181,7 +1193,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         required>
 
                         <option value="">
-                            Select Employment Type First
+                            Select Employment Status First
                         </option>
 
                     </select>
@@ -1202,7 +1214,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     id="quickAddSubmitBtn"
                     type="submit"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
-                    ✔ Create Employee
+                    âœ” Create Employee
                 </button>
 
             </div>
@@ -1270,11 +1282,11 @@ document.addEventListener('DOMContentLoaded', function () {
             type="button"
             onclick="copyCredentials()"
             class="text-sm text-blue-600 hover:text-blue-800 font-semibold mt-3 mb-5">
-            📋 Copy Credentials
+            ðŸ“‹ Copy Credentials
         </button>
 
         <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm rounded-lg p-3 mb-6 text-left">
-            ⚠ Share these credentials with the employee directly so they can log in and set their own password.
+            âš  Share these credentials with the employee directly so they can log in and set their own password.
         </div>
 
         <button

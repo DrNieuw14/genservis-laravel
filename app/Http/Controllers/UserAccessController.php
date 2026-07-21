@@ -78,11 +78,35 @@ class UserAccessController extends Controller
             ->sortBy('name')
             ->groupBy('module');
 
+        // Change History — every logged edit (role assignment, account
+        // status, Employee Master info) made TO this user's account,
+        // regardless of which admin/HR account made it.
+        $history = ActivityLog::with('user')
+            ->where('target_user_id', $user->id)
+            ->latest()
+            ->take(50)
+            ->get();
+
+        // Actions Performed — the flip side: edits THIS account made to
+        // other people's records (e.g. an HR officer changing someone
+        // else's position/role). Lets an HR/admin account's own page show
+        // their own audit trail, not just what happened to them.
+        $performedActions = ActivityLog::with('targetUser.personnel')
+            ->where('user_id', $user->id)
+            ->whereNotNull('target_user_id')
+            ->latest()
+            ->take(50)
+            ->get();
+
         return view('admin.user-access.show', [
 
             'user' => $user,
 
             'permissions' => $permissions,
+
+            'history' => $history,
+
+            'performedActions' => $performedActions,
 
         ]);
     }
@@ -108,6 +132,9 @@ class UserAccessController extends Controller
             'additional_role_ids.*' => 'exists:roles,id',
         ]);
 
+        $oldRoleName = $user->systemRole->name ?? 'None';
+        $oldAdditionalNames = $user->additionalRoles->pluck('name')->sort()->values();
+
         $user->update([
             'role_id' => $validated['role_id'],
         ]);
@@ -121,7 +148,29 @@ class UserAccessController extends Controller
 
         $user->additionalRoles()->sync($additionalRoleIds);
 
-        // TODO: Add Activity Log
+        $newRoleName = Role::find($validated['role_id'])->name ?? 'None';
+        $newAdditionalNames = Role::whereIn('id', $additionalRoleIds)->pluck('name')->sort()->values();
+
+        $changes = [];
+
+        if ($oldRoleName !== $newRoleName) {
+            $changes[] = "Primary Role: \"{$oldRoleName}\" \u{2192} \"{$newRoleName}\"";
+        }
+
+        if ($oldAdditionalNames->join(',') !== $newAdditionalNames->join(',')) {
+            $old = $oldAdditionalNames->isEmpty() ? 'None' : $oldAdditionalNames->join(', ');
+            $new = $newAdditionalNames->isEmpty() ? 'None' : $newAdditionalNames->join(', ');
+            $changes[] = "Additional Roles: \"{$old}\" \u{2192} \"{$new}\"";
+        }
+
+        if (!empty($changes)) {
+            ActivityLogger::log(
+                'User Access',
+                'Updated Roles',
+                'Updated roles for ' . (optional($user->personnel)->fullname ?? $user->name) . ': ' . implode('; ', $changes),
+                $user->id
+            );
+        }
 
         return redirect()
             ->route('admin.user-access.show', $user)
@@ -140,11 +189,21 @@ class UserAccessController extends Controller
                 ->with('error', 'This user must complete onboarding before the account can be activated.');
         }
 
+        $oldStatus = $user->status;
+
         $user->update([
             'status' => $validated['status'],
         ]);
 
-        // TODO: Add Activity Log
+        if ($oldStatus !== $validated['status']) {
+            ActivityLogger::log(
+                'User Access',
+                'Updated Account Status',
+                'Changed account status for ' . (optional($user->personnel)->fullname ?? $user->name)
+                    . ": \"{$oldStatus}\" \u{2192} \"{$validated['status']}\"",
+                $user->id
+            );
+        }
 
         return redirect()
             ->route('admin.user-access.show', $user)

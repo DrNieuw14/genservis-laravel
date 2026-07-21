@@ -100,7 +100,13 @@
 
                             @if(!$entry->time_in)
 
-                                @if($entry->schedule_date->isFuture())
+                                @if($status === 'on_leave')
+
+                                    <div class="text-xs text-purple-500 mt-1">
+                                        🌴 Approved leave — no check-in needed
+                                    </div>
+
+                                @elseif($entry->schedule_date->isFuture())
 
                                     <div class="text-xs text-gray-400 mt-1">
                                         🔒 Opens {{ $entry->schedule_date->format('M d, Y') }}

@@ -9,6 +9,7 @@ class Position extends Model
     protected $fillable = [
         'position_name',
         'position_code',
+        'sort_order',
         'description',
         'is_active',
     ];

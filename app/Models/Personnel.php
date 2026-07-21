@@ -29,6 +29,7 @@ class Personnel extends Model
         'assigned_area',
         'status',
         'user_id',
+        'is_utility_staff',
     ];
 
     protected $attributes = [
@@ -60,20 +61,22 @@ class Personnel extends Model
     }
 
     /**
-     * Utility & Maintenance Staff pool — Utility Personnel employment type,
-     * or anyone in an electrical/maintenance position. Shared by
-     * EmployeeController::utilityStaff(), JobRequestController::assignForm(),
-     * and UtilityScheduleController so the pool's definition only lives in
-     * one place.
+     * Utility & Maintenance Staff pool — an explicit, HR-edit-proof flag
+     * (`is_utility_staff`), toggled by whoever holds manage-utility-schedule
+     * (i.e. Mark). Previously derived by matching position_name against
+     * "Utility"/"Maintenance"/etc, but that silently broke the moment HR
+     * relabeled someone's official designation (e.g. "Utility Worker" ->
+     * "Administrative Aide I" during a system role/Employment Status
+     * cleanup) even though they still work under Mark for attendance
+     * purposes — position/employment type are HR's concern, this flag is
+     * Mark's own call and stays put regardless of what HR does elsewhere.
+     * Shared by EmployeeController::utilityStaff(),
+     * JobRequestController::assignForm(), and UtilityScheduleController so
+     * the pool's definition only lives in one place.
      */
     public function scopeUtilityStaff($query)
     {
-        return $query->where(function ($q) {
-            $q->whereHas('employmentType', fn ($eq) => $eq->where('name', 'Utility Personnel'))
-                ->orWhereHas('positionRecord', fn ($pq) => $pq
-                    ->where('position_name', 'like', '%lectric%')
-                    ->orWhere('position_name', 'like', '%aintenance%'));
-        });
+        return $query->where('is_utility_staff', true);
     }
 
     /**
@@ -106,6 +109,30 @@ class Personnel extends Model
             EmployeeProfile::class,
             'personnel_id'
         );
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        return $this->profile?->photo_url;
+    }
+
+    // "SURNAME, Given Names" for official documents (e.g. the DTR) that
+    // expect that order — fullname is stored as one plain string (no
+    // separate surname/given-name columns), so this assumes the last space-
+    // separated word is the surname. Holds for every real name in this
+    // system so far (e.g. "Jenny Beb F. Espineli" -> "Espineli, Jenny Beb F."),
+    // but flag it if a compound surname ever needs splitting differently.
+    public function surnameFirstName(): string
+    {
+        $parts = explode(' ', trim($this->fullname));
+
+        if (count($parts) < 2) {
+            return $this->fullname;
+        }
+
+        $surname = array_pop($parts);
+
+        return $surname . ', ' . implode(' ', $parts);
     }
 
     public function contact()

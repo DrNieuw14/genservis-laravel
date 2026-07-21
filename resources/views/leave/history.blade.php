@@ -5,14 +5,21 @@
 <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <!-- PAGE HEADER -->
-    <div class="mb-6">
-        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
-            📄 My Leave Requests
-        </h2>
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+                📄 My Leave Requests
+            </h2>
 
-        <p class="text-gray-500 mt-1 text-lg">
-            Track your submitted leave requests and approval status.
-        </p>
+            <p class="text-gray-500 mt-1 text-lg">
+                Track your submitted leave requests and approval status.
+            </p>
+        </div>
+
+        <a href="{{ route('leave.index') }}"
+           class="bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-3 rounded-lg shadow">
+            📝 Apply for Leave
+        </a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -53,6 +60,7 @@
 
             <thead class="bg-gray-100">
                 <tr>
+                    <th class="p-3 text-left text-gray-800">Type</th>
                     <th class="p-3 text-left text-gray-800">Reason</th>
                     <th class="p-3 text-left text-gray-800">Start Date</th>
                     <th class="p-3 text-left text-gray-800">End Date</th>
@@ -67,15 +75,19 @@
                     <tr class="hover:bg-gray-50 transition">
 
                         <td class="p-3">
+                            {{ $leave->leave_type }}
+                        </td>
+
+                        <td class="p-3">
                             {{ $leave->reason }}
                         </td>
 
                         <td class="p-3">
-                            {{ $leave->start_date }}
+                            {{ $leave->start_date->format('M d, Y') }}
                         </td>
 
                         <td class="p-3">
-                            {{ $leave->end_date }}
+                            {{ $leave->end_date->format('M d, Y') }}
                         </td>
 
                         <td class="p-4">
@@ -98,6 +110,10 @@
                                     ❌ Rejected
                                 </span>
 
+                                @if($leave->rejection_reason)
+                                    <div class="text-xs text-gray-500 mt-1 italic">"{{ $leave->rejection_reason }}"</div>
+                                @endif
+
                             @endif
 
                         </td>
@@ -113,7 +129,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="p-4 text-center text-gray-500">
+                        <td colspan="7" class="p-4 text-center text-gray-500">
                             No leave requests found.
                         </td>
                     </tr>

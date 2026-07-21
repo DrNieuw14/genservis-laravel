@@ -74,7 +74,7 @@
     </form>
 
     <!-- KPI CARDS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-6 mb-8">
 
         <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl shadow-lg text-white p-6">
             <div class="flex justify-between items-center">
@@ -113,6 +113,16 @@
                     <h2 class="text-5xl font-extrabold mt-3">{{ $incompleteCount }}</h2>
                 </div>
                 <div class="text-5xl opacity-70">⚠️</div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-2xl shadow-lg text-white p-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="uppercase tracking-wider text-sm text-indigo-100">On Leave</p>
+                    <h2 class="text-5xl font-extrabold mt-3">{{ $onLeaveCount }}</h2>
+                </div>
+                <div class="text-5xl opacity-70">🌴</div>
             </div>
         </div>
 
@@ -159,7 +169,21 @@
 
                         <td class="p-3">{{ $entry->schedule_date->format('M d, Y') }}</td>
 
-                        <td class="p-3">{{ $entry->personnel->fullname ?? '-' }}</td>
+                        <td class="p-3">
+                            <div class="flex items-center gap-2">
+
+                                @if($entry->personnel?->photo_url)
+                                    <img src="{{ $entry->personnel->photo_url }}" alt="" class="w-8 h-8 rounded-full object-cover border">
+                                @else
+                                    <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">
+                                        {{ strtoupper(substr($entry->personnel->fullname ?? '?', 0, 1)) }}
+                                    </span>
+                                @endif
+
+                                {{ $entry->personnel->fullname ?? '-' }}
+
+                            </div>
+                        </td>
 
                         <td class="p-3">{{ $entry->task }}</td>
 

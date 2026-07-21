@@ -12,6 +12,11 @@ use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\JobRequestController;
 use App\Http\Controllers\UtilityScheduleController;
 use App\Http\Controllers\ProjectEstimateController;
+use App\Http\Controllers\AttendanceKioskController;
+use App\Http\Controllers\BuildingInspectionController;
+use App\Http\Controllers\UtilityLeaveController;
+use App\Http\Controllers\UtilityDtrController;
+use App\Http\Controllers\EnergyConservationReportController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Supervisor\MaterialController;
@@ -29,6 +34,8 @@ use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanItemController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmployeeProfileController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PropertyInventoryController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeEducationController;
@@ -66,6 +73,24 @@ Route::middleware(['auth'])->group(function () {
     )->name('material-request.slip');
 
     Route::post('/material-request', [MaterialRequestController::class, 'store']);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| MY PROFILE — self-service, reachable by any logged-in account regardless
+| of role/permissions. Photo upload writes to the same EmployeeProfile
+| `photo` column the admin-side Employee Master already has (just wasn't
+| wired to any UI before).
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+
+    Route::patch('/profile/photo', [ProfileController::class, 'updatePhoto'])
+        ->name('profile.photo.update');
 
 });
 
@@ -253,8 +278,270 @@ Route::middleware(['auth', 'permission:manage-project-estimates'])->group(functi
 
 });
 
+/*
+|--------------------------------------------------------------------------
+| BUILDING INSPECTION CHECKLIST (PPLS-QF-03) — Mark's tool for logging
+| building inspections against the 6 fixed CvSU categories.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-building-inspections'])->group(function () {
+
+    Route::get('/building-inspections', [BuildingInspectionController::class, 'index'])
+        ->name('building-inspections.index');
+
+    Route::get('/building-inspections/create', [BuildingInspectionController::class, 'create'])
+        ->name('building-inspections.create');
+
+    Route::post('/building-inspections', [BuildingInspectionController::class, 'store'])
+        ->name('building-inspections.store');
+
+    // KEEP BEFORE {id} routes below — {id} would otherwise swallow these
+    // static paths as a route-model-binding lookup.
+    Route::get('/building-inspections/reports', [BuildingInspectionController::class, 'report'])
+        ->name('building-inspections.reports');
+
+    Route::get('/building-inspections/reports/print', [BuildingInspectionController::class, 'reportPrint'])
+        ->name('building-inspections.reports.print');
+
+    Route::get('/building-inspections/{id}', [BuildingInspectionController::class, 'show'])
+        ->name('building-inspections.show');
+
+    Route::get('/building-inspections/{id}/edit', [BuildingInspectionController::class, 'edit'])
+        ->name('building-inspections.edit');
+
+    Route::put('/building-inspections/{id}', [BuildingInspectionController::class, 'update'])
+        ->name('building-inspections.update');
+
+    Route::delete('/building-inspections/{id}', [BuildingInspectionController::class, 'destroy'])
+        ->name('building-inspections.destroy');
+
+    Route::get('/building-inspections/{id}/print', [BuildingInspectionController::class, 'print'])
+        ->name('building-inspections.print');
+
+    Route::put('/building-inspections/{id}/items/{itemId}', [BuildingInspectionController::class, 'updateItem'])
+        ->name('building-inspections.items.update');
+
+    Route::post('/building-inspections/{id}/items/{itemId}/photos', [BuildingInspectionController::class, 'uploadPhoto'])
+        ->name('building-inspections.items.photos.store');
+
+    Route::delete('/building-inspections/{id}/items/{itemId}/photos/{photoId}', [BuildingInspectionController::class, 'destroyPhoto'])
+        ->name('building-inspections.items.photos.destroy');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| UTILITY LEAVE REQUESTS — Mark approves leave for his own Utility &
+| Maintenance Staff pool. Separate from the general (legacy-role-gated)
+| Leave Management admin page — deliberately not touching that one.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:approve-utility-leave'])->group(function () {
+
+    Route::get('/utility-leave', [UtilityLeaveController::class, 'index'])
+        ->name('utility-leave.index');
+
+    Route::post('/utility-leave/{id}/approve', [UtilityLeaveController::class, 'approve'])
+        ->name('utility-leave.approve');
+
+    Route::post('/utility-leave/{id}/reject', [UtilityLeaveController::class, 'reject'])
+        ->name('utility-leave.reject');
+
+    Route::get('/utility-leave/reports', [UtilityLeaveController::class, 'report'])
+        ->name('utility-leave.reports');
+
+    Route::get('/utility-leave/reports/print', [UtilityLeaveController::class, 'reportPrint'])
+        ->name('utility-leave.reports.print');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| ROOM INVENTORY OF PROPERTY — Property Custodian's tracking of fixed/
+| durable property (furniture, ICT equipment, appliances) per room,
+| distinct from the consumable Materials Inventory module.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-property-inventory'])->group(function () {
+
+    Route::get('/property-inventory', [PropertyInventoryController::class, 'index'])
+        ->name('property-inventory.index');
+
+    Route::get('/property-inventory/create', [PropertyInventoryController::class, 'create'])
+        ->name('property-inventory.create');
+
+    Route::post('/property-inventory', [PropertyInventoryController::class, 'store'])
+        ->name('property-inventory.store');
+
+    Route::get('/property-inventory/{room}', [PropertyInventoryController::class, 'show'])
+        ->name('property-inventory.show');
+
+    Route::get('/property-inventory/{room}/edit', [PropertyInventoryController::class, 'edit'])
+        ->name('property-inventory.edit');
+
+    Route::put('/property-inventory/{room}', [PropertyInventoryController::class, 'update'])
+        ->name('property-inventory.update');
+
+    Route::delete('/property-inventory/{room}', [PropertyInventoryController::class, 'destroy'])
+        ->name('property-inventory.destroy');
+
+    Route::get('/property-inventory/{room}/print', [PropertyInventoryController::class, 'print'])
+        ->name('property-inventory.print');
+
+    Route::post('/property-inventory/{room}/items', [PropertyInventoryController::class, 'storeItem'])
+        ->name('property-inventory.items.store');
+
+    Route::put('/property-inventory/{room}/items/{item}', [PropertyInventoryController::class, 'updateItem'])
+        ->name('property-inventory.items.update');
+
+    Route::delete('/property-inventory/{room}/items/{item}', [PropertyInventoryController::class, 'destroyItem'])
+        ->name('property-inventory.items.destroy');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| UTILITY DTR (Daily Time Record) — a report, not a new data source. Pulls
+| together Attendance/Overtime (utility_schedules) and approved Leave into
+| one per-person, per-month record for Mark to hand to HR/Payroll.
+|--------------------------------------------------------------------------
+*/
+
+// Employee self-service — reviewing/verifying their OWN DTR, the first
+// stage of the Employee -> Mark -> HR pipeline. No permission gate (any
+// logged-in utility staff member may use it, checked inside the
+// controller); KEEP BEFORE the {personnelId} routes below, or "my" would
+// be swallowed as a personnelId route-model-binding lookup.
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/utility-dtr/my', [UtilityDtrController::class, 'myDtr'])
+        ->name('utility-dtr.my');
+
+    Route::post('/utility-dtr/my/verify', [UtilityDtrController::class, 'verify'])
+        ->name('utility-dtr.my.verify');
+
+});
+
+// HR's final approval stage.
+Route::middleware(['auth', 'permission:approve-dtr'])->group(function () {
+
+    Route::get('/utility-dtr/hr/pending', [UtilityDtrController::class, 'pendingApprovals'])
+        ->name('utility-dtr.hr.pending');
+
+    Route::post('/utility-dtr/{personnelId}/approve', [UtilityDtrController::class, 'approve'])
+        ->name('utility-dtr.approve');
+
+});
+
+Route::middleware(['auth', 'permission:manage-utility-schedule'])->group(function () {
+
+    Route::get('/utility-dtr', [UtilityDtrController::class, 'index'])
+        ->name('utility-dtr.index');
+
+    Route::get('/utility-dtr/{personnelId}', [UtilityDtrController::class, 'show'])
+        ->name('utility-dtr.show');
+
+    Route::get('/utility-dtr/{personnelId}/print', [UtilityDtrController::class, 'print'])
+        ->name('utility-dtr.print');
+
+    Route::post('/utility-dtr/{personnelId}/check', [UtilityDtrController::class, 'check'])
+        ->name('utility-dtr.check');
+
+});
+
+// Reject is shared by both the Mark stage and the HR stage — which one is
+// actually allowed depends on the DTR's current status, checked inside the
+// controller itself.
+Route::middleware(['auth', 'permission:manage-utility-schedule,approve-dtr'])->group(function () {
+
+    Route::post('/utility-dtr/{personnelId}/reject', [UtilityDtrController::class, 'reject'])
+        ->name('utility-dtr.reject');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| ENERGY CONSERVATION REPORT — monthly report to DOE Main Campus, built
+| from the real CvSU template. Energy Focal Person only (Mark, via his
+| additional role).
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-energy-reports'])->group(function () {
+
+    Route::get('/energy-reports', [EnergyConservationReportController::class, 'index'])
+        ->name('energy-reports.index');
+
+    Route::get('/energy-reports/create', [EnergyConservationReportController::class, 'create'])
+        ->name('energy-reports.create');
+
+    Route::post('/energy-reports', [EnergyConservationReportController::class, 'store'])
+        ->name('energy-reports.store');
+
+    Route::get('/energy-reports/{energyReport}', [EnergyConservationReportController::class, 'show'])
+        ->name('energy-reports.show');
+
+    Route::get('/energy-reports/{energyReport}/edit', [EnergyConservationReportController::class, 'edit'])
+        ->name('energy-reports.edit');
+
+    Route::put('/energy-reports/{energyReport}', [EnergyConservationReportController::class, 'update'])
+        ->name('energy-reports.update');
+
+    Route::put('/energy-reports/{energyReport}/consumption', [EnergyConservationReportController::class, 'updateConsumption'])
+        ->name('energy-reports.consumption.update');
+
+    Route::put('/energy-reports/{energyReport}/measures', [EnergyConservationReportController::class, 'updateMeasures'])
+        ->name('energy-reports.measures.update');
+
+    Route::delete('/energy-reports/{energyReport}', [EnergyConservationReportController::class, 'destroy'])
+        ->name('energy-reports.destroy');
+
+    Route::post('/energy-reports/{energyReport}/submit', [EnergyConservationReportController::class, 'markSubmitted'])
+        ->name('energy-reports.submit');
+
+    Route::get('/energy-reports/{energyReport}/print', [EnergyConservationReportController::class, 'print'])
+        ->name('energy-reports.print');
+
+    Route::post('/energy-reports/{energyReport}/activities', [EnergyConservationReportController::class, 'storeActivity'])
+        ->name('energy-reports.activities.store');
+
+    Route::put('/energy-reports/{energyReport}/activities/{activityId}', [EnergyConservationReportController::class, 'updateActivity'])
+        ->name('energy-reports.activities.update');
+
+    Route::delete('/energy-reports/{energyReport}/activities/{activityId}', [EnergyConservationReportController::class, 'destroyActivity'])
+        ->name('energy-reports.activities.destroy');
+
+    Route::post('/energy-reports/{energyReport}/issues', [EnergyConservationReportController::class, 'storeIssue'])
+        ->name('energy-reports.issues.store');
+
+    Route::put('/energy-reports/{energyReport}/issues/{issueId}', [EnergyConservationReportController::class, 'updateIssue'])
+        ->name('energy-reports.issues.update');
+
+    Route::delete('/energy-reports/{energyReport}/issues/{issueId}', [EnergyConservationReportController::class, 'destroyIssue'])
+        ->name('energy-reports.issues.destroy');
+
+    Route::post('/energy-reports/{energyReport}/attachments', [EnergyConservationReportController::class, 'uploadAttachment'])
+        ->name('energy-reports.attachments.store');
+
+    Route::delete('/energy-reports/{energyReport}/attachments/{attachment}', [EnergyConservationReportController::class, 'destroyAttachment'])
+        ->name('energy-reports.attachments.destroy');
+
+});
+
 // ── Landing page ──────────────────────────────────────────
 Route::get('/', fn() => view('welcome'))->name('home');
+
+// ── Utility Attendance Kiosk — deliberately public, no auth/guest
+// middleware. It's a shared scan station: identity comes from possessing
+// the employee's own QR code, not from a browser login session. ──
+Route::get('/attendance-kiosk', [AttendanceKioskController::class, 'index'])
+    ->name('attendance-kiosk.index');
+
+Route::post('/attendance-kiosk/scan', [AttendanceKioskController::class, 'scan'])
+    ->name('attendance-kiosk.scan');
 
 // ── Guest routes ──────────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -879,12 +1166,37 @@ Route::middleware(['auth'])->group(function () {
 
     });
 
+    Route::middleware('permission:edit-employees')->group(function () {
+
+        Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])
+            ->name('employees.edit');
+
+        Route::put('/employees/{employee}', [EmployeeController::class, 'update'])
+            ->name('employees.update');
+
+    });
+
     // KEEP BEFORE employees.show — {employee} below would otherwise swallow
     // this static path as a route-model-binding lookup.
     Route::middleware('permission:view-utility-staff')->group(function () {
 
         Route::get('/employees/utility-staff', [EmployeeController::class, 'utilityStaff'])
             ->name('employees.utility-staff');
+
+    });
+
+    // Managing WHO is in the pool is Mark's own call, not tied to HR's
+    // Employee Master edit-employees permission.
+    Route::middleware('permission:manage-utility-schedule')->group(function () {
+
+        Route::get('/employees/utility-staff/search', [EmployeeController::class, 'searchForUtilityStaff'])
+            ->name('employees.utility-staff.search');
+
+        Route::post('/employees/utility-staff', [EmployeeController::class, 'addUtilityStaff'])
+            ->name('employees.utility-staff.add');
+
+        Route::delete('/employees/utility-staff/{employee}', [EmployeeController::class, 'removeUtilityStaff'])
+            ->name('employees.utility-staff.remove');
 
     });
 
@@ -895,6 +1207,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/employees/{employee}', [EmployeeController::class, 'show'])
             ->name('employees.show');
+
+        Route::get('/employees/{employee}/id-card', [EmployeeController::class, 'idCard'])
+            ->name('employees.id-card');
 
     });
 
@@ -1294,6 +1609,12 @@ Route::middleware(['auth'])->group(function () {
         [UserApprovalController::class, 'getEmployeeId']
         )->name('admin.users.generate-employee-id');
 
+    });
+
+    // Shared "positions for this employment type" lookup — used by both
+    // Onboarding and the Employee Master edit form's cascading dropdown.
+    Route::middleware('permission:onboard-users,edit-employees')->group(function () {
+
         Route::get(
             '/admin/users/employment-type/{employmentType}/positions',
             [UserApprovalController::class, 'getPositions']
@@ -1301,13 +1622,17 @@ Route::middleware(['auth'])->group(function () {
 
     });
 
-    // Leave admin
-    Route::middleware('role:supervisor')->group(function () {
+    // Leave admin — general (all-employee) leave management, gated by the
+    // granular approve-leave-requests permission instead of the legacy
+    // role='supervisor' string (which locked this out for everyone but the
+    // one super admin account, same root-cause pattern fixed elsewhere in
+    // this app).
+    Route::middleware('permission:approve-leave-requests')->group(function () {
 
         Route::get('leave-requests',       [LeaveController::class, 'adminIndex'])->name('leave.requests');
-        Route::get('leave/admin',          [LeaveController::class, 'adminIndex']);
-        Route::post('leave/approve/{id}',  [LeaveController::class, 'approve']);
-        Route::post('leave/reject/{id}',   [LeaveController::class, 'reject']);
+        Route::get('leave/admin',          [LeaveController::class, 'adminIndex'])->name('leave.admin');
+        Route::post('leave/approve/{id}',  [LeaveController::class, 'approve'])->name('leave.approve');
+        Route::post('leave/reject/{id}',   [LeaveController::class, 'reject'])->name('leave.reject');
 
     });
           

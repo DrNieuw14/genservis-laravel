@@ -2,59 +2,68 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Display the user's own profile page (self-service — reachable by any
+     * logged-in account, not permission-gated). Photo upload is scoped to
+     * the linked Personnel record; accounts with no Personnel record (e.g.
+     * superadmin) simply don't get the upload widget.
      */
     public function edit(Request $request): View
     {
         return view('profile.edit', [
             'user' => $request->user(),
+            'personnel' => $request->user()->personnel,
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * Update the logged-in user's own profile photo, stored on their
+     * linked Personnel's EmployeeProfile (the same `photo` column already
+     * used by the admin-side Employee Master personal information page —
+     * reused, not duplicated). Mirrors MaterialController's image upload
+     * pattern (store/delete on disk('public'), optional remove checkbox).
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function updatePhoto(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $personnel = $request->user()->personnel;
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if (!$personnel) {
+            return Redirect::route('profile.edit')
+                ->with('error', 'No employee record is linked to this account.');
         }
 
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
+        $validated = $request->validate([
+            'photo' => 'nullable|image|max:2048',
+            'remove_photo' => 'nullable|boolean',
         ]);
 
-        $user = $request->user();
+        $photoPath = optional($personnel->profile)->photo;
 
-        Auth::logout();
+        if ($request->hasFile('photo')) {
 
-        $user->delete();
+            if ($photoPath) {
+                Storage::disk('public')->delete($photoPath);
+            }
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+            $photoPath = $request->file('photo')->store('profile_photos', 'public');
 
-        return Redirect::to('/');
+        } elseif ($request->boolean('remove_photo') && $photoPath) {
+
+            Storage::disk('public')->delete($photoPath);
+            $photoPath = null;
+
+        }
+
+        $personnel->profile()->updateOrCreate([], ['photo' => $photoPath]);
+
+        return Redirect::route('profile.edit')->with('status', 'photo-updated');
     }
 }

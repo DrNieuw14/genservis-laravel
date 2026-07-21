@@ -53,6 +53,9 @@ class UtilitySchedule extends Model
      * Trust-based attendance, computed from time_in/time_out rather than
      * stored — no one manually classifies a day as "late" or "no show".
      *
+     * - on_leave: personnel has APPROVED leave covering this date, never
+     *   checked in — checked before no_show/scheduled so an approved leave
+     *   day never misreads as a missed shift
      * - scheduled: day hasn't happened yet, no check-in
      * - no_show: day already passed, never checked in
      * - checked_in: checked in today (or a future-dated entry someone
@@ -66,6 +69,11 @@ class UtilitySchedule extends Model
         $isPastDay = $this->schedule_date->lt(Carbon::today());
 
         if (!$this->time_in) {
+
+            if (LeaveRequest::hasApprovedLeaveOn($this->personnel_id, $this->schedule_date)) {
+                return 'on_leave';
+            }
+
             return $isPastDay ? 'no_show' : 'scheduled';
         }
 
@@ -92,6 +100,7 @@ class UtilitySchedule extends Model
     public static function attendanceStatusLabel(string $status): array
     {
         return match ($status) {
+            'on_leave' => ['label' => '🌴 On Leave', 'class' => 'bg-purple-100 text-purple-700'],
             'scheduled' => ['label' => 'Scheduled', 'class' => 'bg-gray-100 text-gray-600'],
             'no_show' => ['label' => '❌ No Show', 'class' => 'bg-red-100 text-red-700'],
             'checked_in' => ['label' => '🟢 Checked In', 'class' => 'bg-blue-100 text-blue-700'],
@@ -121,5 +130,76 @@ class UtilitySchedule extends Model
         }
 
         return $graceDeadline->diffInMinutes($this->time_out);
+    }
+
+    /**
+     * Shared by the self-service My Schedule page AND the public attendance
+     * kiosk scanner — one source of truth for what "checking in" means,
+     * regardless of how the request got here. Returns ['success' => bool,
+     * 'message' => string] rather than throwing, since both callers just
+     * need to relay the outcome to the user.
+     */
+    public function performCheckIn(): array
+    {
+        if ($this->schedule_date->isFuture()) {
+            return [
+                'success' => false,
+                'message' => 'You can only check in once your scheduled date arrives (' . $this->schedule_date->format('M d, Y') . ').',
+            ];
+        }
+
+        if (LeaveRequest::hasApprovedLeaveOn($this->personnel_id, $this->schedule_date)) {
+            return ['success' => false, 'message' => 'You have approved leave on this date — check-in is not applicable.'];
+        }
+
+        if ($this->time_in) {
+            return ['success' => false, 'message' => 'Already checked in for this schedule.'];
+        }
+
+        $this->update(['time_in' => now()]);
+
+        return ['success' => true, 'message' => 'Checked in at ' . now()->format('g:i A') . '.'];
+    }
+
+    public function performCheckOut(?string $overtimeReason = null): array
+    {
+        if (!$this->time_in) {
+            return ['success' => false, 'message' => 'Check in first before checking out.'];
+        }
+
+        if ($this->time_out) {
+            return ['success' => false, 'message' => 'Already checked out for this schedule.'];
+        }
+
+        $this->time_out = now();
+        $this->overtime_minutes = $this->computeOvertimeMinutes();
+        $this->overtime_reason = $this->overtime_minutes > 0 ? $overtimeReason : null;
+        $this->save();
+
+        $message = 'Checked out at ' . now()->format('g:i A') . '.';
+
+        if ($this->overtime_minutes > 0) {
+            $message .= ' (' . $this->overtime_minutes . ' min overtime recorded)';
+        }
+
+        return ['success' => true, 'message' => $message];
+    }
+
+    // Reverts a check-out that was just performed by mistake (e.g. an
+    // accidental second QR scan on the attendance kiosk). Not time-limited
+    // server-side — the kiosk UI only offers this for a few seconds right
+    // after the check-out happens, which is the actual guardrail.
+    public function undoCheckOut(): array
+    {
+        if (!$this->time_out) {
+            return ['success' => false, 'message' => 'This entry is not checked out.'];
+        }
+
+        $this->time_out = null;
+        $this->overtime_minutes = null;
+        $this->overtime_reason = null;
+        $this->save();
+
+        return ['success' => true, 'message' => 'Check-out undone — you are checked in again.'];
     }
 }
