@@ -2,6 +2,8 @@
 
 @section('content')
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <div class="flex flex-wrap justify-between items-start gap-4 mb-6">
@@ -258,7 +260,13 @@
     </div>
 
     <!-- V. SUMMARY -->
-    <h3 class="font-bold text-lg mb-3">V. Summary of Accomplishments</h3>
+    <div class="flex items-center justify-between mb-3">
+        <h3 class="font-bold text-lg">V. Summary of Accomplishments</h3>
+        <button type="button" onclick="openSummaryModal()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg shadow">
+            ✏️ Edit
+        </button>
+    </div>
     <p class="text-gray-600 mb-8">{{ $report->summary_of_accomplishments ?: '-' }}</p>
 
     <!-- VI. ATTACHMENTS -->
@@ -327,7 +335,8 @@
             <div class="p-6 grid grid-cols-1 gap-4">
                 <div>
                     <label class="block mb-1 font-semibold text-sm">Date</label>
-                    <input type="date" name="activity_date" id="activityDate" class="w-full border rounded-lg p-3" required>
+                    <input type="text" name="activity_date" id="activityDate" readonly autocomplete="off"
+                           class="w-full border rounded-lg p-3 cursor-pointer bg-white" placeholder="Click to pick a date" required>
                 </div>
                 <div>
                     <label class="block mb-1 font-semibold text-sm">Activity</label>
@@ -344,7 +353,11 @@
             </div>
             <div class="border-t px-6 py-4 flex justify-end gap-2">
                 <button type="button" onclick="closeActivityModal()" class="bg-gray-200 hover:bg-gray-300 px-5 py-2 rounded-lg">Cancel</button>
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow">💾 Save</button>
+                <button type="submit" name="action" value="add_another" id="activitySaveAddAnother"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow">
+                    ➕ Save & Add Another
+                </button>
+                <button type="submit" name="action" value="done" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow">💾 Save</button>
             </div>
         </form>
     </div>
@@ -376,7 +389,11 @@
             </div>
             <div class="border-t px-6 py-4 flex justify-end gap-2">
                 <button type="button" onclick="closeIssueModal()" class="bg-gray-200 hover:bg-gray-300 px-5 py-2 rounded-lg">Cancel</button>
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow">💾 Save</button>
+                <button type="submit" name="action" value="add_another" id="issueSaveAddAnother"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow">
+                    ➕ Save & Add Another
+                </button>
+                <button type="submit" name="action" value="done" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow">💾 Save</button>
             </div>
         </form>
     </div>
@@ -392,11 +409,19 @@
         <form method="POST" action="{{ route('energy-reports.consumption.update', $report->id) }}">
             @csrf
             @method('PUT')
+            @php
+                $previousReport = $report->previousMonthReport();
+                $suggestedPrevBill = $report->previous_month_bill ?? optional($previousReport)->current_month_bill;
+                $suggestedPrevConsumption = $report->previous_month_consumption ?? optional($previousReport)->current_month_consumption;
+            @endphp
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block mb-1 font-semibold text-sm">Previous Month — Electricity Bill (₱)</label>
                     <input type="number" step="0.01" min="0" name="previous_month_bill"
-                           value="{{ $report->previous_month_bill }}" class="w-full border rounded-lg p-3">
+                           value="{{ $suggestedPrevBill }}" class="w-full border rounded-lg p-3">
+                    @if($report->previous_month_bill === null && $suggestedPrevBill !== null)
+                        <p class="text-xs text-gray-400 mt-1">Carried over from {{ $previousReport->monthLabel() }} — verify and save.</p>
+                    @endif
                 </div>
                 <div>
                     <label class="block mb-1 font-semibold text-sm">Current Month — Electricity Bill (₱)</label>
@@ -406,7 +431,10 @@
                 <div>
                     <label class="block mb-1 font-semibold text-sm">Previous Month — Consumption (kWh)</label>
                     <input type="number" step="0.01" min="0" name="previous_month_consumption"
-                           value="{{ $report->previous_month_consumption }}" class="w-full border rounded-lg p-3">
+                           value="{{ $suggestedPrevConsumption }}" class="w-full border rounded-lg p-3">
+                    @if($report->previous_month_consumption === null && $suggestedPrevConsumption !== null)
+                        <p class="text-xs text-gray-400 mt-1">Carried over from {{ $previousReport->monthLabel() }} — verify and save.</p>
+                    @endif
                 </div>
                 <div>
                     <label class="block mb-1 font-semibold text-sm">Current Month — Consumption (kWh)</label>
@@ -464,7 +492,37 @@
     </div>
 </div>
 
+<!-- SUMMARY MODAL -->
+<div id="summaryModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center border-b px-6 py-4">
+            <h2 class="text-xl font-bold">Edit Summary of Accomplishments</h2>
+            <button type="button" onclick="closeSummaryModal()" class="text-gray-500 hover:text-red-600 text-xl">✕</button>
+        </div>
+        <form method="POST" action="{{ route('energy-reports.summary.update', $report->id) }}">
+            @csrf
+            @method('PUT')
+            <div class="p-6">
+                <textarea name="summary_of_accomplishments" rows="6"
+                          class="w-full border rounded-lg p-3">{{ $report->summary_of_accomplishments }}</textarea>
+            </div>
+            <div class="border-t px-6 py-4 flex justify-end gap-2">
+                <button type="button" onclick="closeSummaryModal()" class="bg-gray-200 hover:bg-gray-300 px-5 py-2 rounded-lg">Cancel</button>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow">💾 Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <script>
+
+    const activityDatePicker = flatpickr('#activityDate', {
+        altInput: true,
+        altFormat: 'M j, Y',
+        dateFormat: 'Y-m-d',
+    });
 
     function openMeasuresModal() {
         document.getElementById('measuresModal').classList.remove('hidden');
@@ -472,6 +530,14 @@
 
     function closeMeasuresModal() {
         document.getElementById('measuresModal').classList.add('hidden');
+    }
+
+    function openSummaryModal() {
+        document.getElementById('summaryModal').classList.remove('hidden');
+    }
+
+    function closeSummaryModal() {
+        document.getElementById('summaryModal').classList.add('hidden');
     }
 
     function openConsumptionModal() {
@@ -484,18 +550,23 @@
 
     function openActivityModal(mode, id, date, activity, participants, remarks) {
         document.getElementById('activityModalTitle').innerText = mode === 'edit' ? 'Edit Activity' : 'Add Activity';
-        document.getElementById('activityDate').value = date ?? '';
+        activityDatePicker.setDate(date ?? null);
         document.getElementById('activityTitle').value = activity ?? '';
         document.getElementById('activityParticipants').value = participants ?? '';
         document.getElementById('activityRemarks').value = remarks ?? '';
 
         const form = document.getElementById('activityForm');
+        const saveAddAnotherBtn = document.getElementById('activitySaveAddAnother');
         if (mode === 'edit') {
             form.action = '{{ url('/energy-reports/'.$report->id.'/activities') }}/' + id;
             document.getElementById('activityFormMethod').value = 'PUT';
+            // Editing always targets one existing activity — "Add Another"
+            // only makes sense when creating new ones.
+            saveAddAnotherBtn.classList.add('hidden');
         } else {
             form.action = '{{ route('energy-reports.activities.store', $report->id) }}';
             document.getElementById('activityFormMethod').value = 'POST';
+            saveAddAnotherBtn.classList.remove('hidden');
         }
         document.getElementById('activityModal').classList.remove('hidden');
     }
@@ -511,12 +582,17 @@
         document.getElementById('issueRecommendation').value = recommendation ?? '';
 
         const form = document.getElementById('issueForm');
+        const saveAddAnotherBtn = document.getElementById('issueSaveAddAnother');
         if (mode === 'edit') {
             form.action = '{{ url('/energy-reports/'.$report->id.'/issues') }}/' + id;
             document.getElementById('issueFormMethod').value = 'PUT';
+            // Editing always targets one existing issue — "Add Another"
+            // only makes sense when creating new ones.
+            saveAddAnotherBtn.classList.add('hidden');
         } else {
             form.action = '{{ route('energy-reports.issues.store', $report->id) }}';
             document.getElementById('issueFormMethod').value = 'POST';
+            saveAddAnotherBtn.classList.remove('hidden');
         }
         document.getElementById('issueModal').classList.remove('hidden');
     }
@@ -524,6 +600,18 @@
     function closeIssueModal() {
         document.getElementById('issueModal').classList.add('hidden');
     }
+
+    @if(session('reopen_add_activity'))
+        document.addEventListener('DOMContentLoaded', function () {
+            openActivityModal('add');
+        });
+    @endif
+
+    @if(session('reopen_add_issue'))
+        document.addEventListener('DOMContentLoaded', function () {
+            openIssueModal('add');
+        });
+    @endif
 
 </script>
 

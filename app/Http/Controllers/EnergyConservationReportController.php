@@ -14,7 +14,27 @@ class EnergyConservationReportController extends Controller
     {
         $reports = EnergyConservationReport::orderByDesc('report_month')->paginate(12);
 
-        return view('energy_reports.index', compact('reports'));
+        // Unpaginated, chronological — feeds the trend chart and yearly totals,
+        // which need every report regardless of which page the table is on.
+        $allReports = EnergyConservationReport::orderBy('report_month')->get();
+
+        $chartData = $allReports->map(fn ($r) => [
+            'month' => $r->monthLabel(),
+            'bill' => $r->current_month_bill,
+            'consumption' => $r->current_month_consumption,
+        ])->values();
+
+        $yearlyTotals = $allReports
+            ->groupBy(fn ($r) => substr($r->report_month, 0, 4))
+            ->map(fn ($group, $year) => [
+                'year' => $year,
+                'total_bill' => $group->sum('current_month_bill'),
+                'total_consumption' => $group->sum('current_month_consumption'),
+            ])
+            ->sortKeysDesc()
+            ->values();
+
+        return view('energy_reports.index', compact('reports', 'chartData', 'yearlyTotals'));
     }
 
     public function create()
@@ -36,6 +56,16 @@ class EnergyConservationReportController extends Controller
         $validated['created_by'] = Auth::id();
 
         $report = EnergyConservationReport::create($validated);
+
+        // Carry last month's "current month" figures forward as this
+        // report's "previous month" figures, so the coordinator only ever
+        // has to type each month's numbers once.
+        if ($previous = $report->previousMonthReport()) {
+            $report->update([
+                'previous_month_bill' => $previous->current_month_bill,
+                'previous_month_consumption' => $previous->current_month_consumption,
+            ]);
+        }
 
         return redirect()
             ->route('energy-reports.show', $report->id)
@@ -107,6 +137,17 @@ class EnergyConservationReportController extends Controller
         return back()->with('success', 'Energy conservation measures updated.');
     }
 
+    public function updateSummary(Request $request, EnergyConservationReport $energyReport)
+    {
+        $validated = $request->validate([
+            'summary_of_accomplishments' => 'nullable|string',
+        ]);
+
+        $energyReport->update($validated);
+
+        return back()->with('success', 'Summary of accomplishments updated.');
+    }
+
     public function destroy(EnergyConservationReport $energyReport)
     {
         $energyReport->delete();
@@ -146,7 +187,16 @@ class EnergyConservationReportController extends Controller
 
         $energyReport->activities()->create($validated);
 
-        return back()->with('success', 'Activity added.');
+        $response = back()->with('success', 'Activity added.');
+
+        // "Save & Add Another" — flash a flag the show page reads to reopen
+        // the Add Activity modal automatically, same pattern as Project
+        // Estimate's item modal.
+        if ($request->input('action') === 'add_another') {
+            $response->with('reopen_add_activity', true);
+        }
+
+        return $response;
     }
 
     public function updateActivity(Request $request, EnergyConservationReport $energyReport, $activityId)
@@ -172,7 +222,15 @@ class EnergyConservationReportController extends Controller
 
         $energyReport->issues()->create($validated);
 
-        return back()->with('success', 'Issue added.');
+        $response = back()->with('success', 'Issue added.');
+
+        // "Save & Add Another" — same pattern as storeActivity()/Project
+        // Estimate's item modal.
+        if ($request->input('action') === 'add_another') {
+            $response->with('reopen_add_issue', true);
+        }
+
+        return $response;
     }
 
     public function updateIssue(Request $request, EnergyConservationReport $energyReport, $issueId)

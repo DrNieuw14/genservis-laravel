@@ -331,6 +331,37 @@ width="80">
 
 </div>
 
+@if($report->attachments->where('type', 'electric_bill')->isNotEmpty())
+
+    <div class="annex">
+
+        <h2 class="text-center">ANNEX — COPY OF MONTHLY ELECTRIC BILL</h2>
+        <p class="text-center">{{ $report->monthLabel() }} — {{ $report->campus }}</p>
+
+        <div class="photo-grid">
+
+            @foreach($report->attachments->where('type', 'electric_bill') as $bill)
+
+                <div class="photo-card">
+                    @if($bill->isImage())
+                        <img src="{{ $bill->url }}" alt="Copy of monthly electric bill">
+                    @else
+                        <p style="border:1px solid #000;padding:20px;background:#f5f5f5;">
+                            📎 {{ basename($bill->path) }}<br>
+                            <span class="photo-caption">Non-image file — see the uploaded attachment in the system.</span>
+                        </p>
+                    @endif
+                    <div class="photo-caption">{{ $bill->created_at->format('M d, Y') }} — {{ $bill->uploader->fullname ?? $bill->uploader->name ?? '-' }}</div>
+                </div>
+
+            @endforeach
+
+        </div>
+
+    </div>
+
+@endif
+
 @if($report->attachments->where('type', 'photo')->isNotEmpty())
 
     <div class="annex">

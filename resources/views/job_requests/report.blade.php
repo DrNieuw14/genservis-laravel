@@ -2,6 +2,8 @@
 
 @section('content')
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <div class="flex justify-between items-start mb-6">
@@ -33,16 +35,17 @@
     <!-- FILTERS -->
     <form method="GET" action="{{ route('job-requests.reports') }}" class="border rounded-lg p-5 bg-gray-50 mb-6">
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
 
             <div>
-                <label class="block mb-1 font-semibold text-sm">From</label>
-                <input type="date" name="date_from" value="{{ $dateFrom }}" class="w-full border rounded-lg p-3">
-            </div>
+                <label class="block mb-1 font-semibold text-sm">Date Range</label>
 
-            <div>
-                <label class="block mb-1 font-semibold text-sm">To</label>
-                <input type="date" name="date_to" value="{{ $dateTo }}" class="w-full border rounded-lg p-3">
+                <input type="text" id="date_range" readonly autocomplete="off"
+                    class="w-full border rounded-lg p-3 cursor-pointer bg-white"
+                    placeholder="Click to pick a date range">
+
+                <input type="hidden" name="date_from" id="date_from" value="{{ $dateFrom }}">
+                <input type="hidden" name="date_to" id="date_to" value="{{ $dateTo }}">
             </div>
 
             <div>
@@ -201,5 +204,43 @@
     </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+
+    function toISODate(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    const existingFrom = @json($dateFrom ?: null);
+    const existingTo = @json($dateTo ?: null);
+
+    flatpickr("#date_range", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "M j, Y",
+        defaultDate: existingFrom && existingTo ? [existingFrom, existingTo] : (existingFrom ? [existingFrom] : null),
+
+        onChange: function (selectedDates) {
+
+            if (selectedDates.length === 1) {
+                const iso = toISODate(selectedDates[0]);
+                document.getElementById('date_from').value = iso;
+                document.getElementById('date_to').value = iso;
+            }
+
+            if (selectedDates.length === 2) {
+                document.getElementById('date_from').value = toISODate(selectedDates[0]);
+                document.getElementById('date_to').value = toISODate(selectedDates[1]);
+            }
+        }
+    });
+
+</script>
 
 @endsection

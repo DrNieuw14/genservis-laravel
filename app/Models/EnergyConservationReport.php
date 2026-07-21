@@ -101,4 +101,14 @@ class EnergyConservationReport extends Model
     {
         return \Illuminate\Support\Carbon::parse($this->report_month . '-01')->format('F Y');
     }
+
+    // The report for the calendar month right before this one, if it
+    // exists — used to carry "current month" figures forward as next
+    // month's "previous month" figures instead of re-typing them.
+    public function previousMonthReport(): ?self
+    {
+        $prevMonth = \Illuminate\Support\Carbon::parse($this->report_month . '-01')->subMonth()->format('Y-m');
+
+        return static::where('report_month', $prevMonth)->first();
+    }
 }

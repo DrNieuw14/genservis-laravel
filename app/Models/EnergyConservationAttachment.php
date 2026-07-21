@@ -36,4 +36,9 @@ class EnergyConservationAttachment extends Model
             default => '📎 Other Supporting Document',
         };
     }
+
+    public function isImage(): bool
+    {
+        return in_array(strtolower(pathinfo($this->path, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+    }
 }

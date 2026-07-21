@@ -496,6 +496,9 @@ Route::middleware(['auth', 'permission:manage-energy-reports'])->group(function 
     Route::put('/energy-reports/{energyReport}/measures', [EnergyConservationReportController::class, 'updateMeasures'])
         ->name('energy-reports.measures.update');
 
+    Route::put('/energy-reports/{energyReport}/summary', [EnergyConservationReportController::class, 'updateSummary'])
+        ->name('energy-reports.summary.update');
+
     Route::delete('/energy-reports/{energyReport}', [EnergyConservationReportController::class, 'destroy'])
         ->name('energy-reports.destroy');
 

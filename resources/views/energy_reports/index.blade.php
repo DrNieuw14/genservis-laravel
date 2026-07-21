@@ -31,6 +31,27 @@
         <div class="bg-red-500 text-white p-4 mb-6 rounded-lg text-lg">{{ session('error') }}</div>
     @endif
 
+    <!-- YEARLY TOTALS -->
+    @if($yearlyTotals->isNotEmpty())
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            @foreach($yearlyTotals as $yt)
+                <div class="border rounded-lg p-5 bg-gray-50">
+                    <p class="text-sm text-gray-500 font-semibold">{{ $yt['year'] }} Total</p>
+                    <p class="text-2xl font-bold text-gray-800">₱{{ number_format($yt['total_bill'], 2) }}</p>
+                    <p class="text-gray-500">{{ number_format($yt['total_consumption'], 2) }} kWh consumed</p>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
+    <!-- CONSUMPTION TREND CHART -->
+    @if($chartData->count() > 0)
+        <div class="border rounded-lg p-5 mb-6">
+            <h3 class="font-bold text-lg mb-3">📊 Consumption Trend</h3>
+            <canvas id="consumptionTrendChart" height="90"></canvas>
+        </div>
+    @endif
+
     <div class="overflow-x-auto border rounded-lg">
 
         <table class="w-full">
@@ -41,6 +62,7 @@
                     <th class="p-3 text-left">Campus</th>
                     <th class="p-3 text-center">Electricity Bill (₱)</th>
                     <th class="p-3 text-center">Consumption (kWh)</th>
+                    <th class="p-3 text-center">vs Previous Month</th>
                     <th class="p-3 text-center">Status</th>
                     <th class="p-3 text-center">Action</th>
                 </tr>
@@ -50,11 +72,28 @@
 
                 @forelse($reports as $report)
 
+                    @php $consDiff = $report->consumptionDifference(); @endphp
+
                     <tr class="hover:bg-gray-50">
                         <td class="p-3 font-semibold">{{ $report->monthLabel() }}</td>
                         <td class="p-3">{{ $report->campus }}</td>
                         <td class="p-3 text-center">{{ $report->current_month_bill !== null ? number_format($report->current_month_bill, 2) : '-' }}</td>
                         <td class="p-3 text-center">{{ $report->current_month_consumption !== null ? number_format($report->current_month_consumption, 2) : '-' }}</td>
+                        <td class="p-3 text-center">
+                            @if($consDiff === null)
+                                <span class="text-gray-400 text-xs">-</span>
+                            @elseif($consDiff < 0)
+                                <span class="text-xs px-2 py-1 rounded-full font-semibold bg-green-100 text-green-700">
+                                    🔻 Saved {{ number_format(abs($consDiff), 2) }} kWh ({{ $report->consumptionPercentChange() }}%)
+                                </span>
+                            @elseif($consDiff > 0)
+                                <span class="text-xs px-2 py-1 rounded-full font-semibold bg-red-100 text-red-700">
+                                    🔺 +{{ number_format($consDiff, 2) }} kWh ({{ $report->consumptionPercentChange() }}%)
+                                </span>
+                            @else
+                                <span class="text-xs px-2 py-1 rounded-full font-semibold bg-gray-100 text-gray-600">No change</span>
+                            @endif
+                        </td>
                         <td class="p-3 text-center">
                             <span class="text-xs px-2 py-1 rounded-full font-semibold {{ $report->status === 'submitted' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
                                 {{ $report->status === 'submitted' ? 'Submitted' : 'Draft' }}
@@ -70,7 +109,7 @@
                 @empty
 
                     <tr>
-                        <td colspan="6" class="p-6 text-center text-gray-500">
+                        <td colspan="7" class="p-6 text-center text-gray-500">
                             No monthly reports yet. Click "New Monthly Report" to start one.
                         </td>
                     </tr>
@@ -88,5 +127,54 @@
     </div>
 
 </div>
+
+@if($chartData->count() > 0)
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script>
+        const trendData = @json($chartData);
+
+        new Chart(document.getElementById('consumptionTrendChart'), {
+            type: 'line',
+            data: {
+                labels: trendData.map(d => d.month),
+                datasets: [
+                    {
+                        label: 'Electricity Bill (₱)',
+                        data: trendData.map(d => d.bill),
+                        borderColor: '#16a34a',
+                        backgroundColor: '#16a34a',
+                        yAxisID: 'yBill',
+                        tension: 0.3,
+                    },
+                    {
+                        label: 'Consumption (kWh)',
+                        data: trendData.map(d => d.consumption),
+                        borderColor: '#2563eb',
+                        backgroundColor: '#2563eb',
+                        yAxisID: 'yConsumption',
+                        tension: 0.3,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    yBill: {
+                        type: 'linear',
+                        position: 'left',
+                        title: { display: true, text: '₱' },
+                    },
+                    yConsumption: {
+                        type: 'linear',
+                        position: 'right',
+                        title: { display: true, text: 'kWh' },
+                        grid: { drawOnChartArea: false },
+                    },
+                },
+            },
+        });
+    </script>
+@endif
 
 @endsection
