@@ -6,8 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class JobRequestPhoto extends Model
 {
+    const TYPES = [
+        'request_evidence' => '📷 Evidence Submitted with Request',
+        'work_done' => '🔧 Work Done Evidence',
+    ];
+
     protected $fillable = [
         'job_request_id',
+        'type',
         'path',
         'uploaded_by',
     ];
@@ -25,5 +31,10 @@ class JobRequestPhoto extends Model
     public function getUrlAttribute()
     {
         return asset('storage/' . $this->path);
+    }
+
+    public function typeLabel(): string
+    {
+        return self::TYPES[$this->type] ?? $this->type;
     }
 }

@@ -128,6 +128,30 @@ class WalkinRequestController extends Controller
         ]);
     }
 
+    // Same "quick-add without leaving the page" pattern as
+    // quickAddEmployee() above — for when the destination department
+    // genuinely isn't in the list yet.
+    public function quickAddDepartment(Request $request)
+    {
+        $validated = $request->validate([
+            'department_name' => 'required|string|max:255|unique:departments,department_name',
+            'department_code' => 'nullable|string|max:50',
+        ]);
+
+        $department = Department::create($validated);
+
+        ActivityLogger::log(
+            'Departments',
+            'Quick-Added Department',
+            'Created department "' . $department->department_name . '" via Walk-In Issuance.'
+        );
+
+        return response()->json([
+            'id' => $department->id,
+            'department_name' => $department->department_name,
+        ]);
+    }
+
     public function getEmployeeId($employmentTypeId)
     {
         return response()->json([

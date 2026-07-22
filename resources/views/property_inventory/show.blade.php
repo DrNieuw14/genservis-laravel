@@ -91,10 +91,18 @@
     <div class="flex items-center justify-between mb-3">
         <h3 class="font-bold text-lg">Property Items</h3>
 
-        <button type="button" onclick="openItemModal('add')"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg shadow">
-            ➕ Add Item
-        </button>
+        <div class="flex gap-2">
+            @if(auth()->user()->hasPermission('manage-property-issuance'))
+                <a href="{{ route('property-issuances.create') }}?room_id={{ $room->id }}"
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-lg shadow">
+                    🧾 Issue Property
+                </a>
+            @endif
+            <button type="button" onclick="openItemModal('add')"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg shadow">
+                ➕ Add Item
+            </button>
+        </div>
     </div>
 
     <div class="overflow-x-auto border rounded-lg">
@@ -136,7 +144,7 @@
 
                                 <button type="button"
                                     class="text-blue-600 hover:underline text-sm"
-                                    onclick='openItemModal("edit", {{ $item->id }}, {{ json_encode($item->property_name) }}, {{ json_encode($item->property_number) }}, {{ json_encode($item->description) }}, {{ $item->quantity }}, {{ $item->unit_value ?? "null" }}, {{ json_encode($item->date_acquired?->format("Y-m-d")) }}, {{ json_encode($item->condition) }}, {{ json_encode($item->remarks) }})'>
+                                    onclick='openItemModal("edit", {{ $item->id }}, {{ json_encode($item->property_name) }}, {{ json_encode($item->property_number) }}, {{ json_encode($item->description) }}, {{ $item->quantity }}, {{ $item->unit_value ?? "null" }}, {{ json_encode($item->date_acquired?->format("Y-m-d")) }}, {{ json_encode($item->condition) }}, {{ json_encode($item->remarks) }}, {{ json_encode($item->unit) }}, {{ json_encode($item->estimated_useful_life) }})'>
                                     ✏️ Edit
                                 </button>
 
@@ -203,9 +211,9 @@
                     </div>
 
                     <div>
-                        <label class="block mb-1 font-semibold text-sm">Quantity</label>
-                        <input type="number" name="quantity" id="itemQuantity" min="1" value="1"
-                            class="w-full border rounded-lg p-3" required>
+                        <label class="block mb-1 font-semibold text-sm">Unit</label>
+                        <input type="text" name="unit" id="itemUnit" placeholder="e.g. unit, pc, set"
+                            class="w-full border rounded-lg p-3">
                     </div>
 
                 </div>
@@ -213,14 +221,30 @@
                 <div class="grid grid-cols-2 gap-4">
 
                     <div>
+                        <label class="block mb-1 font-semibold text-sm">Quantity</label>
+                        <input type="number" name="quantity" id="itemQuantity" min="1" value="1"
+                            class="w-full border rounded-lg p-3" required>
+                    </div>
+
+                    <div>
                         <label class="block mb-1 font-semibold text-sm">Unit Value (₱)</label>
                         <input type="number" name="unit_value" id="itemUnitValue" step="0.01" min="0"
                             class="w-full border rounded-lg p-3">
                     </div>
 
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+
                     <div>
                         <label class="block mb-1 font-semibold text-sm">Date Acquired</label>
                         <input type="date" name="date_acquired" id="itemDateAcquired"
+                            class="w-full border rounded-lg p-3">
+                    </div>
+
+                    <div>
+                        <label class="block mb-1 font-semibold text-sm">Estimated Useful Life</label>
+                        <input type="text" name="estimated_useful_life" id="itemUsefulLife" placeholder="e.g. 5 years"
                             class="w-full border rounded-lg p-3">
                     </div>
 
@@ -269,7 +293,7 @@
 
 <script>
 
-    function openItemModal(mode, itemId, propertyName, propertyNumber, description, quantity, unitValue, dateAcquired, condition, remarks) {
+    function openItemModal(mode, itemId, propertyName, propertyNumber, description, quantity, unitValue, dateAcquired, condition, remarks, unit, estimatedUsefulLife) {
 
         document.getElementById('itemModalTitle').innerText = mode === 'edit' ? 'Edit Item' : 'Add Item';
         document.getElementById('itemPropertyName').value = propertyName ?? '';
@@ -280,6 +304,8 @@
         document.getElementById('itemDateAcquired').value = dateAcquired ?? '';
         document.getElementById('itemCondition').value = condition ?? 'Good';
         document.getElementById('itemRemarks').value = remarks ?? '';
+        document.getElementById('itemUnit').value = unit ?? '';
+        document.getElementById('itemUsefulLife').value = estimatedUsefulLife ?? '';
 
         const form = document.getElementById('itemForm');
         const saveAddAnotherBtn = document.getElementById('itemSaveAddAnother');

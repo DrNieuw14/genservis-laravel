@@ -456,6 +456,29 @@ class MaterialController extends Controller
             ->with('success', 'Material updated successfully!');
     }
 
+    // 📷 Quick image upload — for a material with no photo yet, straight
+    // from the inventory list, without going through the full edit form.
+    public function quickUpdateImage(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'image' => 'required|image|max:2048',
+        ]);
+
+        $material = Material::findOrFail($id);
+
+        if ($material->image) {
+            Storage::disk('public')->delete($material->image);
+        }
+
+        $path = $validated['image']->store('materials', 'public');
+
+        $material->update(['image' => $path]);
+
+        return response()->json([
+            'image_url' => $material->fresh()->image_url,
+        ]);
+    }
+
     // 🏢 Bulk Assign Department
     public function bulkAssignDepartment(Request $request)
     {

@@ -294,22 +294,34 @@ width="80">
 
     <div class="annex">
 
-        <h2 class="text-center">ANNEX — PHOTO EVIDENCE OF WORK</h2>
+        <h2 class="text-center">ANNEX — PHOTO EVIDENCE</h2>
         <p class="text-center">{{ $jobRequest->reference_no }} — {{ $jobRequest->nature_of_request }}</p>
 
-        <div class="photo-grid">
+        @foreach(\App\Models\JobRequestPhoto::TYPES as $type => $label)
 
-            @foreach($jobRequest->photos as $photo)
+            @php $typePhotos = $jobRequest->photos->where('type', $type); @endphp
 
-                <div class="photo-card">
-                    <img src="{{ $photo->url }}" alt="Evidence photo">
-                    <div class="photo-caption">{{ $photo->created_at->format('M d, Y g:i A') }}</div>
-                    <div class="photo-uploader">{{ $photo->uploader->fullname ?? $photo->uploader->name ?? '-' }}</div>
+            @if($typePhotos->isNotEmpty())
+
+                <h3 style="margin-top:16px;">{{ $label }}</h3>
+
+                <div class="photo-grid">
+
+                    @foreach($typePhotos as $photo)
+
+                        <div class="photo-card">
+                            <img src="{{ $photo->url }}" alt="Evidence photo">
+                            <div class="photo-caption">{{ $photo->created_at->format('M d, Y g:i A') }}</div>
+                            <div class="photo-uploader">{{ $photo->uploader->fullname ?? $photo->uploader->name ?? '-' }}</div>
+                        </div>
+
+                    @endforeach
+
                 </div>
 
-            @endforeach
+            @endif
 
-        </div>
+        @endforeach
 
     </div>
 

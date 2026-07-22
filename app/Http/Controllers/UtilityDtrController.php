@@ -30,9 +30,7 @@ class UtilityDtrController extends Controller
 
     public function show(Request $request, $personnelId)
     {
-        if (!Auth::user()->hasPermission('manage-utility-schedule')) {
-            abort(403);
-        }
+        $this->authorizeDtrManager();
 
         $personnel = Personnel::utilityStaff()->findOrFail($personnelId);
 
@@ -41,13 +39,49 @@ class UtilityDtrController extends Controller
 
     public function print(Request $request, $personnelId)
     {
-        if (!Auth::user()->hasPermission('manage-utility-schedule')) {
-            abort(403);
-        }
+        $this->authorizeDtrManager();
 
         $personnel = Personnel::utilityStaff()->findOrFail($personnelId);
 
         return view('utility_dtr.print', $this->dtrDataForPersonnel($request, $personnel));
+    }
+
+    // GSO (manage-utility-schedule) or HR (approve-dtr) correcting a day's
+    // credited hours — e.g. a forgot-to-clock-out entry that raw-computes
+    // to an implausible 12+ hrs, or hand-adjusting a late/undertime day.
+    // An empty value clears the override and reverts to the auto-computed
+    // default rather than storing a blank/zero.
+    public function updateCreditedHours(Request $request, $personnelId)
+    {
+        $this->authorizeDtrManager();
+
+        $personnel = Personnel::utilityStaff()->findOrFail($personnelId);
+
+        $validated = $request->validate([
+            'schedule_date' => 'required|date',
+            'credited_hours' => 'nullable|numeric|min:0|max:24',
+        ]);
+
+        $entry = UtilitySchedule::where('personnel_id', $personnel->id)
+            ->whereDate('schedule_date', $validated['schedule_date'])
+            ->first();
+
+        if (!$entry) {
+            return back()->with('error', 'No attendance entry exists for that date to edit.');
+        }
+
+        $entry->update(['credited_hours' => $validated['credited_hours'] ?? null]);
+
+        return back()->with('success', 'Credited hours updated for ' . \Illuminate\Support\Carbon::parse($validated['schedule_date'])->format('M d, Y') . '.');
+    }
+
+    private function authorizeDtrManager(): void
+    {
+        $user = Auth::user();
+
+        if (!$user->hasPermission('manage-utility-schedule') && !$user->hasPermission('approve-dtr')) {
+            abort(403);
+        }
     }
 
     /**
@@ -341,15 +375,46 @@ class UtilityDtrController extends Controller
             // instead of blank cells — the day name for a genuinely
             // unscheduled day (matches the reference DTR: "FRIDAY",
             // "SATURDAY", "SUNDAY" for off days), or the leave type for an
-            // approved-leave day.
+            // approved-leave day. A day with NO schedule entry at all can
+            // still be an approved-leave day (leave filed for a date that
+            // was never scheduled to begin with) — checked directly here
+            // rather than only via $entry->attendanceStatus(), which can
+            // only detect on_leave when an entry actually exists.
             $rowLabel = null;
 
             if (!$entry) {
-                $rowLabel = strtoupper($date->format('l'));
+
+                $leave = $approvedLeaves->first(fn ($l) => $date->between($l->start_date, $l->end_date));
+
+                if ($leave) {
+                    $status = 'on_leave';
+                    $rowLabel = strtoupper($leave->leave_type);
+                } else {
+                    $rowLabel = strtoupper($date->format('l'));
+                }
+
             } elseif ($status === 'on_leave') {
                 $leave = $approvedLeaves->first(fn ($l) => $date->between($l->start_date, $l->end_date));
                 $rowLabel = $leave ? strtoupper($leave->leave_type) : 'ON LEAVE';
             }
+
+            // Raw undertime from actual clock times — only used to derive
+            // the SUGGESTED default hours below, never shown directly.
+            $rawUndertimeMinutes = $rowLabel ? null : $this->undertimeMinutes($entry);
+            $defaultHours = $this->defaultCreditedHours($entry, $status, $rawUndertimeMinutes);
+            $creditedHours = $entry?->credited_hours ?? $defaultHours;
+
+            // The Undertime column actually shown (both on this page and
+            // the CS Form 48 print) is always derived FROM the final
+            // credited hours (default or GSO/HR-overridden), against the
+            // standard 8-hr day — so editing a day's credited hours to 8
+            // also zeroes its printed undertime, instead of the print
+            // continuing to show the old raw clocked figure.
+            $undertimeMinutes = $rowLabel
+                ? null
+                : ($creditedHours !== null
+                    ? max(0, (int) round((UtilitySchedule::STANDARD_WORKDAY_HOURS - $creditedHours) * 60))
+                    : $rawUndertimeMinutes);
 
             $days->push([
                 'date' => $date->copy(),
@@ -358,7 +423,9 @@ class UtilityDtrController extends Controller
                 'rowLabel' => $rowLabel,
                 // Approved leave and unscheduled days are authorized/not
                 // applicable, not undertime.
-                'undertimeMinutes' => $rowLabel ? null : $this->undertimeMinutes($entry),
+                'undertimeMinutes' => $undertimeMinutes,
+                'defaultHours' => $defaultHours,
+                'creditedHours' => $creditedHours,
             ]);
         }
 
@@ -367,9 +434,15 @@ class UtilityDtrController extends Controller
         $absentDays = $days->where('status', 'no_show')->count();
         $leaveDays = $days->where('status', 'on_leave')->count();
 
-        $totalWorkedMinutes = $entries
-            ->filter(fn ($entry) => $entry->time_in && $entry->time_out)
-            ->sum(fn ($entry) => $entry->time_in->diffInMinutes($entry->time_out));
+        // Credited hours (8-hr standard day minus undertime, 0 for a
+        // no-show, 8 for approved leave, or a GSO/HR manual override) —
+        // NOT the raw time_in-to-time_out span, which could read an
+        // implausible 12+ hrs on a forgot-to-clock-out day. This only
+        // drives the interactive "Hours Worked" summary here; the official
+        // CS Form 48 print view keeps showing the raw undertime figures
+        // exactly as recorded, since that's the physical form's own record
+        // of actual clock times.
+        $totalWorkedHours = round($days->sum('creditedHours'), 2);
 
         $totalOvertimeMinutes = $entries->sum('overtime_minutes');
         $totalUndertimeMinutes = $days->sum('undertimeMinutes');
@@ -417,7 +490,7 @@ class UtilityDtrController extends Controller
             'lateDays' => $lateDays,
             'absentDays' => $absentDays,
             'leaveDays' => $leaveDays,
-            'totalWorkedHours' => round($totalWorkedMinutes / 60, 2),
+            'totalWorkedHours' => $totalWorkedHours,
             'totalOvertimeHours' => round($totalOvertimeMinutes / 60, 2),
             'totalUndertimeMinutes' => $totalUndertimeMinutes,
             'officialHours' => $officialHours,
@@ -448,6 +521,38 @@ class UtilityDtrController extends Controller
 
         $workedMinutes = $entry->time_in->diffInMinutes($entry->time_out);
 
-        return max(0, $scheduledMinutes - $workedMinutes);
+        return max(0, (int) round($scheduledMinutes - $workedMinutes));
+    }
+
+    // Default credited hours before any GSO/HR override — 8-hr standard
+    // workday minus undertime (covers both late arrival and early
+    // departure, since undertimeMinutes already nets scheduled vs actual
+    // worked duration), 0 for a no-show, 8 for approved leave. Falls back
+    // to the raw clocked span only when there's no shift_start/shift_end to
+    // measure undertime against at all. Days not yet finished (scheduled,
+    // still checked in) return null — nothing to credit yet.
+    private function defaultCreditedHours(?UtilitySchedule $entry, ?string $status, ?int $undertimeMinutes): ?float
+    {
+        if ($status === 'on_leave') {
+            return UtilitySchedule::STANDARD_WORKDAY_HOURS;
+        }
+
+        if ($status === 'no_show') {
+            return 0.0;
+        }
+
+        if (!in_array($status, ['present', 'late', 'incomplete'])) {
+            return null;
+        }
+
+        if ($undertimeMinutes !== null) {
+            return round(max(0, UtilitySchedule::STANDARD_WORKDAY_HOURS - ($undertimeMinutes / 60)), 2);
+        }
+
+        if ($entry?->time_in && $entry->time_out) {
+            return round($entry->time_in->diffInMinutes($entry->time_out) / 60, 2);
+        }
+
+        return null;
     }
 }

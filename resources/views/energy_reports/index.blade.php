@@ -61,8 +61,9 @@
                     <th class="p-3 text-left">Reporting Month</th>
                     <th class="p-3 text-left">Campus</th>
                     <th class="p-3 text-center">Electricity Bill (₱)</th>
+                    <th class="p-3 text-center">vs Previous Month (₱)</th>
                     <th class="p-3 text-center">Consumption (kWh)</th>
-                    <th class="p-3 text-center">vs Previous Month</th>
+                    <th class="p-3 text-center">vs Previous Month (kWh)</th>
                     <th class="p-3 text-center">Status</th>
                     <th class="p-3 text-center">Action</th>
                 </tr>
@@ -72,12 +73,30 @@
 
                 @forelse($reports as $report)
 
-                    @php $consDiff = $report->consumptionDifference(); @endphp
+                    @php
+                        $consDiff = $report->consumptionDifference();
+                        $billDiff = $report->billDifference();
+                    @endphp
 
                     <tr class="hover:bg-gray-50">
                         <td class="p-3 font-semibold">{{ $report->monthLabel() }}</td>
                         <td class="p-3">{{ $report->campus }}</td>
                         <td class="p-3 text-center">{{ $report->current_month_bill !== null ? number_format($report->current_month_bill, 2) : '-' }}</td>
+                        <td class="p-3 text-center">
+                            @if($billDiff === null)
+                                <span class="text-gray-400 text-xs">-</span>
+                            @elseif($billDiff < 0)
+                                <span class="text-xs px-2 py-1 rounded-full font-semibold bg-green-100 text-green-700">
+                                    🔻 Saved ₱{{ number_format(abs($billDiff), 2) }} ({{ $report->billPercentChange() }}%)
+                                </span>
+                            @elseif($billDiff > 0)
+                                <span class="text-xs px-2 py-1 rounded-full font-semibold bg-red-100 text-red-700">
+                                    🔺 +₱{{ number_format($billDiff, 2) }} ({{ $report->billPercentChange() }}%)
+                                </span>
+                            @else
+                                <span class="text-xs px-2 py-1 rounded-full font-semibold bg-gray-100 text-gray-600">No change</span>
+                            @endif
+                        </td>
                         <td class="p-3 text-center">{{ $report->current_month_consumption !== null ? number_format($report->current_month_consumption, 2) : '-' }}</td>
                         <td class="p-3 text-center">
                             @if($consDiff === null)
@@ -109,7 +128,7 @@
                 @empty
 
                     <tr>
-                        <td colspan="7" class="p-6 text-center text-gray-500">
+                        <td colspan="9" class="p-6 text-center text-gray-500">
                             No monthly reports yet. Click "New Monthly Report" to start one.
                         </td>
                     </tr>

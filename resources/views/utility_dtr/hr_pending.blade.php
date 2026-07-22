@@ -49,8 +49,7 @@
 
                             <div class="flex gap-2 justify-center">
 
-                                <a href="{{ route('utility-dtr.print', ['personnelId' => $submission->personnel_id, 'start_date' => $submission->period_start->toDateString(), 'end_date' => $submission->period_end->toDateString()]) }}"
-                                   target="_blank"
+                                <a href="{{ route('utility-dtr.show', ['personnelId' => $submission->personnel_id, 'start_date' => $submission->period_start->toDateString(), 'end_date' => $submission->period_end->toDateString()]) }}"
                                    class="text-blue-600 hover:underline text-sm">
                                     👁 View
                                 </a>

@@ -36,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
             $pendingJobRequestCount = 0;
             $pendingUtilityLeaveCount = 0;
             $myJobRequestsInProgressCount = 0;
+            $myAssignedJobsPendingCount = 0;
 
             if (Auth::check()) {
 
@@ -80,6 +81,16 @@ class AppServiceProvider extends ServiceProvider
                 $myJobRequestsInProgressCount = JobRequest::where('user_id', Auth::id())
                     ->whereNotIn('status', ['completed', 'rejected'])
                     ->count();
+
+                // Genuine action-needed queue (red badge) — jobs assigned to
+                // ME that I haven't marked done yet. Once marked work_done
+                // it's off my plate and awaiting the approver's sign-off, so
+                // that status deliberately isn't counted here.
+                if ($user->personnel) {
+                    $myAssignedJobsPendingCount = JobRequest::whereHas('assignedPersonnel', fn ($q) => $q->where('personnel.id', $user->personnel->id))
+                        ->where('status', 'assigned')
+                        ->count();
+                }
             }
 
             $view->with([
@@ -88,6 +99,7 @@ class AppServiceProvider extends ServiceProvider
                 'pendingJobRequestCount' => $pendingJobRequestCount,
                 'pendingUtilityLeaveCount' => $pendingUtilityLeaveCount,
                 'myJobRequestsInProgressCount' => $myJobRequestsInProgressCount,
+                'myAssignedJobsPendingCount' => $myAssignedJobsPendingCount,
             ]);
         });
 

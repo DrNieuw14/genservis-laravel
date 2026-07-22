@@ -11,6 +11,7 @@ use App\Models\Notification;
 use App\Events\NewNotificationEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class JobRequestController extends Controller
 {
@@ -33,11 +34,15 @@ class JobRequestController extends Controller
             'work_summary' => 'required|string|max:2000',
             'work_category' => 'nullable|string|max:150',
             'target_date' => 'nullable|date',
+            'photos' => 'nullable|array',
+            'photos.*' => 'nullable|image|max:5120',
         ], [
             'office_unit_project.required' => 'Please enter the office, unit, or project location.',
             'category.required' => 'Please select what kind of job request this is.',
             'nature_of_request.required' => 'Please give a short title for this request.',
             'work_summary.required' => 'Please describe the work needed.',
+            'photos.*.image' => 'Each file must be a photo (JPG, PNG, etc.).',
+            'photos.*.max' => 'Each photo must be 5MB or smaller.',
         ]);
 
         $personnel = Personnel::where('user_id', Auth::id())->first();
@@ -63,6 +68,20 @@ class JobRequestController extends Controller
             'target_date' => $validated['target_date'] ?? null,
             'status' => 'pending',
         ]);
+
+        foreach ($request->file('photos', []) as $photo) {
+
+            if (!$photo) {
+                continue;
+            }
+
+            JobRequestPhoto::create([
+                'job_request_id' => $jobRequest->id,
+                'type' => 'request_evidence',
+                'path' => $photo->store('job_requests', 'public'),
+                'uploaded_by' => Auth::id(),
+            ]);
+        }
 
         // 🔔 Notify whoever approves this category of job request
         $approvers = User::withPermission($jobRequest->approvalPermission())->get();
@@ -370,6 +389,7 @@ class JobRequestController extends Controller
 
             JobRequestPhoto::create([
                 'job_request_id' => $jobRequest->id,
+                'type' => 'work_done',
                 'path' => $path,
                 'uploaded_by' => $user->id,
             ]);
@@ -429,6 +449,67 @@ class JobRequestController extends Controller
         }
 
         return back()->with('success', 'This job was already marked done — attach a photo if you have one to add.');
+    }
+
+    // Lets the requester add a photo they forgot at submission, or GSO/PPS
+    // add one on their behalf — available any time regardless of status,
+    // unlike the work-done photos which only make sense once assigned.
+    public function uploadRequestEvidence(Request $request, $id)
+    {
+        $jobRequest = JobRequest::findOrFail($id);
+
+        $user = Auth::user();
+
+        $isOwner = $jobRequest->user_id === $user->id;
+        $canManage = $user->hasPermission($jobRequest->approvalPermission())
+            || $user->hasPermission('assign-job-request-personnel');
+
+        if (!$isOwner && !$canManage) {
+            abort(403);
+        }
+
+        $request->validate([
+            'photos' => 'required|array',
+            'photos.*' => 'image|max:5120',
+        ], [
+            'photos.required' => 'Please choose at least one photo to upload.',
+            'photos.*.image' => 'Each file must be a photo (JPG, PNG, etc.).',
+            'photos.*.max' => 'Each photo must be 5MB or smaller.',
+        ]);
+
+        foreach ($request->file('photos', []) as $photo) {
+
+            JobRequestPhoto::create([
+                'job_request_id' => $jobRequest->id,
+                'type' => 'request_evidence',
+                'path' => $photo->store('job_requests', 'public'),
+                'uploaded_by' => $user->id,
+            ]);
+        }
+
+        return back()->with('success', 'Evidence photo(s) added.');
+    }
+
+    public function destroyPhoto($id, $photoId)
+    {
+        $jobRequest = JobRequest::findOrFail($id);
+        $photo = JobRequestPhoto::where('job_request_id', $jobRequest->id)->findOrFail($photoId);
+
+        $user = Auth::user();
+
+        $isOwner = $jobRequest->user_id === $user->id;
+        $isUploader = $photo->uploaded_by === $user->id;
+        $canManage = $user->hasPermission($jobRequest->approvalPermission())
+            || $user->hasPermission('assign-job-request-personnel');
+
+        if (!$isOwner && !$isUploader && !$canManage) {
+            abort(403);
+        }
+
+        Storage::disk('public')->delete($photo->path);
+        $photo->delete();
+
+        return back()->with('success', 'Photo removed.');
     }
 
     public function markCompleted($id)

@@ -249,6 +249,23 @@ class PermissionSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
+            | Water Bill Report — Carmona Water District billing notices,
+            | tracked per meter/account. General Services Officer only.
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Water Bill Report',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Water Bills', 'slug' => 'manage-water-bills'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
             | Room Inventory of Property — fixed/durable property (furniture,
             | ICT equipment, appliances, etc.) tracked per room, distinct from
             | the consumable Materials Inventory. Property Custodian only.
@@ -261,6 +278,7 @@ class PermissionSeeder extends Seeder
                 'permissions' => [
 
                     ['name' => 'Manage Property Inventory', 'slug' => 'manage-property-inventory'],
+                    ['name' => 'Manage Property Issuance', 'slug' => 'manage-property-issuance'],
 
                 ]
             ],

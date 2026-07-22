@@ -17,6 +17,8 @@ use App\Http\Controllers\BuildingInspectionController;
 use App\Http\Controllers\UtilityLeaveController;
 use App\Http\Controllers\UtilityDtrController;
 use App\Http\Controllers\EnergyConservationReportController;
+use App\Http\Controllers\WaterBillController;
+use App\Http\Controllers\WaterMeterController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Supervisor\MaterialController;
@@ -36,6 +38,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmployeeProfileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyInventoryController;
+use App\Http\Controllers\PropertyIssuanceController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeEducationController;
@@ -120,6 +123,15 @@ Route::middleware(['auth'])->group(function () {
     // themselves (e.g. Rony) don't hold assign-job-request-personnel.
     Route::post('/job-requests/{id}/mark-work-done', [JobRequestController::class, 'markWorkDone'])
         ->name('job-requests.mark-work-done');
+
+    // Authorization is done inside the controller (requester, or whoever
+    // can approve/assign this category) rather than a permission, so the
+    // requester can add a forgotten photo without needing GSO/PPS access.
+    Route::post('/job-requests/{id}/evidence-photos', [JobRequestController::class, 'uploadRequestEvidence'])
+        ->name('job-requests.evidence-photos.store');
+
+    Route::delete('/job-requests/{id}/photos/{photoId}', [JobRequestController::class, 'destroyPhoto'])
+        ->name('job-requests.photos.destroy');
 
 });
 
@@ -404,6 +416,53 @@ Route::middleware(['auth', 'permission:manage-property-inventory'])->group(funct
 
 /*
 |--------------------------------------------------------------------------
+| Property Issuance — ICS/PAR slips generated from Room Inventory items.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-property-issuance'])->group(function () {
+
+    Route::get('/property-issuances', [PropertyIssuanceController::class, 'index'])
+        ->name('property-issuances.index');
+
+    Route::get('/property-issuances/create', [PropertyIssuanceController::class, 'create'])
+        ->name('property-issuances.create');
+
+    Route::post('/property-issuances', [PropertyIssuanceController::class, 'store'])
+        ->name('property-issuances.store');
+
+    Route::delete('/property-issuances/{issuance}', [PropertyIssuanceController::class, 'destroy'])
+        ->name('property-issuances.destroy');
+
+    Route::post('/property-issuances/{issuance}/photos', [PropertyIssuanceController::class, 'uploadPhoto'])
+        ->name('property-issuances.photos.store');
+
+    Route::delete('/property-issuances/{issuance}/photos/{photo}', [PropertyIssuanceController::class, 'destroyPhoto'])
+        ->name('property-issuances.photos.destroy');
+
+});
+
+// show/print are reachable by any logged-in employee — the Property
+// Custodian via manage-property-issuance, or the slip's own recipient
+// viewing their own accountability record. Authorization is done inside
+// the controller rather than a permission, same pattern as Job Request.
+Route::middleware(['auth'])->group(function () {
+
+    // KEEP BEFORE {issuance} below — it would otherwise swallow this
+    // static path as a route-model-binding lookup.
+    Route::get('/property-issuances/mine', [PropertyIssuanceController::class, 'mine'])
+        ->name('property-issuances.mine');
+
+    Route::get('/property-issuances/{issuance}', [PropertyIssuanceController::class, 'show'])
+        ->name('property-issuances.show');
+
+    Route::get('/property-issuances/{issuance}/print', [PropertyIssuanceController::class, 'print'])
+        ->name('property-issuances.print');
+
+});
+
+/*
+|--------------------------------------------------------------------------
 | UTILITY DTR (Daily Time Record) — a report, not a new data source. Pulls
 | together Attendance/Overtime (utility_schedules) and approved Leave into
 | one per-person, per-month record for Mark to hand to HR/Payroll.
@@ -441,14 +500,24 @@ Route::middleware(['auth', 'permission:manage-utility-schedule'])->group(functio
     Route::get('/utility-dtr', [UtilityDtrController::class, 'index'])
         ->name('utility-dtr.index');
 
+    Route::post('/utility-dtr/{personnelId}/check', [UtilityDtrController::class, 'check'])
+        ->name('utility-dtr.check');
+
+});
+
+// show/print/hours-edit are reachable by GSO (manage-utility-schedule) OR
+// HR (approve-dtr) — HR needs to review (and now correct) a DTR's daily
+// figures before approving it, not just the pending-list summary.
+Route::middleware(['auth', 'permission:manage-utility-schedule,approve-dtr'])->group(function () {
+
     Route::get('/utility-dtr/{personnelId}', [UtilityDtrController::class, 'show'])
         ->name('utility-dtr.show');
 
     Route::get('/utility-dtr/{personnelId}/print', [UtilityDtrController::class, 'print'])
         ->name('utility-dtr.print');
 
-    Route::post('/utility-dtr/{personnelId}/check', [UtilityDtrController::class, 'check'])
-        ->name('utility-dtr.check');
+    Route::post('/utility-dtr/{personnelId}/hours', [UtilityDtrController::class, 'updateCreditedHours'])
+        ->name('utility-dtr.hours.update');
 
 });
 
@@ -531,6 +600,47 @@ Route::middleware(['auth', 'permission:manage-energy-reports'])->group(function 
 
     Route::delete('/energy-reports/{energyReport}/attachments/{attachment}', [EnergyConservationReportController::class, 'destroyAttachment'])
         ->name('energy-reports.attachments.destroy');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Water Bill Report — Carmona Water District billing notices, tracked per
+| meter/account (CvSU Carmona has more than one water connection).
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-water-bills'])->group(function () {
+
+    Route::get('/water-bills', [WaterBillController::class, 'index'])
+        ->name('water-bills.index');
+
+    Route::post('/water-bills', [WaterBillController::class, 'store'])
+        ->name('water-bills.store');
+
+    Route::put('/water-bills/{bill}', [WaterBillController::class, 'update'])
+        ->name('water-bills.update');
+
+    Route::delete('/water-bills/{bill}', [WaterBillController::class, 'destroy'])
+        ->name('water-bills.destroy');
+
+    Route::get('/water-bills/print', [WaterBillController::class, 'print'])
+        ->name('water-bills.print');
+
+    Route::get('/water-meters', [WaterMeterController::class, 'index'])
+        ->name('water-meters.index');
+
+    Route::post('/water-meters', [WaterMeterController::class, 'store'])
+        ->name('water-meters.store');
+
+    Route::get('/water-meters/{meter}', [WaterMeterController::class, 'show'])
+        ->name('water-meters.show');
+
+    Route::put('/water-meters/{meter}', [WaterMeterController::class, 'update'])
+        ->name('water-meters.update');
+
+    Route::delete('/water-meters/{meter}', [WaterMeterController::class, 'destroy'])
+        ->name('water-meters.destroy');
 
 });
 
@@ -1326,6 +1436,11 @@ Route::middleware(['auth'])->group(function () {
             [WalkinRequestController::class, 'quickAddEmployee']
         )->name('walkin.quick-add-employee');
 
+        Route::post(
+            '/walkin-requests/quick-add-department',
+            [WalkinRequestController::class, 'quickAddDepartment']
+        )->name('walkin.quick-add-department');
+
         Route::get(
             '/walkin-requests/generate-employee-id/{employmentType}',
             [WalkinRequestController::class, 'getEmployeeId']
@@ -1532,6 +1647,13 @@ Route::middleware(['auth'])->group(function () {
 
         Route::put('/materials/{id}', [MaterialController::class, 'update'])
             ->name('materials.update');
+
+        // Lightweight image-only upload for a material that has none yet
+        // — the full update() route requires name/department/category/unit/
+        // threshold together, which is unnecessary friction just to attach
+        // a photo from the inventory list.
+        Route::post('/materials/{id}/quick-image', [MaterialController::class, 'quickUpdateImage'])
+            ->name('materials.quick-image');
 
         Route::post('/materials/bulk-assign-department', [MaterialController::class, 'bulkAssignDepartment'])
             ->name('materials.bulk-assign-department');

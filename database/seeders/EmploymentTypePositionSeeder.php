@@ -160,6 +160,14 @@ class EmploymentTypePositionSeeder extends Seeder
                 'Administrative Officer IV',
                 'Administrative Officer V',
 
+                'Nurse I',
+                'Nurse II',
+                'Nurse III',
+                'Nurse IV',
+                'Nurse V',
+                'Nurse VI',
+                'Nurse VII',
+
             ],
 
             'Casual Personnel' => [
@@ -214,6 +222,13 @@ class EmploymentTypePositionSeeder extends Seeder
                 // Absorbed from the removed Administrative/Non-Teaching/
                 // Utility Personnel employment types.
                 'Nurse',
+                'Nurse I',
+                'Nurse II',
+                'Nurse III',
+                'Nurse IV',
+                'Nurse V',
+                'Nurse VI',
+                'Nurse VII',
                 'Utility Worker',
                 'Groundskeeper',
                 'Maintenance Worker',

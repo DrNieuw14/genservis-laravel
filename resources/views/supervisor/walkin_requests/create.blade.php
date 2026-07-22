@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 
@@ -7,7 +7,7 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <h2 class="text-3xl font-bold text-gray-800">
-                ðŸ“¦ Walk-In Material Issuance
+                📦 Walk-In Material Issuance
             </h2>
 
             <p class="text-gray-500 mt-1">
@@ -22,38 +22,11 @@
     method="POST">
         @csrf
 
-        <!-- Destination Department -->
-        <div class="mb-6">
-
-            <label class="block mb-2 font-semibold">
-                Destination Department / Office
-            </label>
-
-            <select
-                id="departmentSelect"
-                name="department_id"
-                class="w-full border rounded-lg p-3"
-                required>
-
-                <option value="">
-                    -- Select Department --
-                </option>
-
-                @foreach($departments as $department)
-                    <option value="{{ $department->id }}">
-                        {{ $department->department_name }}
-                    </option>
-                @endforeach
-
-            </select>
-
-        </div>
-
         <!-- Source & Destination -->
         <div class="border border-blue-200 bg-blue-50 rounded-xl p-5 mb-6">
 
             <h3 class="text-lg font-semibold text-blue-700 mb-4">
-                ðŸ¢ Source & Destination
+                🏢 Source & Destination
             </h3>
 
             <div class="grid grid-cols-2 gap-6">
@@ -86,10 +59,101 @@
 
         </div>
 
+        <!-- Material Information -->
+<div class="border rounded-lg p-5 mb-6 bg-gray-50">
+
+    <h3 class="text-lg font-semibold text-blue-700 mb-4">
+        Material Information
+    </h3>
+
+    <table
+        class="w-full border rounded-lg overflow-hidden"
+        id="materialsTable">
+
+        <thead class="bg-gray-100">
+
+            <tr>
+                <th class="p-3 text-left">
+                    Material
+                </th>
+
+                <th class="p-3 text-left">
+                    Quantity
+                </th>
+
+                <th class="p-3 text-center">
+                    Action
+                </th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+
+                <td class="p-2">
+
+                    <select
+                        name="material_id[]"
+                        class="material-select w-full"
+                        required>
+
+                        <option value="">
+                            🔍 Click to search materials...
+                        </option>
+
+                    </select>
+
+                    <img class="material-thumb hidden w-12 h-12 object-cover rounded-lg border mt-1 cursor-pointer hover:opacity-80 transition" alt="" title="Click to preview">
+
+                </td>
+
+                <td class="p-2">
+
+                    <input
+                        type="number"
+                        name="quantity[]"
+                        min="1"
+                        class="w-full border rounded-lg p-3"
+                        required>
+
+                </td>
+
+                <td class="text-center">
+
+                    <button
+                        type="button"
+                        onclick="removeRow(this)"
+                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded">
+
+                        Remove
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+    <button
+        type="button"
+        onclick="addRow()"
+        class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+
+        ➕ Add Material
+
+    </button>
+
+</div>
+
         <div class="border rounded-lg p-5 mb-6 bg-gray-50">
 
     <h3 class="text-lg font-semibold text-green-700 mb-4">
-        ðŸ“ Issuance Information
+        📝 Issuance Information
     </h3>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -104,7 +168,7 @@
                     type="button"
                     onclick="openQuickAddModal()"
                     class="text-sm text-blue-600 hover:text-blue-800 font-semibold">
-                    âž• Add New Employee
+                    ➕ Add New Employee
                 </button>
             </div>
 
@@ -160,96 +224,41 @@
 
 </div>
 
-        <!-- Material Information -->
-<div class="border rounded-lg p-5 bg-gray-50">
+        <!-- Destination Department -->
+        <div class="mb-6">
 
-    <h3 class="text-lg font-semibold text-blue-700 mb-4">
-        Material Information
-    </h3>
+            <div class="flex items-center justify-between mb-2">
+                <label class="font-semibold">
+                    Destination Department / Office
+                </label>
 
-    <table
-        class="w-full border rounded-lg overflow-hidden"
-        id="materialsTable">
+                <button
+                    type="button"
+                    onclick="openDepartmentQuickAddModal()"
+                    class="text-sm text-blue-600 hover:text-blue-800 font-semibold">
+                    ➕ Add New Department
+                </button>
+            </div>
 
-        <thead class="bg-gray-100">
+            <select
+                id="departmentSelect"
+                name="department_id"
+                class="w-full border rounded-lg p-3"
+                required>
 
-            <tr>
-                <th class="p-3 text-left">
-                    Material
-                </th>
+                <option value="">
+                    -- Select Department --
+                </option>
 
-                <th class="p-3 text-left">
-                    Quantity
-                </th>
+                @foreach($departments as $department)
+                    <option value="{{ $department->id }}">
+                        {{ $department->department_name }}
+                    </option>
+                @endforeach
 
-                <th class="p-3 text-center">
-                    Action
-                </th>
-            </tr>
+            </select>
 
-        </thead>
-
-        <tbody>
-
-            <tr>
-
-                <td class="p-2">
-
-                    <select
-                        name="material_id[]"
-                        class="material-select w-full"
-                        required>
-
-                        <option value="">
-                            ðŸ” Click to search materials...
-                        </option>
-
-                    </select>
-
-                    <img class="material-thumb hidden w-12 h-12 object-cover rounded-lg border mt-1" alt="">
-
-                </td>
-
-                <td class="p-2">
-
-                    <input
-                        type="number"
-                        name="quantity[]"
-                        min="1"
-                        class="w-full border rounded-lg p-3"
-                        required>
-
-                </td>
-
-                <td class="text-center">
-
-                    <button
-                        type="button"
-                        onclick="removeRow(this)"
-                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded">
-
-                        Remove
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-        </tbody>
-
-    </table>
-
-    <button
-        type="button"
-        onclick="addRow()"
-        class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-
-        âž• Add Material
-
-    </button>
-
-</div>
+        </div>
 
         <!-- Action Buttons -->
         <div class="mt-6 flex gap-3">
@@ -259,14 +268,14 @@
                 onclick="showConfirmationModal()"
                 class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow">
 
-                ðŸ“¤ Issue Material
+                📤 Issue Material
 
             </button>
 
             <a href="{{ route('walkin.history') }}"
                class="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-lg shadow">
 
-                ðŸ“‹ View History
+                📋 View History
 
             </a>
 
@@ -277,6 +286,39 @@
 </div>
 
 <script>
+
+// Highlights a missing field so it's obvious at a glance which one needs
+// attention, instead of just a generic "complete all fields" alert. Works
+// for both plain inputs/selects and Tom-Select-wrapped ones (Tom Select
+// hides the original <select> and renders its own .ts-wrapper control, so
+// the red border has to go on that instead for it to be visible).
+function markFieldError(field)
+{
+    const tomWrapper = field.closest('div')?.querySelector('.ts-wrapper');
+
+    if (tomWrapper) {
+        tomWrapper.classList.add('border-2', 'border-red-500', 'rounded-lg');
+    } else {
+        field.classList.add('border-2', 'border-red-500');
+    }
+
+    if (!field.dataset.errorClearBound) {
+        field.addEventListener('change', () => clearFieldError(field));
+        field.addEventListener('input', () => clearFieldError(field));
+        field.dataset.errorClearBound = '1';
+    }
+}
+
+function clearFieldError(field)
+{
+    const tomWrapper = field.closest('div')?.querySelector('.ts-wrapper');
+
+    if (tomWrapper) {
+        tomWrapper.classList.remove('border-2', 'border-red-500', 'rounded-lg');
+    }
+
+    field.classList.remove('border-2', 'border-red-500');
+}
 
 function addRow()
 {
@@ -293,7 +335,7 @@ function addRow()
                 name="material_id[]"
                 class="material-select w-full"
                 required>
-                <option value="">ðŸ” Click to search materials...</option>
+                <option value="">🔍 Click to search materials...</option>
             </select>
             <img class="material-thumb hidden w-12 h-12 object-cover rounded-lg border mt-1" alt="">
         </td>
@@ -342,8 +384,15 @@ function showConfirmationModal()
     const employeeSelect =
         document.getElementById('employeeSelect');
 
+    // Reads the visible option text rather than a data-name attribute —
+    // an employee added via the Quick Add modal gets its option injected
+    // by Tom Select's addOption(), which doesn't carry custom data-*
+    // attributes over to the underlying <select>, so relying on
+    // dataset.name here would incorrectly treat a freshly-added employee
+    // as "not selected". The trailing " (EMP-ID)" is stripped to keep the
+    // clean display name used elsewhere on this page.
     const employee = employeeSelect.value
-        ? employeeSelect.options[employeeSelect.selectedIndex].dataset.name
+        ? employeeSelect.options[employeeSelect.selectedIndex].text.replace(/\s*\([^)]*\)\s*$/, '')
         : '';
 
     const room =
@@ -366,16 +415,40 @@ function showConfirmationModal()
             departmentSelect.selectedIndex
         ].text;
 
-    if(
-        !employee ||
-        !room ||
-        !purpose ||
-        !departmentSelect.value
-    )
+    const roomInput = document.querySelector('input[name="room"]');
+    const purposeInput = document.querySelector('input[name="purpose"]');
+
+    // Clear any previous error highlighting before re-checking, so a field
+    // that's now filled in doesn't stay marked red.
+    [employeeSelect, roomInput, purposeInput, departmentSelect].forEach(
+        field => clearFieldError(field)
+    );
+
+    const missing = [];
+
+    if (!employee) missing.push({ field: employeeSelect, label: 'Employee Name' });
+    if (!room) missing.push({ field: roomInput, label: 'Room' });
+    if (!purpose) missing.push({ field: purposeInput, label: 'Purpose' });
+    if (!departmentSelect.value) missing.push({ field: departmentSelect, label: 'Destination Department / Office' });
+
+    if (missing.length > 0)
     {
-        alert(
-            'Please complete all request information.'
-        );
+        missing.forEach(({ field }) => markFieldError(field));
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'A few fields need your attention',
+            html: '<ul style="text-align:left;list-style:disc;padding-left:1.5rem;margin:0;">' +
+                missing.map(m => `<li>${m.label}</li>`).join('') +
+                '</ul>',
+            confirmButtonText: 'Got it',
+            confirmButtonColor: '#2563eb',
+        });
+
+        missing[0].field.closest('div').scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
 
         return;
     }
@@ -433,9 +506,13 @@ function showConfirmationModal()
 
     if(materialRows === '')
     {
-        alert(
-            'Please add at least one material.'
-        );
+        Swal.fire({
+            icon: 'warning',
+            title: 'No materials added yet',
+            text: 'Please add at least one material before continuing.',
+            confirmButtonText: 'Got it',
+            confirmButtonColor: '#2563eb',
+        });
 
         return;
     }
@@ -596,7 +673,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // âœ… MATERIAL SEARCH (Tom Select) â€” single source of truth, mirrors
+    // ✅ MATERIAL SEARCH (Tom Select) — single source of truth, mirrors
     // the Material Request form's picker so behavior stays consistent
     const allMaterials = @json($materialsForJs);
 
@@ -615,7 +692,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         tom.addOption({
             value: '',
-            text: 'ðŸ” Click to search materials...'
+            text: '🔍 Click to search materials...'
         });
 
         allMaterials.forEach(function (m) {
@@ -625,7 +702,7 @@ document.addEventListener('DOMContentLoaded', function () {
             let disabled = false;
 
             if (m.stock <= 0) {
-                text += ' â€” Out of Stock';
+                text += ' — Out of Stock';
                 disabled = true;
             }
 
@@ -686,6 +763,29 @@ document.addEventListener('DOMContentLoaded', function () {
         initMaterialTomSelect(select);
     });
 
+    // Click-to-preview for material thumbnails — delegated on the document
+    // since rows (and their thumbnails) are added dynamically via addRow(),
+    // so a listener bound only to elements present at page load would miss
+    // any thumbnail added afterward.
+    document.addEventListener('click', function (e) {
+
+        const thumb = e.target.closest('.material-thumb');
+
+        if (!thumb || !thumb.src) {
+            return;
+        }
+
+        Swal.fire({
+            imageUrl: thumb.src,
+            imageAlt: thumb.alt || 'Material photo',
+            title: thumb.alt || '',
+            showConfirmButton: false,
+            showCloseButton: true,
+            background: '#fff',
+        });
+
+    });
+
     function openQuickAddModal()
     {
         document.getElementById('quickAddForm').reset();
@@ -702,6 +802,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
         document.getElementById('quickAddModal')
             .classList.add('flex');
+    }
+
+    function openDepartmentQuickAddModal()
+    {
+        document.getElementById('departmentQuickAddForm').reset();
+
+        document.getElementById('departmentQuickAddError')
+            .classList.add('hidden');
+
+        document.getElementById('departmentQuickAddModal')
+            .classList.remove('hidden');
+
+        document.getElementById('departmentQuickAddModal')
+            .classList.add('flex');
+    }
+
+    function closeDepartmentQuickAddModal()
+    {
+        document.getElementById('departmentQuickAddModal')
+            .classList.add('hidden');
+
+        document.getElementById('departmentQuickAddModal')
+            .classList.remove('flex');
     }
 
     function closeQuickAddModal()
@@ -725,7 +848,7 @@ document.addEventListener('DOMContentLoaded', function () {
             data.temporary_password;
 
         document.getElementById('copyCredentialsBtn').textContent =
-            'ðŸ“‹ Copy Credentials';
+            '📋 Copy Credentials';
 
         document.getElementById('employeeCreatedModal')
             .classList.remove('hidden');
@@ -757,10 +880,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const btn = document.getElementById('copyCredentialsBtn');
 
-            btn.textContent = 'âœ” Copied!';
+            btn.textContent = '✔ Copied!';
 
             setTimeout(() => {
-                btn.textContent = 'ðŸ“‹ Copy Credentials';
+                btn.textContent = '📋 Copy Credentials';
             }, 1500);
 
         });
@@ -888,7 +1011,83 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .finally(() => {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'âœ” Create Employee';
+            submitBtn.textContent = '✔ Create Employee';
+        });
+
+    });
+
+    document.getElementById('departmentQuickAddForm')
+        .addEventListener('submit', function (e) {
+
+        e.preventDefault();
+
+        const submitBtn =
+            document.getElementById('departmentQuickAddSubmitBtn');
+
+        const errorBox =
+            document.getElementById('departmentQuickAddError');
+
+        errorBox.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating...';
+
+        const formData = new FormData(this);
+
+        fetch('{{ route('walkin.quick-add-department') }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document
+                    .querySelector('meta[name="csrf-token"]')
+                    .content,
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(async response => {
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw data;
+            }
+
+            return data;
+        })
+        .then(data => {
+
+            // Both the main Destination Department select and the one
+            // inside the Quick Add Employee modal share name="department_id"
+            // — a newly created department should show up in either.
+            document.querySelectorAll('select[name="department_id"]')
+                .forEach(select => {
+
+                const option = new Option(data.department_name, data.id);
+                select.add(option);
+                select.value = String(data.id);
+                select.dispatchEvent(new Event('change'));
+
+            });
+
+            closeDepartmentQuickAddModal();
+
+        })
+        .catch(error => {
+
+            let message = error.message || 'Unable to create department. Please check the form and try again.';
+
+            if (error.errors) {
+                message = Object.values(error.errors)
+                    .map(messages => messages[0])
+                    .join(' ');
+            }
+
+            errorBox.textContent = message;
+            errorBox.classList.remove('hidden');
+
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '✔ Create Department';
         });
 
     });
@@ -905,7 +1104,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6">
 
         <h2 class="text-2xl font-bold text-yellow-600 mb-4">
-            âš  Confirm Material Issuance
+            ⚠ Confirm Material Issuance
         </h2>
 
         <div class="space-y-2 text-gray-700">
@@ -1063,12 +1262,12 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6">
 
         <h2 class="text-2xl font-bold text-gray-800 mb-1">
-            âž• Add New Employee
+            ➕ Add New Employee
         </h2>
 
         <p class="text-gray-500 mb-4">
             Not in the list? Create their employee record so this
-            issuance â€” and any future one â€” can be traced back to them.
+            issuance — and any future one — can be traced back to them.
         </p>
 
         <div
@@ -1214,7 +1413,79 @@ document.addEventListener('DOMContentLoaded', function () {
                     id="quickAddSubmitBtn"
                     type="submit"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
-                    âœ” Create Employee
+                    ✔ Create Employee
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- Quick Add Department Modal -->
+<div
+    id="departmentQuickAddModal"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-[9999]">
+
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-1">
+            ➕ Add New Department
+        </h2>
+
+        <p class="text-gray-500 mb-4">
+            Not in the list? Add it here so this issuance — and any future
+            one — can be traced to the right department.
+        </p>
+
+        <div
+            id="departmentQuickAddError"
+            class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
+        </div>
+
+        <form id="departmentQuickAddForm">
+
+            <div class="grid grid-cols-1 gap-4">
+
+                <div>
+                    <label class="block mb-1 font-semibold text-sm">
+                        Department Name
+                    </label>
+                    <input
+                        type="text"
+                        name="department_name"
+                        class="w-full border rounded-lg p-3"
+                        required>
+                </div>
+
+                <div>
+                    <label class="block mb-1 font-semibold text-sm">
+                        Department Code <span class="text-gray-400 font-normal">(optional)</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="department_code"
+                        class="w-full border rounded-lg p-3">
+                </div>
+
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+
+                <button
+                    type="button"
+                    onclick="closeDepartmentQuickAddModal()"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded">
+                    Cancel
+                </button>
+
+                <button
+                    id="departmentQuickAddSubmitBtn"
+                    type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
+                    ✔ Create Department
                 </button>
 
             </div>
@@ -1282,11 +1553,11 @@ document.addEventListener('DOMContentLoaded', function () {
             type="button"
             onclick="copyCredentials()"
             class="text-sm text-blue-600 hover:text-blue-800 font-semibold mt-3 mb-5">
-            ðŸ“‹ Copy Credentials
+            📋 Copy Credentials
         </button>
 
         <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm rounded-lg p-3 mb-6 text-left">
-            âš  Share these credentials with the employee directly so they can log in and set their own password.
+            ⚠ Share these credentials with the employee directly so they can log in and set their own password.
         </div>
 
         <button

@@ -300,6 +300,7 @@ class RolePermissionSeeder extends Seeder
                     'manage-project-estimates',
                     'manage-building-inspections',
                     'approve-utility-leave',
+                    'manage-water-bills',
 
                 ])->pluck('id')->toArray()
 
@@ -358,6 +359,7 @@ class RolePermissionSeeder extends Seeder
                 Permission::whereIn('slug', [
 
                     'manage-property-inventory',
+                    'manage-property-issuance',
 
                 ])->pluck('id')->toArray()
 

@@ -11,11 +11,13 @@ class PropertyItem extends Model
     protected $fillable = [
         'room_id',
         'property_name',
+        'unit',
         'property_number',
         'description',
         'quantity',
         'unit_value',
         'date_acquired',
+        'estimated_useful_life',
         'condition',
         'remarks',
         'created_by',

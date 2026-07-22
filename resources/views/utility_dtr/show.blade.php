@@ -18,7 +18,7 @@
 
         <div class="flex gap-2">
 
-            <x-back-button :href="route('utility-dtr.index')" />
+            <x-back-button :href="auth()->user()->hasPermission('manage-utility-schedule') ? route('utility-dtr.index') : route('utility-dtr.hr.pending')" />
 
             <a href="{{ route('utility-dtr.print', ['personnelId' => $personnel->id, 'start_date' => $monthStart->toDateString(), 'end_date' => $monthEnd->toDateString()]) }}"
                target="_blank"
@@ -51,7 +51,7 @@
 
             <div class="flex gap-2">
 
-                @if($submission->status === 'employee_verified')
+                @if($submission->status === 'employee_verified' && auth()->user()->hasPermission('manage-utility-schedule'))
 
                     <form method="POST" action="{{ route('utility-dtr.check', ['personnelId' => $personnel->id]) }}">
                         @csrf
@@ -66,6 +66,10 @@
                             class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow">
                         ❌ Send Back
                     </button>
+
+                @elseif($submission->status === 'employee_verified')
+
+                    <span class="text-gray-500 text-sm">Waiting for the General Services Officer to check this DTR first.</span>
 
                 @elseif($submission->status === 'draft')
 
@@ -142,7 +146,7 @@
         </div>
 
         <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg text-white p-5">
-            <p class="uppercase tracking-wider text-xs text-blue-100">Hours Worked</p>
+            <p class="uppercase tracking-wider text-xs text-blue-100">Credited Hours</p>
             <h2 class="text-3xl font-extrabold mt-2">{{ $totalWorkedHours }}</h2>
         </div>
 
@@ -167,6 +171,7 @@
                     <th class="p-3">Task</th>
                     <th class="p-3">Status</th>
                     <th class="p-3">Overtime</th>
+                    <th class="p-3">Credited Hours</th>
                 </tr>
             </thead>
 
@@ -205,6 +210,40 @@
                             {{ $entry?->overtime_minutes > 0 ? $entry->overtime_minutes . ' min' : '-' }}
                         </td>
 
+                        <td class="p-3 text-center">
+
+                            @if($entry)
+
+                                @php $rowId = $day['date']->format('Ymd'); @endphp
+
+                                <div id="hoursDisplay{{ $rowId }}">
+                                    {{ $day['creditedHours'] !== null ? number_format($day['creditedHours'], 2) : '-' }}
+                                    @if($entry->credited_hours !== null)
+                                        <span class="text-xs text-blue-600 font-semibold" title="Manually adjusted (system default was {{ $day['defaultHours'] !== null ? number_format($day['defaultHours'], 2) : '-' }})">✏️</span>
+                                    @endif
+                                    <button type="button" onclick="toggleHoursEdit('{{ $rowId }}')" class="text-gray-400 hover:text-blue-600 ml-1">✎</button>
+                                </div>
+
+                                <form id="hoursForm{{ $rowId }}" method="POST"
+                                      action="{{ route('utility-dtr.hours.update', $personnel->id) }}"
+                                      class="hidden mt-1">
+                                    @csrf
+                                    <input type="hidden" name="schedule_date" value="{{ $day['date']->toDateString() }}">
+                                    <div class="flex items-center gap-1 justify-center">
+                                        <input type="number" step="0.01" min="0" max="24" name="credited_hours"
+                                               value="{{ $entry->credited_hours }}" placeholder="{{ $day['defaultHours'] !== null ? number_format($day['defaultHours'], 2) : '' }}"
+                                               class="w-20 border rounded p-1 text-center">
+                                        <button type="submit" class="text-green-600 hover:underline text-xs">Save</button>
+                                        <button type="button" onclick="toggleHoursEdit('{{ $rowId }}')" class="text-gray-500 hover:underline text-xs">Cancel</button>
+                                    </div>
+                                </form>
+
+                            @else
+                                <span class="text-gray-300">-</span>
+                            @endif
+
+                        </td>
+
                     </tr>
 
                 @endforeach
@@ -216,5 +255,14 @@
     </div>
 
 </div>
+
+<script>
+
+    function toggleHoursEdit(rowId) {
+        document.getElementById('hoursDisplay' + rowId).classList.toggle('hidden');
+        document.getElementById('hoursForm' + rowId).classList.toggle('hidden');
+    }
+
+</script>
 
 @endsection

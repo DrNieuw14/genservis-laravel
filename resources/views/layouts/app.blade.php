@@ -318,13 +318,27 @@
 
             </a>
 
+            @if(auth()->user()->hasPermission('manage-property-issuance'))
+
+            <a href="{{ route('property-issuances.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('property-issuances.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🧾 Property Issuances (ICS/PAR)
+
+            </a>
+
             @endif
 
-            @if(auth()->user()->hasPermission('manage-energy-reports'))
+            @endif
+
+            @if(auth()->user()->hasPermission('manage-energy-reports') || auth()->user()->hasPermission('manage-water-bills'))
 
             <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
                 Energy Conservation
             </div>
+
+            @if(auth()->user()->hasPermission('manage-energy-reports'))
 
             <a href="{{ route('energy-reports.index') }}"
             class="block px-3 py-2 rounded
@@ -333,6 +347,20 @@
                 💡 Energy Conservation Report
 
             </a>
+
+            @endif
+
+            @if(auth()->user()->hasPermission('manage-water-bills'))
+
+            <a href="{{ route('water-bills.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('water-bills.*') || request()->routeIs('water-meters.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🚰 Water Bill Report
+
+            </a>
+
+            @endif
 
             @endif
 
@@ -810,9 +838,33 @@
                     </a>
 
                     <a href="{{ route('job-requests.my-assigned') }}"
-                    class="block px-4 py-3 rounded-xl transition
+                    class="flex items-center justify-between px-4 py-3 rounded-xl transition
                     {{ request()->routeIs('job-requests.my-assigned') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        🔧 My Assigned Jobs
+
+                        <span>🔧 My Assigned Jobs</span>
+
+                        @if($myAssignedJobsPendingCount > 0)
+                        <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                            {{ $myAssignedJobsPendingCount }}
+                        </span>
+                        @endif
+
+                    </a>
+
+                @endif
+
+                @if(in_array(Auth::user()->role, ['personnel', 'supervisor']))
+
+                    <div class="border-t my-2"></div>
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
+                        Property Services
+                    </div>
+
+                    <a href="{{ route('property-issuances.mine') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('property-issuances.mine') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        🧾 My Property Accountability
                     </a>
 
                 @endif

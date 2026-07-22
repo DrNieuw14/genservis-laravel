@@ -69,6 +69,19 @@ class PositionSeeder extends Seeder
             ['position_name' => 'Research Assistant', 'position_code' => 'RA'],
             ['position_name' => 'Nurse', 'position_code' => 'NURSE'],
 
+            // Nurse rank ladder — real civil service position title series,
+            // same sort_order convention as the Faculty Academic Rank
+            // ladder above (kept alongside the existing flat "Nurse" entry
+            // rather than replacing it, since a real employee is currently
+            // on that one).
+            ['position_name' => 'Nurse I', 'position_code' => 'NURSE1', 'sort_order' => 20],
+            ['position_name' => 'Nurse II', 'position_code' => 'NURSE2', 'sort_order' => 21],
+            ['position_name' => 'Nurse III', 'position_code' => 'NURSE3', 'sort_order' => 22],
+            ['position_name' => 'Nurse IV', 'position_code' => 'NURSE4', 'sort_order' => 23],
+            ['position_name' => 'Nurse V', 'position_code' => 'NURSE5', 'sort_order' => 24],
+            ['position_name' => 'Nurse VI', 'position_code' => 'NURSE6', 'sort_order' => 25],
+            ['position_name' => 'Nurse VII', 'position_code' => 'NURSE7', 'sort_order' => 26],
+
             // Utility
             ['position_name' => 'Utility Worker', 'position_code' => 'UTIL'],
             ['position_name' => 'Groundskeeper', 'position_code' => 'GROUND'],

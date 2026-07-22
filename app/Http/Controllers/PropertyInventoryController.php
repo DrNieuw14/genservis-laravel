@@ -169,11 +169,13 @@ class PropertyInventoryController extends Controller
     {
         return $request->validate([
             'property_name' => 'required|string|max:255',
+            'unit' => 'nullable|string|max:255',
             'property_number' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'quantity' => 'required|integer|min:1',
             'unit_value' => 'nullable|numeric|min:0',
             'date_acquired' => 'nullable|date',
+            'estimated_useful_life' => 'nullable|string|max:255',
             'condition' => 'required|in:' . implode(',', PropertyItem::CONDITIONS),
             'remarks' => 'nullable|string',
         ]);

@@ -26,7 +26,12 @@ class UtilitySchedule extends Model
         'time_out',
         'overtime_minutes',
         'overtime_reason',
+        'credited_hours',
     ];
+
+    // Standard workday used to derive a day's default credited hours when
+    // no manual override is set.
+    const STANDARD_WORKDAY_HOURS = 8.0;
 
     protected $casts = [
         'schedule_date' => 'date',

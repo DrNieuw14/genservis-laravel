@@ -43,7 +43,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('job-requests.store') }}">
+    <form method="POST" action="{{ route('job-requests.store') }}" enctype="multipart/form-data">
         @csrf
 
         <!-- CATEGORY -->
@@ -173,6 +173,31 @@
 
         </div>
 
+        <!-- PHOTO EVIDENCE -->
+        <div class="mt-6">
+            <label class="block mb-2 font-semibold">
+                Photo Evidence (optional)
+            </label>
+
+            <p class="text-sm text-gray-500 mb-3">
+                E.g. a photo of the damaged item or area needing repair/replacement. You can add more than one.
+            </p>
+
+            <input
+                type="file"
+                name="photos[]"
+                accept="image/*"
+                multiple
+                onchange="previewRequestPhotos(this)"
+                class="w-full border rounded-lg p-3 bg-white">
+
+            @error('photos.*')
+                <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+            @enderror
+
+            <div id="request-photo-preview" class="flex flex-wrap gap-3 mt-3"></div>
+        </div>
+
         <div class="mt-8">
             <button type="submit"
                 class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-lg shadow">
@@ -181,6 +206,32 @@
         </div>
 
     </form>
+
+    <script>
+
+        function previewRequestPhotos(input)
+        {
+            const container = document.getElementById('request-photo-preview');
+
+            container.innerHTML = '';
+
+            if (!input.files) {
+                return;
+            }
+
+            Array.from(input.files).forEach(function (file) {
+
+                const img = document.createElement('img');
+
+                img.src = URL.createObjectURL(file);
+                img.className = 'w-24 h-24 object-cover rounded-lg border';
+
+                container.appendChild(img);
+
+            });
+        }
+
+    </script>
 
 </div>
 

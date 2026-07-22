@@ -365,13 +365,21 @@
                                 <img
                                     src="{{ $material->image_url }}"
                                     alt="{{ $material->name }}"
-                                    class="w-12 h-12 object-cover rounded-lg border">
+                                    title="Click to preview"
+                                    class="material-photo w-12 h-12 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
+                                    onclick="previewMaterialPhoto(this)">
 
                             @else
 
-                                <div class="w-12 h-12 flex items-center justify-center rounded-lg border bg-gray-50 text-gray-300 text-xl">
+                                <div
+                                    class="material-photo-placeholder w-12 h-12 flex items-center justify-center rounded-lg border bg-gray-50 text-gray-300 text-xl cursor-pointer hover:bg-gray-100 hover:text-gray-400 transition"
+                                    title="Click to upload a photo"
+                                    data-material-name="{{ $material->name }}"
+                                    onclick="triggerMaterialPhotoUpload(this, {{ $material->id }})">
                                     📦
                                 </div>
+
+                                <input type="file" accept="image/*" class="hidden material-photo-input">
 
                             @endif
 
@@ -511,6 +519,93 @@
 
 @push('scripts')
 <script>
+
+function previewMaterialPhoto(img)
+{
+    Swal.fire({
+        imageUrl: img.src,
+        imageAlt: img.alt || 'Material photo',
+        title: img.alt || '',
+        showConfirmButton: false,
+        showCloseButton: true,
+        background: '#fff',
+    });
+}
+
+// Upload a photo for a material that doesn't have one yet, straight from
+// the inventory list — the hidden file input right after the placeholder
+// is reused for every click rather than creating a new one each time.
+function triggerMaterialPhotoUpload(placeholder, materialId)
+{
+    const input = placeholder.nextElementSibling;
+
+    input.value = '';
+
+    input.onchange = function ()
+    {
+        if (!input.files.length) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', input.files[0]);
+
+        placeholder.classList.add('opacity-50', 'pointer-events-none');
+
+        fetch('{{ url('/materials') }}/' + materialId + '/quick-image', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            },
+            body: formData,
+        })
+        .then(async response => {
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw data;
+            }
+
+            return data;
+        })
+        .then(data => {
+
+            const img = document.createElement('img');
+            img.src = data.image_url;
+            img.alt = placeholder.dataset.materialName || '';
+            img.title = 'Click to preview';
+            img.className = 'material-photo w-12 h-12 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition';
+            img.setAttribute('onclick', 'previewMaterialPhoto(this)');
+
+            placeholder.replaceWith(img);
+            input.remove();
+
+        })
+        .catch(error => {
+
+            let message = error.message || 'Unable to upload photo. Please try again.';
+
+            if (error.errors) {
+                message = Object.values(error.errors).map(m => m[0]).join(' ');
+            }
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Upload failed',
+                text: message,
+                confirmButtonColor: '#2563eb',
+            });
+
+            placeholder.classList.remove('opacity-50', 'pointer-events-none');
+
+        });
+    };
+
+    input.click();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('.delete-material-btn').forEach(button => {
