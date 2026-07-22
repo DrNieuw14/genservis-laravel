@@ -396,6 +396,38 @@
 
             @endif
 
+            @if(auth()->user()->hasPermission('manage-admission-applicants'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Admission Testing
+            </div>
+
+            <a href="{{ route('admission-years.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('admission-years.*') || request()->routeIs('admission-applicants.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🎓 Admission Years
+
+            </a>
+
+            <a href="{{ route('exam-sessions.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('exam-sessions.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                📝 Exam Results
+
+            </a>
+
+            <a href="{{ route('program-rankings.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('program-rankings.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🏆 Program Rankings
+
+            </a>
+
+            @endif
+
             <!-- Walk-In Issuance -->
 
             @if(auth()->user()->hasPermission('create-walkin-requests'))

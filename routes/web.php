@@ -20,6 +20,10 @@ use App\Http\Controllers\EnergyConservationReportController;
 use App\Http\Controllers\WaterBillController;
 use App\Http\Controllers\HealthConsultationController;
 use App\Http\Controllers\ClinicMedicineController;
+use App\Http\Controllers\AdmissionYearController;
+use App\Http\Controllers\AdmissionApplicantController;
+use App\Http\Controllers\ExamSessionController;
+use App\Http\Controllers\ProgramRankingController;
 use App\Http\Controllers\WaterMeterController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
@@ -713,6 +717,81 @@ Route::middleware(['auth', 'permission:manage-clinic-medicines'])->group(functio
 
     Route::delete('/clinic-medicines/{id}', [ClinicMedicineController::class, 'destroy'])
         ->name('clinic-medicines.destroy');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admission Applicant Roster — imported from the real Admission Testing
+| registration export, organized per Admission Year. Admission and Testing
+| Services only.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-admission-applicants'])->group(function () {
+
+    Route::get('/admission-years', [AdmissionYearController::class, 'index'])
+        ->name('admission-years.index');
+
+    Route::post('/admission-years', [AdmissionYearController::class, 'store'])
+        ->name('admission-years.store');
+
+    Route::delete('/admission-years/{id}', [AdmissionYearController::class, 'destroy'])
+        ->name('admission-years.destroy');
+
+    Route::get('/admission-years/{yearId}/applicants', [AdmissionApplicantController::class, 'index'])
+        ->name('admission-applicants.index');
+
+    Route::get('/admission-years/{yearId}/applicants/import', [AdmissionApplicantController::class, 'importForm'])
+        ->name('admission-applicants.import');
+
+    Route::post('/admission-years/{yearId}/applicants/import', [AdmissionApplicantController::class, 'importStore'])
+        ->name('admission-applicants.import.store');
+
+    Route::get('/admission-years/{yearId}/applicants/{id}', [AdmissionApplicantController::class, 'show'])
+        ->name('admission-applicants.show');
+
+    Route::get('/admission-years/{yearId}/applicants/{id}/edit', [AdmissionApplicantController::class, 'edit'])
+        ->name('admission-applicants.edit');
+
+    Route::put('/admission-years/{yearId}/applicants/{id}', [AdmissionApplicantController::class, 'update'])
+        ->name('admission-applicants.update');
+
+    Route::delete('/admission-years/{yearId}/applicants/{id}', [AdmissionApplicantController::class, 'destroy'])
+        ->name('admission-applicants.destroy');
+
+    Route::get('/exam-sessions', [ExamSessionController::class, 'index'])
+        ->name('exam-sessions.index');
+
+    Route::post('/exam-sessions', [ExamSessionController::class, 'store'])
+        ->name('exam-sessions.store');
+
+    Route::get('/exam-sessions/{id}', [ExamSessionController::class, 'show'])
+        ->name('exam-sessions.show');
+
+    Route::delete('/exam-sessions/{id}', [ExamSessionController::class, 'destroy'])
+        ->name('exam-sessions.destroy');
+
+    Route::get('/exam-sessions/{id}/import', [ExamSessionController::class, 'importForm'])
+        ->name('exam-sessions.import');
+
+    Route::post('/exam-sessions/{id}/import', [ExamSessionController::class, 'importStore'])
+        ->name('exam-sessions.import.store');
+
+    Route::get('/program-rankings', [ProgramRankingController::class, 'index'])
+        ->name('program-rankings.index');
+
+    Route::get('/program-rankings/import', [ProgramRankingController::class, 'importForm'])
+        ->name('program-rankings.import');
+
+    Route::post('/program-rankings/import', [ProgramRankingController::class, 'importStore'])
+        ->name('program-rankings.import.store');
+
+    Route::get('/program-rankings/{yearId}/all', [ProgramRankingController::class, 'showAll'])
+        ->name('program-rankings.all');
+
+    Route::get('/program-rankings/{yearId}/{programCode}', [ProgramRankingController::class, 'showProgram'])
+        ->name('program-rankings.show');
 
 });
 

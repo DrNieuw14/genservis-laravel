@@ -302,6 +302,24 @@ class PermissionSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
+            | Admission Applicant Roster — imported from the real Admission
+            | Testing registration export, organized per Admission Year.
+            | Admission and Testing Services only.
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Admission Applicant Roster',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Admission Applicants', 'slug' => 'manage-admission-applicants'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
             | Room Inventory of Property — fixed/durable property (furniture,
             | ICT equipment, appliances, etc.) tracked per room, distinct from
             | the consumable Materials Inventory. Property Custodian only.

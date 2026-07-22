@@ -422,5 +422,28 @@ class RolePermissionSeeder extends Seeder
             }
 
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Admission and Testing Services — Anje's role, held with zero
+        | permissions until now.
+        |--------------------------------------------------------------------------
+        */
+
+        $admissionTesting = Role::where('name', 'Admission and Testing Services')->first();
+
+        if ($admissionTesting) {
+
+            $admissionTesting->permissions()->sync(
+
+                Permission::whereIn('slug', [
+
+                    'manage-admission-applicants',
+
+                ])->pluck('id')->toArray()
+
+            );
+
+        }
     }
 }
