@@ -14,7 +14,7 @@ class RoleController extends Controller
     {
         $search = $request->search;
 
-        $roles = Role::withCount('users')
+        $roles = Role::withCount(['users', 'additionalUsers'])
             ->when($search, function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%");

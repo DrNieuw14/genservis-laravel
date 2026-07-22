@@ -18,6 +18,8 @@ use App\Http\Controllers\UtilityLeaveController;
 use App\Http\Controllers\UtilityDtrController;
 use App\Http\Controllers\EnergyConservationReportController;
 use App\Http\Controllers\WaterBillController;
+use App\Http\Controllers\HealthConsultationController;
+use App\Http\Controllers\ClinicMedicineController;
 use App\Http\Controllers\WaterMeterController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
@@ -641,6 +643,76 @@ Route::middleware(['auth', 'permission:manage-water-bills'])->group(function () 
 
     Route::delete('/water-meters/{meter}', [WaterMeterController::class, 'destroy'])
         ->name('water-meters.destroy');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Health Consultation — Campus Health Services clinic visit record, built
+| from the real CvSU Consultation Form. Health Service / Nurse only.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-health-consultations'])->group(function () {
+
+    Route::get('/health-consultations', [HealthConsultationController::class, 'index'])
+        ->name('health-consultations.index');
+
+    Route::get('/health-consultations/create', [HealthConsultationController::class, 'create'])
+        ->name('health-consultations.create');
+
+    Route::post('/health-consultations', [HealthConsultationController::class, 'store'])
+        ->name('health-consultations.store');
+
+    Route::get('/health-consultations/{id}', [HealthConsultationController::class, 'show'])
+        ->name('health-consultations.show');
+
+    Route::get('/health-consultations/{id}/edit', [HealthConsultationController::class, 'edit'])
+        ->name('health-consultations.edit');
+
+    Route::put('/health-consultations/{id}', [HealthConsultationController::class, 'update'])
+        ->name('health-consultations.update');
+
+    Route::delete('/health-consultations/{id}', [HealthConsultationController::class, 'destroy'])
+        ->name('health-consultations.destroy');
+
+    Route::get('/health-consultations/{id}/print', [HealthConsultationController::class, 'print'])
+        ->name('health-consultations.print');
+
+    Route::post('/health-consultations/{id}/medicines', [HealthConsultationController::class, 'dispenseMedicine'])
+        ->name('health-consultations.medicines.store');
+
+    Route::delete('/health-consultations/{id}/medicines/{medicineLogId}', [HealthConsultationController::class, 'destroyMedicine'])
+        ->name('health-consultations.medicines.destroy');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Clinic Medicine Inventory — Campus Health Services stock of medicine and
+| medical supplies, built from the real CvSU Health Services stock sheet.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-clinic-medicines'])->group(function () {
+
+    Route::get('/clinic-medicines', [ClinicMedicineController::class, 'index'])
+        ->name('clinic-medicines.index');
+
+    Route::get('/clinic-medicines/create', [ClinicMedicineController::class, 'create'])
+        ->name('clinic-medicines.create');
+
+    Route::post('/clinic-medicines', [ClinicMedicineController::class, 'store'])
+        ->name('clinic-medicines.store');
+
+    Route::get('/clinic-medicines/{id}/edit', [ClinicMedicineController::class, 'edit'])
+        ->name('clinic-medicines.edit');
+
+    Route::put('/clinic-medicines/{id}', [ClinicMedicineController::class, 'update'])
+        ->name('clinic-medicines.update');
+
+    Route::delete('/clinic-medicines/{id}', [ClinicMedicineController::class, 'destroy'])
+        ->name('clinic-medicines.destroy');
 
 });
 

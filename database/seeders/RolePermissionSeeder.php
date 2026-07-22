@@ -392,5 +392,35 @@ class RolePermissionSeeder extends Seeder
             );
 
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Health Consultation — Health Service (Kris's primary role) and the
+        | Nurse rank ladder (future nurses onboarded onto Nurse I-VII) both
+        | get this, same "two roles share one permission" pattern as GSO/PPS
+        | sharing Job Request assignment.
+        |--------------------------------------------------------------------------
+        */
+
+        foreach (['Health Service', 'Nurse'] as $roleName) {
+
+            $role = Role::where('name', $roleName)->first();
+
+            if ($role) {
+
+                $role->permissions()->sync(
+
+                    Permission::whereIn('slug', [
+
+                        'manage-health-consultations',
+                        'manage-clinic-medicines',
+
+                    ])->pluck('id')->toArray()
+
+                );
+
+            }
+
+        }
     }
 }

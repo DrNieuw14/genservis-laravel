@@ -21,6 +21,18 @@ class Role extends Model
         return $this->hasMany(User::class);
     }
 
+    /**
+     * Accounts holding this role as an additional (stacked) role rather
+     * than their primary one — inverse of User::additionalRoles(). A role
+     * like "Energy Focal Person" is only ever held this way, so it must be
+     * counted alongside users() for an accurate "how many accounts hold
+     * this role" total.
+     */
+    public function additionalUsers()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
     public function permissions()
     {
         return $this->belongsToMany(Permission::class);

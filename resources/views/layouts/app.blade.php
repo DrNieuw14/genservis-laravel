@@ -364,6 +364,38 @@
 
             @endif
 
+            @if(auth()->user()->hasPermission('manage-health-consultations') || auth()->user()->hasPermission('manage-clinic-medicines'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Health Services
+            </div>
+
+            @if(auth()->user()->hasPermission('manage-health-consultations'))
+
+            <a href="{{ route('health-consultations.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('health-consultations.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🩺 Health Consultations
+
+            </a>
+
+            @endif
+
+            @if(auth()->user()->hasPermission('manage-clinic-medicines'))
+
+            <a href="{{ route('clinic-medicines.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('clinic-medicines.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                💊 Clinic Medicine Inventory
+
+            </a>
+
+            @endif
+
+            @endif
+
             <!-- Walk-In Issuance -->
 
             @if(auth()->user()->hasPermission('create-walkin-requests'))

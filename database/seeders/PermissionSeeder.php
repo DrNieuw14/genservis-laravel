@@ -266,6 +266,42 @@ class PermissionSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
+            | Health Consultation — Campus Health Services clinic visit
+            | record, built from the real CvSU Consultation Form. Held by
+            | the Health Service role and the Nurse rank ladder.
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Health Consultation',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Health Consultations', 'slug' => 'manage-health-consultations'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Clinic Medicine Inventory — stock of medicine/medical supplies
+            | held by Campus Health Services, built from the real CvSU
+            | Health Services stock sheet. Health Service / Nurse only.
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Clinic Medicine Inventory',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Clinic Medicines', 'slug' => 'manage-clinic-medicines'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
             | Room Inventory of Property — fixed/durable property (furniture,
             | ICT equipment, appliances, etc.) tracked per room, distinct from
             | the consumable Materials Inventory. Property Custodian only.
