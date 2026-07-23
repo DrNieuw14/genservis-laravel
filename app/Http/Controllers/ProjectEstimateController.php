@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewNotificationEvent;
 use App\Models\JobRequest;
+use App\Models\Notification;
 use App\Models\ProjectEstimate;
 use App\Models\ProjectEstimateItem;
 use App\Models\ProjectEstimatePhoto;
@@ -115,6 +117,51 @@ class ProjectEstimateController extends Controller
         return redirect()
             ->route('project-estimates.index')
             ->with('success', 'Project estimate deleted.');
+    }
+
+    // 🔔 Toggle Ongoing/Done — notifies the linked Job Request's requester
+    // (if any) and the estimate's own preparer (if not the one making this
+    // change), same "who'd actually want to know" reasoning as every other
+    // status-change notification in this app.
+    public function updateStatus(Request $request, $id)
+    {
+        $estimate = ProjectEstimate::with('jobRequest')->findOrFail($id);
+
+        $validated = $request->validate([
+            'status' => 'required|in:ongoing,done',
+        ]);
+
+        $estimate->update([
+            'status' => $validated['status'],
+            'status_updated_at' => now(),
+            'status_updated_by' => Auth::id(),
+        ]);
+
+        $user = Auth::user();
+        $statusLabel = $estimate->statusLabel();
+
+        $notifyUserIds = collect([$estimate->jobRequest?->user_id, $estimate->prepared_by])
+            ->filter()
+            ->unique()
+            ->reject(fn ($userId) => $userId === Auth::id());
+
+        foreach ($notifyUserIds as $notifyUserId) {
+
+            $notif = Notification::create([
+                'user_id' => $notifyUserId,
+                'type' => 'project_estimate',
+                'title' => 'Project Status Updated',
+                'url' => route('project-estimates.show', $estimate->id, false),
+                'message' =>
+                    ($user->fullname ?? $user->username)
+                    . ' marked "' . $estimate->project_name . '" as ' . $statusLabel . '.',
+                'is_read' => 0,
+            ]);
+
+            event(new NewNotificationEvent($notif));
+        }
+
+        return back()->with('success', "Project marked as {$statusLabel}.");
     }
 
     public function storeItem(Request $request, $id)

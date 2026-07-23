@@ -51,6 +51,7 @@
                     <th class="p-3 text-center">Score</th>
                     <th class="p-3 text-center">Grade</th>
                     <th class="p-3 text-center">PR</th>
+                    <th class="p-3 text-center">Status</th>
                     <th class="p-3 text-center">Roster Match</th>
                 </tr>
             </thead>
@@ -80,6 +81,16 @@
                         <td class="p-3 text-center">{{ $r->percentile_rank ?? '-' }}</td>
 
                         <td class="p-3 text-center">
+                            @if($r->admitted === true)
+                                <span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">✅ Admitted</span>
+                            @elseif($r->admitted === false)
+                                <span class="bg-gray-100 text-gray-500 text-xs font-semibold px-2 py-1 rounded-full">Not Admitted</span>
+                            @else
+                                <span class="text-gray-400 text-xs">-</span>
+                            @endif
+                        </td>
+
+                        <td class="p-3 text-center">
                             @if($r->match_status === 'matched')
                                 <a href="{{ route('admission-applicants.show', [$year->id, $r->admission_applicant_id]) }}"
                                    class="text-green-700 hover:underline">
@@ -100,7 +111,7 @@
                 @empty
 
                     <tr>
-                        <td colspan="8" class="p-6 text-center text-gray-500">
+                        <td colspan="9" class="p-6 text-center text-gray-500">
                             No examinees found.
                         </td>
                     </tr>

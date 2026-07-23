@@ -9,6 +9,10 @@
         <div>
             <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
                 🧾 {{ $estimate->project_name }}
+
+                <span class="text-sm font-semibold px-3 py-1 rounded-full {{ $estimate->status === 'done' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
+                    {{ $estimate->statusLabel() }}
+                </span>
             </h2>
 
             <p class="text-gray-500 mt-1 text-lg">
@@ -17,9 +21,32 @@
                     — {{ $estimate->location }}
                 @endif
             </p>
+
+            @if($estimate->status_updated_at)
+                <p class="text-xs text-gray-400 mt-1">
+                    Status updated by {{ $estimate->statusUpdatedBy->fullname ?? $estimate->statusUpdatedBy->name ?? '-' }}
+                    on {{ $estimate->status_updated_at->format('M d, Y h:i A') }}
+                </p>
+            @endif
         </div>
 
         <div class="flex gap-2">
+
+            <form method="POST" action="{{ route('project-estimates.status.update', $estimate->id) }}">
+                @csrf
+                <input type="hidden" name="status" value="{{ $estimate->status === 'done' ? 'ongoing' : 'done' }}">
+                @if($estimate->status === 'done')
+                    <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded"
+                            onclick="return confirm('Reopen this project as Ongoing?')">
+                        🔄 Mark as Ongoing
+                    </button>
+                @else
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                            onclick="return confirm('Mark this project as Done? The requester will be notified.')">
+                        ✅ Mark as Done
+                    </button>
+                @endif
+            </form>
 
             <x-back-button :href="route('project-estimates.index')" />
 

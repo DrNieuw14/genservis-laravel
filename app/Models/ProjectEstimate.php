@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProjectEstimate extends Model
 {
+    const STATUSES = [
+        'ongoing' => '🟡 Ongoing',
+        'done' => '🟢 Done',
+    ];
+
     protected $fillable = [
         'reference_no',
         'project_name',
@@ -15,8 +20,15 @@ class ProjectEstimate extends Model
         'duration',
         'assumptions',
         'exclusions',
+        'status',
+        'status_updated_at',
+        'status_updated_by',
         'job_request_id',
         'created_by',
+    ];
+
+    protected $casts = [
+        'status_updated_at' => 'datetime',
     ];
 
     public function items()
@@ -42,6 +54,16 @@ class ProjectEstimate extends Model
     public function jobRequest()
     {
         return $this->belongsTo(JobRequest::class);
+    }
+
+    public function statusUpdatedBy()
+    {
+        return $this->belongsTo(User::class, 'status_updated_by');
+    }
+
+    public function statusLabel(): string
+    {
+        return self::STATUSES[$this->status] ?? $this->status;
     }
 
     public function materialsTotal(): float

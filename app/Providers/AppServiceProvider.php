@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Notification;
 use App\Models\Personnel;
 use App\Models\JobRequest;
+use App\Models\ProjectEstimate;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
@@ -37,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
             $pendingUtilityLeaveCount = 0;
             $myJobRequestsInProgressCount = 0;
             $myAssignedJobsPendingCount = 0;
+            $myOngoingProjectEstimatesCount = 0;
 
             if (Auth::check()) {
 
@@ -91,6 +93,13 @@ class AppServiceProvider extends ServiceProvider
                         ->where('status', 'assigned')
                         ->count();
                 }
+
+                // Same "informational, not an action queue" convention as
+                // myJobRequestsInProgressCount — how many project estimates
+                // I prepared are still Ongoing (not yet marked Done).
+                $myOngoingProjectEstimatesCount = ProjectEstimate::where('prepared_by', Auth::id())
+                    ->where('status', 'ongoing')
+                    ->count();
             }
 
             $view->with([
@@ -100,6 +109,7 @@ class AppServiceProvider extends ServiceProvider
                 'pendingUtilityLeaveCount' => $pendingUtilityLeaveCount,
                 'myJobRequestsInProgressCount' => $myJobRequestsInProgressCount,
                 'myAssignedJobsPendingCount' => $myAssignedJobsPendingCount,
+                'myOngoingProjectEstimatesCount' => $myOngoingProjectEstimatesCount,
             ]);
         });
 

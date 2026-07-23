@@ -181,6 +181,83 @@
 
     @endif
 
+    <!-- OFFICIAL RECEIPT -->
+    @php
+        $receiptPhotos = $jobRequest->photos->where('type', 'official_receipt');
+        // Assigned utility worker can add a receipt too — even once the job
+        // is done, since a receipt for materials bought to do the work
+        // often only comes in hand after finishing, not restricted to the
+        // requester/approver/assigner like the general evidence photos.
+        $canManageReceipts = $canManageEvidence || $isAssignedWorker;
+    @endphp
+
+    @if($receiptPhotos->isNotEmpty() || $canManageReceipts)
+
+        <div class="border rounded-lg p-5 bg-gray-50 mb-6">
+
+            <p class="text-sm text-gray-500 mb-2">
+                🧾 Official Receipt ({{ $receiptPhotos->count() }})
+            </p>
+
+            @if($receiptPhotos->isNotEmpty())
+
+                <div class="flex flex-wrap gap-4 mb-4">
+
+                    @foreach($receiptPhotos as $photo)
+
+                        <div class="text-center">
+
+                            <a href="{{ $photo->url }}" target="_blank">
+                                <img
+                                    src="{{ $photo->url }}"
+                                    alt="Official receipt"
+                                    class="w-28 h-28 object-cover rounded-lg border hover:opacity-80 transition">
+                            </a>
+
+                            <p class="text-xs text-gray-500 mt-1">
+                                {{ $photo->uploader->fullname ?? $photo->uploader->name ?? '-' }}
+                            </p>
+
+                            @if($canManageReceipts || $photo->uploaded_by === auth()->id())
+                                <form method="POST" action="{{ route('job-requests.photos.destroy', [$jobRequest->id, $photo->id]) }}"
+                                      onsubmit="return confirm('Remove this photo?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:underline text-xs">🗑 Remove</button>
+                                </form>
+                            @endif
+
+                        </div>
+
+                    @endforeach
+
+                </div>
+
+            @endif
+
+            @if($canManageReceipts)
+
+                <form method="POST" action="{{ route('job-requests.receipt-photos.store', $jobRequest->id) }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="flex flex-wrap items-end gap-3">
+                        <div class="flex-1 min-w-[200px]">
+                            <input type="file" name="photos[]" accept="image/*" multiple class="w-full border rounded-lg p-2 bg-white">
+                        </div>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg shadow">
+                            ⬆️ Add Receipt
+                        </button>
+                    </div>
+                    @error('photos.*')
+                        <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                    @enderror
+                </form>
+
+            @endif
+
+        </div>
+
+    @endif
+
     <!-- APPROVAL -->
     @if(in_array($jobRequest->status, ['approved', 'assigned', 'work_done', 'completed', 'rejected']))
 

@@ -54,6 +54,7 @@
                     <th class="p-3 text-left">Location</th>
                     <th class="p-3">Items</th>
                     <th class="p-3">Estimated Total</th>
+                    <th class="p-3 text-center">Status</th>
                     <th class="p-3">Created</th>
                     <th class="p-3 text-center">Action</th>
                 </tr>
@@ -75,6 +76,12 @@
 
                         <td class="p-3 text-center">₱{{ number_format($estimate->grandTotal(), 2) }}</td>
 
+                        <td class="p-3 text-center">
+                            <span class="text-xs font-semibold px-2 py-1 rounded-full {{ $estimate->status === 'done' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
+                                {{ $estimate->statusLabel() }}
+                            </span>
+                        </td>
+
                         <td class="p-3 text-center">{{ $estimate->created_at->format('M d, Y') }}</td>
 
                         <td class="p-3 text-center">
@@ -89,7 +96,7 @@
                 @empty
 
                     <tr>
-                        <td colspan="7" class="p-6 text-center text-gray-500">
+                        <td colspan="8" class="p-6 text-center text-gray-500">
                             No project estimates yet.
                         </td>
                     </tr>

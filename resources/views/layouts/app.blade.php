@@ -233,10 +233,16 @@
             </div>
 
             <a href="{{ route('project-estimates.index') }}"
-            class="block px-3 py-2 rounded
+            class="flex items-center justify-between px-3 py-2 rounded
             {{ request()->routeIs('project-estimates.index') || request()->routeIs('project-estimates.show') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
-                🧾 Project Estimates
+                <span>🧾 Project Estimates</span>
+
+                @if($myOngoingProjectEstimatesCount > 0)
+                <span class="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    {{ $myOngoingProjectEstimatesCount }}
+                </span>
+                @endif
 
             </a>
 
@@ -423,6 +429,22 @@
             {{ request()->routeIs('program-rankings.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                 🏆 Program Rankings
+
+            </a>
+
+            <a href="{{ route('reapplications.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('reapplications.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🔄 Reapplications
+
+            </a>
+
+            <a href="{{ route('final-admissions.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('final-admissions.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                📋 Final List of Admission
 
             </a>
 

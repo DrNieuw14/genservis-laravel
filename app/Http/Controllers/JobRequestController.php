@@ -490,6 +490,49 @@ class JobRequestController extends Controller
         return back()->with('success', 'Evidence photo(s) added.');
     }
 
+    // Official receipt(s) for materials/parts bought to complete the job —
+    // requester, whoever can approve/assign this category, OR the assigned
+    // worker themselves (even after the job is marked done — a receipt for
+    // materials bought to do the work often only comes in hand once
+    // finished, not restricted to "still in progress" like work-done
+    // photos). Available any time regardless of status.
+    public function uploadReceipt(Request $request, $id)
+    {
+        $jobRequest = JobRequest::findOrFail($id);
+
+        $user = Auth::user();
+
+        $isOwner = $jobRequest->user_id === $user->id;
+        $isAssignedWorker = $jobRequest->isAssignedTo($user);
+        $canManage = $user->hasPermission($jobRequest->approvalPermission())
+            || $user->hasPermission('assign-job-request-personnel');
+
+        if (!$isOwner && !$canManage && !$isAssignedWorker) {
+            abort(403);
+        }
+
+        $request->validate([
+            'photos' => 'required|array',
+            'photos.*' => 'image|max:5120',
+        ], [
+            'photos.required' => 'Please choose at least one receipt photo to upload.',
+            'photos.*.image' => 'Each file must be a photo (JPG, PNG, etc.).',
+            'photos.*.max' => 'Each photo must be 5MB or smaller.',
+        ]);
+
+        foreach ($request->file('photos', []) as $photo) {
+
+            JobRequestPhoto::create([
+                'job_request_id' => $jobRequest->id,
+                'type' => 'official_receipt',
+                'path' => $photo->store('job_requests', 'public'),
+                'uploaded_by' => $user->id,
+            ]);
+        }
+
+        return back()->with('success', 'Receipt photo(s) added.');
+    }
+
     public function destroyPhoto($id, $photoId)
     {
         $jobRequest = JobRequest::findOrFail($id);

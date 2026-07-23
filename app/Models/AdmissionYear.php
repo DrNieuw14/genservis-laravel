@@ -32,6 +32,16 @@ class AdmissionYear extends Model
         return $this->hasMany(ProgramRanking::class);
     }
 
+    public function reapplications()
+    {
+        return $this->hasMany(Reapplication::class);
+    }
+
+    public function finalAdmissions()
+    {
+        return $this->hasMany(FinalAdmission::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

@@ -9,6 +9,7 @@ class JobRequestPhoto extends Model
     const TYPES = [
         'request_evidence' => '📷 Evidence Submitted with Request',
         'work_done' => '🔧 Work Done Evidence',
+        'official_receipt' => '🧾 Official Receipt',
     ];
 
     protected $fillable = [

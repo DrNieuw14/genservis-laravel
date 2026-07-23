@@ -42,6 +42,11 @@ class AdmissionApplicant extends Model
         return $this->hasMany(ExamResult::class, 'admission_applicant_id');
     }
 
+    public function finalAdmission()
+    {
+        return $this->hasOne(FinalAdmission::class, 'admission_applicant_id');
+    }
+
     public function fullName(): string
     {
         $parts = array_filter([

@@ -24,6 +24,8 @@ use App\Http\Controllers\AdmissionYearController;
 use App\Http\Controllers\AdmissionApplicantController;
 use App\Http\Controllers\ExamSessionController;
 use App\Http\Controllers\ProgramRankingController;
+use App\Http\Controllers\ReapplicationController;
+use App\Http\Controllers\FinalAdmissionController;
 use App\Http\Controllers\WaterMeterController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
@@ -135,6 +137,9 @@ Route::middleware(['auth'])->group(function () {
     // requester can add a forgotten photo without needing GSO/PPS access.
     Route::post('/job-requests/{id}/evidence-photos', [JobRequestController::class, 'uploadRequestEvidence'])
         ->name('job-requests.evidence-photos.store');
+
+    Route::post('/job-requests/{id}/receipt-photos', [JobRequestController::class, 'uploadReceipt'])
+        ->name('job-requests.receipt-photos.store');
 
     Route::delete('/job-requests/{id}/photos/{photoId}', [JobRequestController::class, 'destroyPhoto'])
         ->name('job-requests.photos.destroy');
@@ -275,6 +280,9 @@ Route::middleware(['auth', 'permission:manage-project-estimates'])->group(functi
 
     Route::delete('/project-estimates/{id}', [ProjectEstimateController::class, 'destroy'])
         ->name('project-estimates.destroy');
+
+    Route::post('/project-estimates/{id}/status', [ProjectEstimateController::class, 'updateStatus'])
+        ->name('project-estimates.status.update');
 
     Route::get('/project-estimates/{id}/print', [ProjectEstimateController::class, 'print'])
         ->name('project-estimates.print');
@@ -790,8 +798,47 @@ Route::middleware(['auth', 'permission:manage-admission-applicants'])->group(fun
     Route::get('/program-rankings/{yearId}/all', [ProgramRankingController::class, 'showAll'])
         ->name('program-rankings.all');
 
+    Route::get('/program-rankings/{yearId}/admitted-report', [ProgramRankingController::class, 'admittedReport'])
+        ->name('program-rankings.admitted-report');
+
+    Route::get('/program-rankings/{yearId}/admitted-report/print', [ProgramRankingController::class, 'admittedReportPrint'])
+        ->name('program-rankings.admitted-report.print');
+
     Route::get('/program-rankings/{yearId}/{programCode}', [ProgramRankingController::class, 'showProgram'])
         ->name('program-rankings.show');
+
+    Route::post('/program-rankings/{yearId}/{programCode}/quota', [ProgramRankingController::class, 'updateQuota'])
+        ->name('program-rankings.quota.update');
+
+    Route::get('/reapplications', [ReapplicationController::class, 'index'])
+        ->name('reapplications.index');
+
+    Route::get('/reapplications/import', [ReapplicationController::class, 'importForm'])
+        ->name('reapplications.import');
+
+    Route::post('/reapplications/import', [ReapplicationController::class, 'importStore'])
+        ->name('reapplications.import.store');
+
+    Route::get('/reapplications/{id}', [ReapplicationController::class, 'show'])
+        ->name('reapplications.show');
+
+    Route::get('/final-admissions', [FinalAdmissionController::class, 'index'])
+        ->name('final-admissions.index');
+
+    Route::post('/final-admissions', [FinalAdmissionController::class, 'store'])
+        ->name('final-admissions.store');
+
+    Route::post('/final-admissions/bulk', [FinalAdmissionController::class, 'bulkStore'])
+        ->name('final-admissions.bulk-store');
+
+    Route::post('/final-admissions/{id}/move', [FinalAdmissionController::class, 'move'])
+        ->name('final-admissions.move');
+
+    Route::delete('/final-admissions/{id}', [FinalAdmissionController::class, 'destroy'])
+        ->name('final-admissions.destroy');
+
+    Route::get('/final-admissions/{yearId}/print', [FinalAdmissionController::class, 'print'])
+        ->name('final-admissions.print');
 
 });
 

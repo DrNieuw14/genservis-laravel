@@ -16,10 +16,19 @@
             </p>
         </div>
 
-        <a href="{{ route('program-rankings.import') }}"
-           class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded shadow whitespace-nowrap">
-            📥 Upload Raw Data
-        </a>
+        <div class="flex gap-2">
+            @if($selectedYear)
+                <a href="{{ route('program-rankings.admitted-report', $selectedYear->id) }}"
+                   class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow whitespace-nowrap">
+                    📄 Admitted Report
+                </a>
+            @endif
+
+            <a href="{{ route('program-rankings.import') }}"
+               class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded shadow whitespace-nowrap">
+                📥 Upload Raw Data
+            </a>
+        </div>
 
     </div>
 
@@ -76,6 +85,12 @@
                     <p class="text-sm text-gray-500 mt-1">{{ $p['program'] }}</p>
                     <p class="text-2xl font-semibold text-green-700 mt-3">{{ $p['count'] }}</p>
                     <p class="text-xs text-gray-400">examinees</p>
+
+                    @if($p['quota'])
+                        <p class="text-sm text-blue-600 mt-2 font-semibold">🎯 {{ $p['quota'] }} slots</p>
+                    @else
+                        <p class="text-xs text-gray-400 mt-2">No capacity set yet</p>
+                    @endif
 
                 </a>
 
