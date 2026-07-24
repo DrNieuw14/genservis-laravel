@@ -191,7 +191,7 @@
 
                             <form method="POST" action="{{ route('employees.utility-staff.remove', $employee->id) }}"
                                   class="inline"
-                                  onsubmit="return confirm('Remove {{ $employee->fullname }} from the Utility & Maintenance Staff pool?')">
+                                  onsubmit="return genservisConfirm(event, 'Remove {{ $employee->fullname }} from the Utility & Maintenance Staff pool?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-800 font-medium ml-3">

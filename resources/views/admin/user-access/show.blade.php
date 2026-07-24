@@ -218,7 +218,7 @@
 
                             <button
                                 type="submit"
-                                onclick="return confirm('Activate this account?')"
+                                onclick="return genservisConfirm(event, 'Activate this account?')"
                                 class="inline-flex items-center gap-2 px-4 py-2
                                     bg-green-600 hover:bg-green-700
                                     text-white text-sm font-medium
@@ -256,7 +256,7 @@
 
                         <button
                             type="submit"
-                            onclick="return confirm('Suspend this account? The user will not be able to log in.')"
+                            onclick="return genservisConfirm(event, 'Suspend this account? The user will not be able to log in.')"
                             class="inline-flex items-center gap-2 px-4 py-2
                                 bg-red-600 hover:bg-red-700
                                 text-white text-sm font-medium
@@ -277,7 +277,7 @@
 
                         <button
                             type="submit"
-                            onclick="return confirm('Lock this account? The user will not be able to log in.')"
+                            onclick="return genservisConfirm(event, 'Lock this account? The user will not be able to log in.')"
                             class="inline-flex items-center gap-2 px-4 py-2
                                 bg-red-600 hover:bg-red-700
                                 text-white text-sm font-medium
@@ -298,7 +298,7 @@
 
                         <button
                             type="submit"
-                            onclick="return confirm('Deactivate this account? The user will not be able to log in.')"
+                            onclick="return genservisConfirm(event, 'Deactivate this account? The user will not be able to log in.')"
                             class="inline-flex items-center gap-2 px-4 py-2
                                 bg-red-600 hover:bg-red-700
                                 text-white text-sm font-medium
@@ -321,7 +321,7 @@
 
                         <button
                             type="submit"
-                            onclick="return confirm('Reactivate this account?')"
+                            onclick="return genservisConfirm(event, 'Reactivate this account?')"
                             class="inline-flex items-center gap-2 px-4 py-2
                                 bg-green-600 hover:bg-green-700
                                 text-white text-sm font-medium

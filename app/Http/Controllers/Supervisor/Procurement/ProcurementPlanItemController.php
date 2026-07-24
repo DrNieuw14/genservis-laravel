@@ -83,7 +83,12 @@ class ProcurementPlanItemController extends Controller
             'procurement_method' => [
                 'required',
                 'string',
-                'in:COMPETITIVE BIDDING,SHOPPING,DIRECT CONTRACTING,NP- SMALL VALUE PROCUREMENT,NP- AGENCY TO AGENCY',
+                'in:COMPETITIVE BIDDING,SHOPPING,DIRECT CONTRACTING,NP- SMALL VALUE PROCUREMENT,NP- AGENCY TO AGENCY,DIRECT RETAIL PURCHASE OF AIRLINE TICKETS,DIRECT RETAIL PURCHASE OF POL PRODUCTS',
+            ],
+
+            'ppa' => [
+                'nullable',
+                'in:GASS,STO,MFO1,MFO2,MFO3,MFO4',
             ],
 
             'assign_classification_id' => [
@@ -175,6 +180,8 @@ class ProcurementPlanItemController extends Controller
 
             $item->procurement_method = $validated['procurement_method'];
 
+            $item->ppa = $validated['ppa'] ?? null;
+
             $item->created_by = Auth::id();
 
             /*
@@ -241,6 +248,7 @@ class ProcurementPlanItemController extends Controller
             'priority' => $item->priority,
             'remarks' => $item->remarks,
             'procurement_method' => $item->procurement_method,
+            'ppa' => $item->ppa,
         ]);
     }
 
@@ -303,7 +311,12 @@ class ProcurementPlanItemController extends Controller
             'procurement_method' => [
                 'required',
                 'string',
-                'in:COMPETITIVE BIDDING,SHOPPING,DIRECT CONTRACTING,NP- SMALL VALUE PROCUREMENT,NP- AGENCY TO AGENCY',
+                'in:COMPETITIVE BIDDING,SHOPPING,DIRECT CONTRACTING,NP- SMALL VALUE PROCUREMENT,NP- AGENCY TO AGENCY,DIRECT RETAIL PURCHASE OF AIRLINE TICKETS,DIRECT RETAIL PURCHASE OF POL PRODUCTS',
+            ],
+
+            'ppa' => [
+                'nullable',
+                'in:GASS,STO,MFO1,MFO2,MFO3,MFO4',
             ],
 
             'assign_classification_id' => [
@@ -355,6 +368,8 @@ class ProcurementPlanItemController extends Controller
             $item->q4 = $validated['q4'];
 
             $item->procurement_method = $validated['procurement_method'];
+
+            $item->ppa = $validated['ppa'] ?? null;
 
             $item->priority =
                 $validated['priority'] ?? 'Medium';

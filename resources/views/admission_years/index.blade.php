@@ -81,7 +81,7 @@
                                 </a>
 
                                 <form method="POST" action="{{ route('admission-years.destroy', $year->id) }}"
-                                      onsubmit="return confirm('Delete this admission year and its entire applicant roster ({{ $year->applicants_count }} records)? This cannot be undone.')">
+                                      onsubmit="return genservisConfirm(event, 'Delete this admission year and its entire applicant roster ({{ $year->applicants_count }} records)? This cannot be undone.')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">

@@ -37,12 +37,12 @@
                 <input type="hidden" name="status" value="{{ $estimate->status === 'done' ? 'ongoing' : 'done' }}">
                 @if($estimate->status === 'done')
                     <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded"
-                            onclick="return confirm('Reopen this project as Ongoing?')">
+                            onclick="return genservisConfirm(event, 'Reopen this project as Ongoing?')">
                         🔄 Mark as Ongoing
                     </button>
                 @else
                     <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-                            onclick="return confirm('Mark this project as Done? The requester will be notified.')">
+                            onclick="return genservisConfirm(event, 'Mark this project as Done? The requester will be notified.')">
                         ✅ Mark as Done
                     </button>
                 @endif
@@ -62,7 +62,7 @@
             </a>
 
             <form method="POST" action="{{ route('project-estimates.destroy', $estimate->id) }}"
-                  onsubmit="return confirm('Delete this project estimate and all its items? This cannot be undone.')">
+                  onsubmit="return genservisConfirm(event, 'Delete this project estimate and all its items? This cannot be undone.')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
@@ -188,7 +188,7 @@
                                 </button>
 
                                 <form method="POST" action="{{ route('project-estimates.items.destroy', [$estimate->id, $item->id]) }}"
-                                      onsubmit="return confirm('Remove this item?')">
+                                      onsubmit="return genservisConfirm(event, 'Remove this item?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline text-sm">
@@ -312,7 +312,7 @@
                         </p>
 
                         <form method="POST" action="{{ route('project-estimates.photos.destroy', [$estimate->id, $photo->id]) }}"
-                              onsubmit="return confirm('Remove this photo?')">
+                              onsubmit="return genservisConfirm(event, 'Remove this photo?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:underline text-xs">

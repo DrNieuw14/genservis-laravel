@@ -30,7 +30,7 @@
             </a>
 
             <form method="POST" action="{{ route('utility-schedule.duplicate-week') }}"
-                  onsubmit="return confirm('Copy every entry from this week into next week? Slots already scheduled next week will be skipped.')">
+                  onsubmit="return genservisConfirm(event, 'Copy every entry from this week into next week? Slots already scheduled next week will be skipped.')">
                 @csrf
                 <input type="hidden" name="source_week" value="{{ $weekStart->toDateString() }}">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
@@ -168,7 +168,7 @@
                                             </button>
 
                                             <form method="POST" action="{{ route('utility-schedule.destroy', $entry->id) }}"
-                                                  onsubmit="return confirm('Remove this schedule entry?')">
+                                                  onsubmit="return genservisConfirm(event, 'Remove this schedule entry?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:underline text-xs">

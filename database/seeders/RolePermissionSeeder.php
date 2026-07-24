@@ -228,6 +228,10 @@ class RolePermissionSeeder extends Seeder
                     'view-purchase-forecast',
                     'view-procurement-calendar',
 
+                    'view-pre',
+                    'create-pre',
+                    'edit-pre',
+
                     'view-reports',
 
                 ])->pluck('id')->toArray()

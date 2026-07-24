@@ -107,7 +107,7 @@
                             <!-- DELETE -->
                             <form action="{{ route('units.destroy', $unit->id) }}"
                                   method="POST"
-                                  onsubmit="return confirm('Delete this unit?')">
+                                  onsubmit="return genservisConfirm(event, 'Delete this unit?')">
 
                                 @csrf
                                 @method('DELETE')

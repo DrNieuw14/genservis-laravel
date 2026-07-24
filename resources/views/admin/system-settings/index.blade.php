@@ -68,7 +68,7 @@
 
                 <button
                     type="submit"
-                    onclick="return confirm('{{ $settings['maintenance_mode']
+                    onclick="return genservisConfirm(event, '{{ $settings['maintenance_mode']
                         ? 'Bring the site back online for everyone?'
                         : 'Take the site offline for everyone except System Settings admins?' }}')"
                     class="{{ $settings['maintenance_mode']

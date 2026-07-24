@@ -157,7 +157,7 @@
 
                                 <button
                                     type="submit"
-                                    onclick="return confirm('Are you sure you want to {{ $role->status ? 'deactivate' : 'activate' }} this role?')"
+                                    onclick="return genservisConfirm(event, 'Are you sure you want to {{ $role->status ? 'deactivate' : 'activate' }} this role?')"
                                     class="{{ $role->status
                                         ? 'text-red-600 hover:text-red-800'
                                         : 'text-green-600 hover:text-green-800' }} font-medium">

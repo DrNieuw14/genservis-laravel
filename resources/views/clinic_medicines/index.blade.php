@@ -99,7 +99,7 @@
                                 </a>
 
                                 <form method="POST" action="{{ route('clinic-medicines.destroy', $medicine->id) }}"
-                                      onsubmit="return confirm('Remove this medicine from inventory?')">
+                                      onsubmit="return genservisConfirm(event, 'Remove this medicine from inventory?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">

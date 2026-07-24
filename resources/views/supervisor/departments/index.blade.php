@@ -115,7 +115,7 @@
                             <!-- DELETE -->
                             <form action="{{ route('supervisor.departments.destroy', $department->id) }}"
                                   method="POST"
-                                  onsubmit="return confirm('Delete this department?')">
+                                  onsubmit="return genservisConfirm(event, 'Delete this department?')">
 
                                 @csrf
                                 @method('DELETE')

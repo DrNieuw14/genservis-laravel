@@ -6,6 +6,30 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
+<style>
+
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+        background: #16a34a;
+        border-color: #16a34a;
+    }
+
+    .flatpickr-day.today {
+        border-color: #16a34a;
+    }
+
+    .flatpickr-day:hover {
+        background: #dcfce7;
+    }
+
+    .flatpickr-time .flatpickr-am-pm:hover,
+    .flatpickr-time input:hover {
+        background: #dcfce7;
+    }
+
+</style>
+
 @if ($errors->any())
     <div class="bg-red-500 text-white p-4 mb-6 rounded-lg text-lg">
         <ul class="list-disc ml-5">
@@ -32,32 +56,60 @@
         </div>
         <div>
             <label class="block mb-2 font-semibold">Time In</label>
-            <input type="time" name="time_in" value="{{ $old('time_in') }}" class="w-full border rounded-lg p-4">
+            <input type="text" id="time_in_picker" name="time_in" value="{{ $old('time_in') }}"
+                placeholder="Select time" autocomplete="off" class="w-full border rounded-lg p-4 cursor-pointer bg-white">
         </div>
         <div>
             <label class="block mb-2 font-semibold">Time Out</label>
-            <input type="time" name="time_out" value="{{ $old('time_out') }}" class="w-full border rounded-lg p-4">
+            <input type="text" id="time_out_picker" name="time_out" value="{{ $old('time_out') }}"
+                placeholder="Select time" autocomplete="off" class="w-full border rounded-lg p-4 cursor-pointer bg-white">
         </div>
     </div>
+
+    <p id="timeOrderWarning" class="hidden text-red-600 text-sm -mt-6 mb-8">
+        ⚠ Time Out is earlier than Time In — please double-check.
+    </p>
 
     <!-- PATIENT INFORMATION -->
     <h3 class="text-xl font-semibold text-gray-800 mb-4">Patient Information</h3>
 
+    <!-- QUICK-FILL FROM STUDENT / EMPLOYEE RECORD -->
+    <div class="border border-blue-200 bg-blue-50 rounded-xl p-5 mb-6">
+
+        <h4 class="text-base font-semibold text-blue-700 mb-1">
+            🔍 Quick-Fill from Student or Employee Record
+        </h4>
+
+        <p class="text-sm text-gray-500 mb-3">
+            Optional — type at least 2 letters to search the 1st-year Final List of Admission or every employee in the system, then pick a match to auto-fill the fields below. You can still edit them, or skip this and type in manually.
+        </p>
+
+        <select id="patientQuickFillSelect" class="w-full">
+            @if($selectedPatientForJs ?? null)
+                <option value="{{ $selectedPatientForJs['value'] }}" selected>{{ $selectedPatientForJs['text'] }}</option>
+            @endif
+        </select>
+
+        <input type="hidden" id="admission_applicant_id" name="admission_applicant_id" value="{{ $old('admission_applicant_id', $consultation?->admission_applicant_id) }}">
+        <input type="hidden" id="personnel_id" name="personnel_id" value="{{ $old('personnel_id', $consultation?->personnel_id) }}">
+
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="md:col-span-2">
             <label class="block mb-2 font-semibold">Name</label>
-            <input type="text" name="patient_name" value="{{ $old('patient_name') }}" class="w-full border rounded-lg p-4" required>
+            <input type="text" id="patient_name_input" name="patient_name" value="{{ $old('patient_name') }}" class="w-full border rounded-lg p-4" required>
         </div>
         <div>
             <label class="block mb-2 font-semibold">Age</label>
-            <input type="number" min="0" name="patient_age" value="{{ $old('patient_age') }}" class="w-full border rounded-lg p-4">
+            <input type="number" min="0" id="patient_age_input" name="patient_age" value="{{ $old('patient_age') }}" class="w-full border rounded-lg p-4">
         </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div>
             <label class="block mb-2 font-semibold">Sex</label>
-            <select name="patient_sex" class="w-full border rounded-lg p-4">
+            <select id="patient_sex_input" name="patient_sex" class="w-full border rounded-lg p-4">
                 <option value="">-- Select --</option>
                 <option value="Male" @selected($old('patient_sex') === 'Male')>Male</option>
                 <option value="Female" @selected($old('patient_sex') === 'Female')>Female</option>
@@ -65,7 +117,7 @@
         </div>
         <div>
             <label class="block mb-2 font-semibold">Civil Status</label>
-            <select name="patient_civil_status" class="w-full border rounded-lg p-4">
+            <select id="patient_civil_status_input" name="patient_civil_status" class="w-full border rounded-lg p-4">
                 <option value="">-- Select --</option>
                 @foreach(['Single', 'Married', 'Widowed', 'Separated'] as $cs)
                     <option value="{{ $cs }}" @selected($old('patient_civil_status') === $cs)>{{ $cs }}</option>
@@ -81,7 +133,7 @@
 
     <div class="mb-8">
         <label class="block mb-2 font-semibold">Address</label>
-        <input type="text" name="patient_address" value="{{ $old('patient_address') }}" class="w-full border rounded-lg p-4">
+        <input type="text" id="patient_address_input" name="patient_address" value="{{ $old('patient_address') }}" class="w-full border rounded-lg p-4">
     </div>
 
     <!-- CHIEF COMPLAINT -->
@@ -99,15 +151,15 @@
             <div class="space-y-4">
                 <div>
                     <label class="block mb-2 font-semibold text-sm">Name</label>
-                    <input type="text" name="emergency_contact_name" value="{{ $old('emergency_contact_name') }}" class="w-full border rounded-lg p-3">
+                    <input type="text" id="emergency_contact_name_input" name="emergency_contact_name" value="{{ $old('emergency_contact_name') }}" class="w-full border rounded-lg p-3">
                 </div>
                 <div>
                     <label class="block mb-2 font-semibold text-sm">Relationship</label>
-                    <input type="text" name="emergency_contact_relationship" value="{{ $old('emergency_contact_relationship') }}" class="w-full border rounded-lg p-3">
+                    <input type="text" id="emergency_contact_relationship_input" name="emergency_contact_relationship" value="{{ $old('emergency_contact_relationship') }}" class="w-full border rounded-lg p-3">
                 </div>
                 <div>
                     <label class="block mb-2 font-semibold text-sm">Contact No.</label>
-                    <input type="text" name="emergency_contact_no" value="{{ $old('emergency_contact_no') }}" class="w-full border rounded-lg p-3">
+                    <input type="text" id="emergency_contact_no_input" name="emergency_contact_no" value="{{ $old('emergency_contact_no') }}" class="w-full border rounded-lg p-3">
                 </div>
             </div>
         </div>
@@ -359,9 +411,49 @@
 <script>
 
     flatpickr("#consultation_date_picker", { altInput: true, altFormat: "M j, Y", dateFormat: "Y-m-d", defaultDate: document.getElementById('consultation_date_picker').value });
-    flatpickr("#birthday_picker", { altInput: true, altFormat: "M j, Y", dateFormat: "Y-m-d", defaultDate: document.getElementById('birthday_picker').value });
+    const birthdayPicker = flatpickr("#birthday_picker", { altInput: true, altFormat: "M j, Y", dateFormat: "Y-m-d", defaultDate: document.getElementById('birthday_picker').value });
     flatpickr("#previous_consultation_date_picker", { altInput: true, altFormat: "M j, Y", dateFormat: "Y-m-d", defaultDate: document.getElementById('previous_consultation_date_picker').value });
     flatpickr("#doi_picker", { altInput: true, altFormat: "M j, Y", dateFormat: "Y-m-d", defaultDate: document.getElementById('doi_picker').value });
+
+    // Time In / Time Out — 15-min-step time picker instead of the plain
+    // native time input, with a live check flagging Time Out before Time In.
+    const timeInPicker = flatpickr("#time_in_picker", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        altInput: true,
+        altFormat: "h:i K",
+        minuteIncrement: 5,
+        time_24hr: false,
+        defaultDate: document.getElementById('time_in_picker').value || null,
+        onChange: checkTimeOrder,
+    });
+
+    const timeOutPicker = flatpickr("#time_out_picker", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        altInput: true,
+        altFormat: "h:i K",
+        minuteIncrement: 5,
+        time_24hr: false,
+        defaultDate: document.getElementById('time_out_picker').value || null,
+        onChange: checkTimeOrder,
+    });
+
+    function checkTimeOrder() {
+
+        const timeIn = document.getElementById('time_in_picker').value;
+        const timeOut = document.getElementById('time_out_picker').value;
+
+        const warning = document.getElementById('timeOrderWarning');
+
+        if (timeIn && timeOut && timeOut < timeIn) {
+            warning.classList.remove('hidden');
+        } else {
+            warning.classList.add('hidden');
+        }
+    }
 
     document.getElementById('injuriesYes').addEventListener('change', toggleInjuryDetails);
     document.getElementById('injuriesNo').addEventListener('change', toggleInjuryDetails);
@@ -389,5 +481,160 @@
     });
 
     updateGcsTotal();
+
+</script>
+
+<!-- Tom Select — patient quick-fill search -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+
+<style>
+
+    .ts-control {
+        border-radius: 0.5rem !important;
+        border: 1px solid #d1d5db !important;
+        padding: 1rem !important;
+        min-height: 58px !important;
+        box-shadow: none !important;
+        font-size: 18px !important;
+    }
+
+    .ts-control input {
+        font-size: 18px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .ts-wrapper.single .ts-control {
+        background: white !important;
+    }
+
+    .ts-control:focus-within {
+        border-color: #60a5fa !important;
+        box-shadow: 0 0 0 2px rgba(96,165,250,0.3) !important;
+    }
+
+    .ts-dropdown {
+        border-radius: 0.5rem !important;
+        border: 1px solid #d1d5db !important;
+        overflow: hidden;
+        font-size: 16px !important;
+    }
+
+    .ts-dropdown .option {
+        padding: 0.75rem 1rem !important;
+    }
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+<script>
+
+    // Live server-side search instead of preloading the full roster —
+    // stays fast whether the Final List of Admission / Personnel table has
+    // 60 records or 6,000, since only a small LIMIT'd query runs per
+    // keystroke rather than shipping everyone to the browser up front.
+    const patientQuickFill = new TomSelect('#patientQuickFillSelect', {
+        create: false,
+        dropdownParent: 'body',
+        valueField: 'value',
+        labelField: 'text',
+        searchField: [],
+        loadThrottle: 300,
+        placeholder: '🔍 Type 2+ letters to search student or employee name...',
+        load: function (query, callback) {
+
+            if (query.length < 2) {
+                return callback();
+            }
+
+            Promise.all([
+                fetch(`{{ route('health-consultations.search-students') }}?q=${encodeURIComponent(query)}`).then(r => r.json()),
+                fetch(`{{ route('health-consultations.search-employees') }}?q=${encodeURIComponent(query)}`).then(r => r.json()),
+            ])
+                .then(([students, employees]) => {
+
+                    const options = [];
+
+                    students.forEach(s => options.push({
+                        value: 'student-' + s.id,
+                        text: '🎓 ' + s.name + ' — ' + s.program,
+                        kind: 'student',
+                        ...s,
+                    }));
+
+                    employees.forEach(e => options.push({
+                        value: 'faculty-' + e.id,
+                        text: '🧑‍💼 ' + e.name + (e.position ? ' — ' + e.position : ''),
+                        kind: 'faculty',
+                        ...e,
+                    }));
+
+                    callback(options);
+                })
+                .catch(() => callback());
+        },
+    });
+
+    document.getElementById('patientQuickFillSelect').addEventListener('change', function () {
+
+        const value = this.value;
+
+        const admissionField = document.getElementById('admission_applicant_id');
+        const personnelField = document.getElementById('personnel_id');
+
+        if (!value) {
+            return;
+        }
+
+        const option = patientQuickFill.options[value];
+        if (!option) return;
+
+        if (option.kind === 'student') {
+
+            admissionField.value = option.id;
+            personnelField.value = '';
+
+            document.getElementById('patient_name_input').value = option.name;
+            document.getElementById('patient_age_input').value = option.age ?? '';
+            document.getElementById('patient_sex_input').value = option.sex === 'M' || option.sex === 'Male' ? 'Male'
+                : (option.sex === 'F' || option.sex === 'Female' ? 'Female' : '');
+            document.getElementById('patient_address_input').value = option.address ?? '';
+
+            if (option.birthday) {
+                birthdayPicker.setDate(option.birthday, true);
+            }
+
+        } else if (option.kind === 'faculty') {
+
+            personnelField.value = option.id;
+            admissionField.value = '';
+
+            document.getElementById('patient_name_input').value = option.name;
+
+            // Pulled from the HR Employee Master (Employee Profile /
+            // Contact) when filled in — many employees don't have one yet,
+            // so each field only overwrites when real data came back.
+            document.getElementById('patient_age_input').value = option.age ?? '';
+            document.getElementById('patient_sex_input').value = option.sex === 'Male' ? 'Male'
+                : (option.sex === 'Female' ? 'Female' : '');
+            document.getElementById('patient_civil_status_input').value =
+                ['Single', 'Married', 'Widowed', 'Separated'].includes(option.civil_status) ? option.civil_status : '';
+
+            if (option.birthday) {
+                birthdayPicker.setDate(option.birthday, true);
+            } else {
+                birthdayPicker.clear();
+            }
+
+            document.getElementById('emergency_contact_name_input').value = option.emergency_contact_name ?? '';
+            document.getElementById('emergency_contact_relationship_input').value = option.emergency_contact_relationship ?? '';
+            document.getElementById('emergency_contact_no_input').value = option.emergency_contact_no ?? '';
+
+            // No address field exists in the HR module for employees —
+            // stays as whatever was there (usually blank) for manual entry.
+        }
+
+    });
 
 </script>

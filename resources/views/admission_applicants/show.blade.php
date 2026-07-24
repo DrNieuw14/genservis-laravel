@@ -29,7 +29,7 @@
             </a>
 
             <form method="POST" action="{{ route('admission-applicants.destroy', [$year->id, $applicant->id]) }}"
-                  onsubmit="return confirm('Remove this applicant record? This cannot be undone.')">
+                  onsubmit="return genservisConfirm(event, 'Remove this applicant record? This cannot be undone.')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">

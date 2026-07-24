@@ -101,4 +101,43 @@ class ProcurementPlan extends Model
             2
         );
     }
+
+    /**
+     * Sum of annual_cost per tagged PPA — items without a ppa are excluded
+     * (nothing to reconcile them against).
+     */
+    public function totalsByPpa()
+    {
+        return $this->items()
+            ->whereNotNull('ppa')
+            ->selectRaw('ppa, SUM(annual_cost) as total')
+            ->groupBy('ppa')
+            ->pluck('total', 'ppa');
+    }
+
+    /**
+     * Reconcile this plan's PPA-tagged items against a PRE's procurable
+     * (MOOE + Capital Outlay) ceiling per PPA. Warn-only — never blocks
+     * submission, just flags lines over ceiling for review.
+     *
+     * @return array<string, array{planned: float, ceiling: float, over: bool}>
+     */
+    public function reconcileAgainst(ProgramReceiptExpenditure $pre): array
+    {
+        $result = [];
+
+        foreach ($this->totalsByPpa() as $ppa => $planned) {
+
+            $ceiling = $pre->procurableCeilingFor($ppa);
+
+            $result[$ppa] = [
+                'planned' => (float) $planned,
+                'ceiling' => $ceiling,
+                'over' => (float) $planned > $ceiling,
+            ];
+
+        }
+
+        return $result;
+    }
 }

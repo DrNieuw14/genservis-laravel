@@ -40,7 +40,7 @@
             </a>
 
             <form method="POST" action="{{ route('property-inventory.destroy', $room->id) }}"
-                  onsubmit="return confirm('Delete this room and all its property items? This cannot be undone.')">
+                  onsubmit="return genservisConfirm(event, 'Delete this room and all its property items? This cannot be undone.')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
@@ -149,7 +149,7 @@
                                 </button>
 
                                 <form method="POST" action="{{ route('property-inventory.items.destroy', [$room->id, $item->id]) }}"
-                                      onsubmit="return confirm('Remove this property item?')">
+                                      onsubmit="return genservisConfirm(event, 'Remove this property item?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline text-sm">

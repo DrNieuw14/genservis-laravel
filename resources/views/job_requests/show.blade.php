@@ -143,7 +143,7 @@
 
                             @if($canManageEvidence || $photo->uploaded_by === auth()->id())
                                 <form method="POST" action="{{ route('job-requests.photos.destroy', [$jobRequest->id, $photo->id]) }}"
-                                      onsubmit="return confirm('Remove this photo?')">
+                                      onsubmit="return genservisConfirm(event, 'Remove this photo?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline text-xs">🗑 Remove</button>
@@ -220,7 +220,7 @@
 
                             @if($canManageReceipts || $photo->uploaded_by === auth()->id())
                                 <form method="POST" action="{{ route('job-requests.photos.destroy', [$jobRequest->id, $photo->id]) }}"
-                                      onsubmit="return confirm('Remove this photo?')">
+                                      onsubmit="return genservisConfirm(event, 'Remove this photo?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline text-xs">🗑 Remove</button>
@@ -355,7 +355,7 @@
 
                                 @if($canApprove || $canAssign || $photo->uploaded_by === auth()->id())
                                     <form method="POST" action="{{ route('job-requests.photos.destroy', [$jobRequest->id, $photo->id]) }}"
-                                          onsubmit="return confirm('Remove this photo?')">
+                                          onsubmit="return genservisConfirm(event, 'Remove this photo?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:underline text-xs">🗑 Remove</button>

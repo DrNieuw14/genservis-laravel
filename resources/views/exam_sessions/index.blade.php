@@ -75,7 +75,7 @@
                                 </a>
 
                                 <form method="POST" action="{{ route('exam-sessions.destroy', $session->id) }}"
-                                      onsubmit="return confirm('Delete this exam session and all {{ $session->results_count }} of its results? This cannot be undone.')">
+                                      onsubmit="return genservisConfirm(event, 'Delete this exam session and all {{ $session->results_count }} of its results? This cannot be undone.')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">

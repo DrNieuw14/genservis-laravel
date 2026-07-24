@@ -34,7 +34,7 @@
             </a>
 
             <form method="POST" action="{{ route('building-inspections.destroy', $inspection->id) }}"
-                  onsubmit="return confirm('Delete this inspection and all its data? This cannot be undone.')">
+                  onsubmit="return genservisConfirm(event, 'Delete this inspection and all its data? This cannot be undone.')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
@@ -178,7 +178,7 @@
                                     </p>
 
                                     <form method="POST" action="{{ route('building-inspections.items.photos.destroy', [$inspection->id, $item->id, $photo->id]) }}"
-                                          onsubmit="return confirm('Remove this photo?')">
+                                          onsubmit="return genservisConfirm(event, 'Remove this photo?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:underline text-xs">

@@ -124,6 +124,8 @@ class HealthConsultation extends Model
         'soap_plan',
         'attending_physician',
         'created_by',
+        'admission_applicant_id',
+        'personnel_id',
     ];
 
     protected $casts = [
@@ -141,6 +143,16 @@ class HealthConsultation extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function admissionApplicant()
+    {
+        return $this->belongsTo(AdmissionApplicant::class);
+    }
+
+    public function personnel()
+    {
+        return $this->belongsTo(Personnel::class);
     }
 
     public function medicines()

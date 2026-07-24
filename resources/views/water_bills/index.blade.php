@@ -225,7 +225,7 @@
                                     ✏️ Edit
                                 </button>
                                 <form method="POST" action="{{ route('water-bills.destroy', $bill->id) }}"
-                                      onsubmit="return confirm('Remove this bill record?')">
+                                      onsubmit="return genservisConfirm(event, 'Remove this bill record?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline text-sm">🗑 Remove</button>

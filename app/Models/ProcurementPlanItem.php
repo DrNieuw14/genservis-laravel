@@ -38,6 +38,8 @@ class ProcurementPlanItem extends Model
 
         'source_of_fund',
 
+        'ppa',
+
         'remarks',
 
         'created_by',

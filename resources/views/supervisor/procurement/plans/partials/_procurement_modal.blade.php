@@ -415,6 +415,32 @@
                             <option value="DIRECT CONTRACTING">Direct Contracting</option>
                             <option value="NP- SMALL VALUE PROCUREMENT">NP - Small Value Procurement</option>
                             <option value="NP- AGENCY TO AGENCY">NP - Agency to Agency</option>
+                            <option value="DIRECT RETAIL PURCHASE OF AIRLINE TICKETS">Direct Retail Purchase of Airline Tickets</option>
+                            <option value="DIRECT RETAIL PURCHASE OF POL PRODUCTS">Direct Retail Purchase of POL Products</option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- PPA / MFO (PRE reconciliation tag) -->
+                    <div class="md:col-span-2">
+
+                        <label class="font-semibold">
+                            PPA / MFO <span class="text-gray-400 font-normal text-sm">(for PRE budget-ceiling reconciliation, optional)</span>
+                        </label>
+
+                        <select
+                            id="ppa"
+                            name="ppa"
+                            class="w-full border rounded mt-2">
+
+                            <option value="">-- Not Tagged --</option>
+                            <option value="GASS">GASS — General Administration Support Services</option>
+                            <option value="STO">STO — Support to Operations</option>
+                            <option value="MFO1">MFO1 — Higher Education</option>
+                            <option value="MFO2">MFO2 — Advanced Education</option>
+                            <option value="MFO3">MFO3 — Research Services</option>
+                            <option value="MFO4">MFO4 — Technical Advisory Extension Services</option>
 
                         </select>
 

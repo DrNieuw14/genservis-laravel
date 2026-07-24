@@ -55,7 +55,7 @@
                                 </a>
 
                                 <form method="POST" action="{{ route('utility-dtr.approve', ['personnelId' => $submission->personnel_id]) }}"
-                                      onsubmit="return confirm('Approve this DTR?')">
+                                      onsubmit="return genservisConfirm(event, 'Approve this DTR?')">
                                     @csrf
                                     <input type="hidden" name="start_date" value="{{ $submission->period_start->toDateString() }}">
                                     <input type="hidden" name="end_date" value="{{ $submission->period_end->toDateString() }}">

@@ -27,6 +27,7 @@
                         <th class="px-4 py-3 text-left">Material</th>
                         <th class="px-4 py-3 text-left">Classification</th>
                         <th class="px-4 py-3 text-left">Mode of Procurement</th>
+                        <th class="px-4 py-3 text-left">PPA</th>
                         <th class="px-4 py-3 text-left">Added By</th>
                         <th class="px-4 py-3 text-left">Unit</th>
                         <th class="px-4 py-3 text-right">Unit Cost</th>
@@ -61,6 +62,14 @@
 
                     <td class="px-4 py-3 text-sm">
                         {{ $item->procurement_method ?? '—' }}
+                    </td>
+
+                    <td class="px-4 py-3 text-sm">
+                        @if($item->ppa)
+                            <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-semibold">{{ $item->ppa }}</span>
+                        @else
+                            <span class="text-gray-400">—</span>
+                        @endif
                     </td>
 
                     <td class="px-4 py-3 text-sm">
@@ -172,7 +181,7 @@
                 @empty
 
                 <tr>
-                    <td colspan="14" class="text-center text-gray-500 py-10">
+                    <td colspan="15" class="text-center text-gray-500 py-10">
                         No Procurement Items Yet
                     </td>
                 </tr>

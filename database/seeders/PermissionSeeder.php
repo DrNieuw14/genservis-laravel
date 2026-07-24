@@ -108,6 +108,12 @@ class PermissionSeeder extends Seeder
                     ['name' => 'View Procurement Calendar', 'slug' => 'view-procurement-calendar'],
                     ['name' => 'Manage Own Department PPMP Items', 'slug' => 'manage-own-department-ppmp-items'],
 
+                    // Program of Receipts and Expenditures (PRE)
+                    ['name' => 'View PRE', 'slug' => 'view-pre'],
+                    ['name' => 'Create PRE', 'slug' => 'create-pre'],
+                    ['name' => 'Edit PRE', 'slug' => 'edit-pre'],
+                    ['name' => 'Delete PRE', 'slug' => 'delete-pre'],
+
                 ]
             ],
 

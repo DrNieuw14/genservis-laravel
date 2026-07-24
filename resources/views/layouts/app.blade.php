@@ -640,6 +640,22 @@
 
             </a>
 
+            <!-- Program of Receipts and Expenditures (PRE) -->
+
+            @if(auth()->user()->hasPermission('view-pre'))
+
+            <a href="{{ route('procurement.pre.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('procurement.pre.*')
+                ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
+                : 'hover:bg-green-100' }}">
+
+                💰 Program of Receipts (PRE)
+
+            </a>
+
+            @endif
+
             <!-- Budget Monitoring -->
 
             @if(auth()->user()->hasPermission('view-budget-monitoring'))
@@ -786,6 +802,12 @@
                     class="block px-4 py-3 rounded-xl transition
                     {{ request()->routeIs('sports-equipment.my-borrows') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
                         🏀 My Borrowed Equipment
+                    </a>
+
+                    <a href="{{ route('health-consultations.mine') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('health-consultations.mine') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        🩺 Health Consultation
                     </a>
 
                 @endif
@@ -1176,6 +1198,44 @@
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+    // Global replacement for the native browser confirm() popup (the plain
+    // "127.0.0.1:8000 says ..." dialog) — used app-wide via
+    // onsubmit="return genservisConfirm(event, 'message')" or the same on
+    // a submit button's onclick. Auto-picks a red/destructive style for
+    // delete/remove/deactivate-type actions and a neutral blue style for
+    // everything else, so none of the ~40 call sites need per-instance
+    // icon/color options — just swap confirm( for genservisConfirm(event, .
+    function genservisConfirm(event, message) {
+
+        event.preventDefault();
+
+        const form = event.target.form
+            || (event.target.tagName === 'FORM' ? event.target : event.target.closest('form'));
+
+        const isDestructive = /delete|remove|deactivate|suspend|lock/i.test(message);
+
+        Swal.fire({
+            icon: isDestructive ? 'warning' : 'question',
+            title: isDestructive ? 'Are you sure?' : 'Please Confirm',
+            text: message,
+            showCancelButton: true,
+            confirmButtonText: isDestructive ? 'Yes, proceed' : 'Yes',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: isDestructive ? '#dc2626' : '#2563eb',
+        }).then((result) => {
+            if (result.isConfirmed && form) {
+                form.submit();
+            }
+        });
+
+        return false;
+    }
+
+</script>
+
 @stack('scripts')
 </body>
 </html>

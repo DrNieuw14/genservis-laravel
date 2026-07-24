@@ -896,6 +896,9 @@ Allocated Budget
             document.getElementById('procurement_method').value =
                 item.procurement_method || '';
 
+            document.getElementById('ppa').value =
+                item.ppa || '';
+
             updateProcurementSummary();
         }
         

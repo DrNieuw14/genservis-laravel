@@ -34,7 +34,7 @@
             </a>
 
             <form method="POST" action="{{ route('energy-reports.destroy', $report->id) }}"
-                  onsubmit="return confirm('Delete this report and everything in it? This cannot be undone.')">
+                  onsubmit="return genservisConfirm(event, 'Delete this report and everything in it? This cannot be undone.')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
@@ -198,7 +198,7 @@
                                     onclick='openActivityModal("edit", {{ $activity->id }}, {{ json_encode($activity->activity_date->format("Y-m-d")) }}, {{ json_encode($activity->activity) }}, {{ json_encode($activity->participants) }}, {{ json_encode($activity->remarks) }})'
                                     class="text-blue-600 hover:underline text-sm">✏️ Edit</button>
                                 <form method="POST" action="{{ route('energy-reports.activities.destroy', [$report->id, $activity->id]) }}"
-                                      onsubmit="return confirm('Remove this activity?')">
+                                      onsubmit="return genservisConfirm(event, 'Remove this activity?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline text-sm">🗑 Remove</button>
@@ -244,7 +244,7 @@
                                     onclick='openIssueModal("edit", {{ $issue->id }}, {{ json_encode($issue->issue_concern) }}, {{ json_encode($issue->action_taken) }}, {{ json_encode($issue->recommendation) }})'
                                     class="text-blue-600 hover:underline text-sm">✏️ Edit</button>
                                 <form method="POST" action="{{ route('energy-reports.issues.destroy', [$report->id, $issue->id]) }}"
-                                      onsubmit="return confirm('Remove this issue?')">
+                                      onsubmit="return genservisConfirm(event, 'Remove this issue?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline text-sm">🗑 Remove</button>
@@ -306,7 +306,7 @@
                             <span class="text-xs text-gray-500">— {{ $attachment->uploader->fullname ?? $attachment->uploader->name ?? '-' }}</span>
                         </div>
                         <form method="POST" action="{{ route('energy-reports.attachments.destroy', [$report->id, $attachment->id]) }}"
-                              onsubmit="return confirm('Remove this file?')">
+                              onsubmit="return genservisConfirm(event, 'Remove this file?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:underline text-xs">🗑 Remove</button>

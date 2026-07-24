@@ -42,6 +42,7 @@ use App\Http\Controllers\Supervisor\Procurement\ProcurementDashboardController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanItemController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementReportController;
+use App\Http\Controllers\Supervisor\Procurement\ProgramReceiptExpenditureController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmployeeProfileController;
 use App\Http\Controllers\ProfileController;
@@ -743,8 +744,13 @@ Route::middleware(['auth', 'permission:manage-health-consultations'])->group(fun
     Route::post('/health-consultations', [HealthConsultationController::class, 'store'])
         ->name('health-consultations.store');
 
-    Route::get('/health-consultations/{id}', [HealthConsultationController::class, 'show'])
-        ->name('health-consultations.show');
+    // KEEP BEFORE {id} below — "search-students"/"search-employees" would
+    // otherwise be swallowed by the wildcard as an invalid id lookup.
+    Route::get('/health-consultations/search-students', [HealthConsultationController::class, 'searchStudents'])
+        ->name('health-consultations.search-students');
+
+    Route::get('/health-consultations/search-employees', [HealthConsultationController::class, 'searchEmployees'])
+        ->name('health-consultations.search-employees');
 
     Route::get('/health-consultations/{id}/edit', [HealthConsultationController::class, 'edit'])
         ->name('health-consultations.edit');
@@ -755,14 +761,30 @@ Route::middleware(['auth', 'permission:manage-health-consultations'])->group(fun
     Route::delete('/health-consultations/{id}', [HealthConsultationController::class, 'destroy'])
         ->name('health-consultations.destroy');
 
-    Route::get('/health-consultations/{id}/print', [HealthConsultationController::class, 'print'])
-        ->name('health-consultations.print');
-
     Route::post('/health-consultations/{id}/medicines', [HealthConsultationController::class, 'dispenseMedicine'])
         ->name('health-consultations.medicines.store');
 
     Route::delete('/health-consultations/{id}/medicines/{medicineLogId}', [HealthConsultationController::class, 'destroyMedicine'])
         ->name('health-consultations.medicines.destroy');
+
+});
+
+// show/print are reachable by any logged-in employee — Health Service/Nurse
+// via manage-health-consultations, or the record's own linked employee
+// viewing their own visit. Authorization is done inside the controller
+// rather than a permission, same pattern as Property Issuance's show/mine.
+Route::middleware(['auth'])->group(function () {
+
+    // KEEP BEFORE {id} below — it would otherwise swallow this static path
+    // as a route-model-binding lookup.
+    Route::get('/health-consultations/mine', [HealthConsultationController::class, 'mine'])
+        ->name('health-consultations.mine');
+
+    Route::get('/health-consultations/{id}', [HealthConsultationController::class, 'show'])
+        ->name('health-consultations.show');
+
+    Route::get('/health-consultations/{id}/print', [HealthConsultationController::class, 'print'])
+        ->name('health-consultations.print');
 
 });
 
@@ -1292,6 +1314,35 @@ Route::middleware(['auth'])->group(function () {
                     )->name('plans.items.destroy');
 
                 });
+
+                /*
+                |--------------------------------------------------------------------------
+                | Program of Receipts and Expenditures (PRE)
+                |--------------------------------------------------------------------------
+                | The budget-ceiling layer PPMP plans reconcile against, per PPA/MFO.
+                */
+
+                Route::resource(
+                    'pre',
+                    ProgramReceiptExpenditureController::class
+                )
+                    ->middlewareFor(
+                        ['index', 'show'],
+                        'permission:view-pre'
+                    )
+                    ->middlewareFor(
+                        ['create', 'store', 'edit', 'update'],
+                        'permission:create-pre,edit-pre'
+                    )
+                    ->middlewareFor(
+                        'destroy',
+                        'permission:delete-pre'
+                    );
+
+                Route::put(
+                    'pre/{pre}/allocations',
+                    [ProgramReceiptExpenditureController::class, 'updateAllocations']
+                )->middleware('permission:create-pre,edit-pre')->name('pre.allocations.update');
 
             });
 

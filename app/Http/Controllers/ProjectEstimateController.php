@@ -245,7 +245,22 @@ class ProjectEstimateController extends Controller
 
     public function destroyPhoto($id, $photoId)
     {
-        $photo = ProjectEstimatePhoto::where('project_estimate_id', $id)->findOrFail($photoId);
+        $estimate = ProjectEstimate::find($id);
+
+        if (!$estimate) {
+            return back()->with('error', 'This project estimate could not be found. It may have been deleted.');
+        }
+
+        // find() instead of findOrFail() — a raw 404 crash page here (e.g.
+        // from a double-click, or a stale page left open after someone
+        // else already removed the same photo) is unhelpful; redirecting
+        // back with a clear message is friendlier and lets the page just
+        // reload to show the current photo list.
+        $photo = ProjectEstimatePhoto::where('project_estimate_id', $estimate->id)->find($photoId);
+
+        if (!$photo) {
+            return back()->with('error', 'This photo has already been removed or could not be found. The page has been refreshed to show the current list.');
+        }
 
         Storage::disk('public')->delete($photo->path);
         $photo->delete();

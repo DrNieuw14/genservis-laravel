@@ -76,7 +76,7 @@
                                     ✏️ Edit
                                 </button>
                                 <form method="POST" action="{{ route('water-meters.destroy', $meter->id) }}"
-                                      onsubmit="return confirm('Remove this meter? Only possible if it has no recorded bills.')">
+                                      onsubmit="return genservisConfirm(event, 'Remove this meter? Only possible if it has no recorded bills.')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline text-sm">🗑 Remove</button>
