@@ -47,6 +47,7 @@ use App\Http\Controllers\EmployeeProfileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyInventoryController;
 use App\Http\Controllers\PropertyIssuanceController;
+use App\Http\Controllers\SportsEquipmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeContactController;
 use App\Http\Controllers\EmployeeEducationController;
@@ -472,6 +473,72 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/property-issuances/{issuance}/print', [PropertyIssuanceController::class, 'print'])
         ->name('property-issuances.print');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Sports Equipment Borrowing — catalog managed by Inventory Custodian,
+| borrow requests submitted by any user from the Material Request page,
+| approved/returned by Property Custodian.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-sports-equipment-inventory'])->group(function () {
+
+    Route::get('/sports-equipment', [SportsEquipmentController::class, 'index'])
+        ->name('sports-equipment.index');
+
+    Route::get('/sports-equipment/create', [SportsEquipmentController::class, 'create'])
+        ->name('sports-equipment.create');
+
+    Route::post('/sports-equipment', [SportsEquipmentController::class, 'store'])
+        ->name('sports-equipment.store');
+
+    Route::get('/sports-equipment/{sportsEquipment}/edit', [SportsEquipmentController::class, 'edit'])
+        ->name('sports-equipment.edit');
+
+    Route::put('/sports-equipment/{sportsEquipment}', [SportsEquipmentController::class, 'update'])
+        ->name('sports-equipment.update');
+
+    Route::delete('/sports-equipment/{sportsEquipment}', [SportsEquipmentController::class, 'destroy'])
+        ->name('sports-equipment.destroy');
+
+});
+
+// Borrow requests list is viewable by either side (Inventory Custodian
+// monitors stock impact, Property Custodian acts on it) — gating is done
+// inside the controller, same pattern as the catalog vs approval split.
+Route::middleware(['auth', 'permission:manage-sports-equipment-inventory,approve-sports-equipment-borrows'])->group(function () {
+
+    Route::get('/sports-equipment-borrows', [SportsEquipmentController::class, 'borrowsIndex'])
+        ->name('sports-equipment.borrows.index');
+
+});
+
+Route::middleware(['auth', 'permission:approve-sports-equipment-borrows'])->group(function () {
+
+    Route::post('/sports-equipment-borrows/{borrow}/approve', [SportsEquipmentController::class, 'approveBorrow'])
+        ->name('sports-equipment.borrows.approve');
+
+    Route::post('/sports-equipment-borrows/{borrow}/reject', [SportsEquipmentController::class, 'rejectBorrow'])
+        ->name('sports-equipment.borrows.reject');
+
+    Route::post('/sports-equipment-borrows/{borrow}/return', [SportsEquipmentController::class, 'markReturned'])
+        ->name('sports-equipment.borrows.return');
+
+});
+
+// Any authenticated employee can submit a borrow request (from the
+// Material Request page) and track their own borrow history — same
+// no-special-permission convention as Material Request itself.
+Route::middleware(['auth'])->group(function () {
+
+    Route::post('/sports-equipment-borrows', [SportsEquipmentController::class, 'storeBorrow'])
+        ->name('sports-equipment.borrows.store');
+
+    Route::get('/sports-equipment/my-borrows', [SportsEquipmentController::class, 'myBorrows'])
+        ->name('sports-equipment.my-borrows');
 
 });
 
@@ -1835,6 +1902,21 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/materials/store', [MaterialController::class, 'store'])
             ->name('materials.store');
+
+    });
+
+    // Reachable from either the Add or Edit Material form — whichever
+    // permission got the user there is enough to quick-add a lookup value.
+    Route::middleware('permission:create-materials,edit-materials')->group(function () {
+
+        Route::post('/materials/quick-add-category', [MaterialController::class, 'quickAddCategory'])
+            ->name('materials.quick-add-category');
+
+        Route::post('/materials/quick-add-unit', [MaterialController::class, 'quickAddUnit'])
+            ->name('materials.quick-add-unit');
+
+        Route::post('/materials/quick-add-department', [MaterialController::class, 'quickAddDepartment'])
+            ->name('materials.quick-add-department');
 
     });
 

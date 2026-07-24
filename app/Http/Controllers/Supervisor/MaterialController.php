@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Imports\MaterialImport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Helpers\ActivityLogger;
 
 
 class MaterialController extends Controller
@@ -366,6 +367,71 @@ class MaterialController extends Controller
 
         return redirect()->route('materials.index')
         ->with('success', 'Material added successfully');
+    }
+
+    // Quick-add helpers so Category/Unit/Department no longer need their
+    // own sidebar destinations — a missing option can be created inline
+    // right where it's needed, on the Add/Edit Material form itself.
+
+    public function quickAddCategory(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name',
+        ]);
+
+        $category = Category::create($validated);
+
+        ActivityLogger::log(
+            'Categories',
+            'Quick-Added Category',
+            'Created category "' . $category->name . '" while adding a Material.'
+        );
+
+        return response()->json([
+            'id' => $category->id,
+            'name' => $category->name,
+        ]);
+    }
+
+    public function quickAddUnit(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:units,name',
+        ]);
+
+        $unit = Unit::create($validated);
+
+        ActivityLogger::log(
+            'Units',
+            'Quick-Added Unit',
+            'Created unit "' . $unit->name . '" while adding a Material.'
+        );
+
+        return response()->json([
+            'id' => $unit->id,
+            'name' => $unit->name,
+        ]);
+    }
+
+    public function quickAddDepartment(Request $request)
+    {
+        $validated = $request->validate([
+            'department_name' => 'required|string|max:255|unique:departments,department_name',
+            'department_code' => 'nullable|string|max:50',
+        ]);
+
+        $department = Department::create($validated);
+
+        ActivityLogger::log(
+            'Departments',
+            'Quick-Added Department',
+            'Created department "' . $department->department_name . '" while adding a Material.'
+        );
+
+        return response()->json([
+            'id' => $department->id,
+            'department_name' => $department->department_name,
+        ]);
     }
 
     // ✏️ Edit Material Form

@@ -26,12 +26,19 @@ class MaterialRequestController extends Controller
     // 📄 Show form
     public function create()
     {
-        $materials = Material::with('category')->get();
+        // "Sport Equipment" items are now borrowed (not consumed) via the
+        // Borrow Sports Equipment tab on this same page — excluded here so
+        // the same physical basketballs/nets/etc. can't be double-booked
+        // through both the consume-based Material Request flow and the
+        // borrow-and-return flow.
+        $materials = Material::with('category')
+            ->whereDoesntHave('category', fn ($q) => $q->where('name', 'Sport Equipment'))
+            ->get();
 
         // Central Stockroom is the request's source, not a valid destination
         $departments = Department::where('department_name', '!=', 'Central Stockroom')->get();
 
-        $categories = Category::all();
+        $categories = Category::where('name', '!=', 'Sport Equipment')->get();
 
         $materialsForJs = $materials->map(function ($material) {
             return [
@@ -47,13 +54,16 @@ class MaterialRequestController extends Controller
             ];
         })->values();
 
+        $sportsEquipmentForJs = SportsEquipmentController::catalogForJs();
+
         return view(
             'material_request.form',
             compact(
                 'materials',
                 'departments',
                 'categories',
-                'materialsForJs'
+                'materialsForJs',
+                'sportsEquipmentForJs'
             )
         );
     }
@@ -193,6 +203,16 @@ class MaterialRequestController extends Controller
 
             if (!$material) {
                 return back()->with('error', 'Invalid material selected.');
+            }
+
+            // ❌ Sport Equipment is borrow-only now — reject even a direct
+            // POST bypassing the picker (defense in depth).
+            if (($material->category->name ?? null) === 'Sport Equipment') {
+
+                return back()->with(
+                    'error',
+                    $material->name . ' can only be borrowed via "Borrow Sports Equipment," not requested here.'
+                );
             }
 
             // ❌ Prevent exceed stock

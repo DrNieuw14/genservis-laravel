@@ -176,6 +176,14 @@ class RolePermissionSeeder extends Seeder
 
                     /*
                     |--------------------------------------------------------------------------
+                    | Sports Equipment Borrowing
+                    |--------------------------------------------------------------------------
+                    */
+
+                    'manage-sports-equipment-inventory',
+
+                    /*
+                    |--------------------------------------------------------------------------
                     | User Access
                     |--------------------------------------------------------------------------
                     */
@@ -360,6 +368,7 @@ class RolePermissionSeeder extends Seeder
 
                     'manage-property-inventory',
                     'manage-property-issuance',
+                    'approve-sports-equipment-borrows',
 
                 ])->pluck('id')->toArray()
 

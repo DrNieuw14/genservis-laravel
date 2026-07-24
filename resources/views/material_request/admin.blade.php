@@ -8,11 +8,11 @@
     <div class="mb-6">
 
         <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
-            📦 Material Requests
+            📋 Process Material Requests
         </h2>
 
         <p class="text-gray-500 mt-1 text-lg">
-            Manage and monitor personnel material requests.
+            Approve, reject, and release material requests submitted by personnel.
         </p>
 
     </div>

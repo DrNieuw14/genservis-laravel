@@ -62,6 +62,41 @@
 
             @endif
 
+                <!-- PERSONNEL -->
+                {{-- Hidden entirely for users who already have real inventory-management
+                     access (e.g. Secretary) — the self-service personnel/leave/
+                     material-request flows don't apply to their designation.
+                     Exception: Inventory Custodian (raymond) also needs to request
+                     materials/borrow sports equipment for himself, same as anyone else. --}}
+                @php
+                    $isSelfServicePersonnel = Auth::user()->role === 'personnel'
+                        && (!auth()->user()->hasPermission('view-materials') || auth()->user()->systemRole?->name === 'Inventory Custodian');
+                    $isUtilityStaffMember = Auth::user()->personnel
+                        && \App\Models\Personnel::utilityStaff()->where('id', Auth::user()->personnel->id)->exists();
+                @endphp
+
+                @if($isSelfServicePersonnel)
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
+                        Inventory Services
+                    </div>
+
+                    <a href="/material-request"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->is('material-request') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📦 Material Request
+                    </a>
+
+                    <a href="{{ route('material-request.history') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->is('material-request/history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📜 Request History
+                    </a>
+
+                    <div class="border-t my-2"></div>
+
+                @endif
+
             <!-- User Approval -->
 
             @if(auth()->user()->hasPermission('approve-users'))
@@ -132,13 +167,15 @@
 
             @if(auth()->user()->hasPermission('process-material-requests'))
 
-            <!-- Material Requests -->
+            <!-- Process Material Requests (admin/approval view — distinct
+                 from the employee-facing "Material Request" self-service
+                 page under Inventory Services further down) -->
 
             <a href="/supervisor/material-requests"
             class="block px-3 py-2 rounded
             {{ request()->is('supervisor/material-requests*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
-                📋 Material Requests
+                📋 Process Material Requests
 
             </a>
 
@@ -338,6 +375,34 @@
 
             @endif
 
+            @if(auth()->user()->hasPermission('manage-sports-equipment-inventory') || auth()->user()->hasPermission('approve-sports-equipment-borrows'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Sports Equipment
+            </div>
+
+            @if(auth()->user()->hasPermission('manage-sports-equipment-inventory'))
+
+            <a href="{{ route('sports-equipment.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('sports-equipment.index') || request()->routeIs('sports-equipment.create') || request()->routeIs('sports-equipment.edit') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🏀 Equipment Inventory
+
+            </a>
+
+            @endif
+
+            <a href="{{ route('sports-equipment.borrows.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('sports-equipment.borrows.index') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🔄 Borrow Requests
+
+            </a>
+
+            @endif
+
             @if(auth()->user()->hasPermission('manage-energy-reports') || auth()->user()->hasPermission('manage-water-bills'))
 
             <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
@@ -450,6 +515,20 @@
 
             @endif
 
+            @if(
+                auth()->user()->hasPermission('create-walkin-requests') ||
+                auth()->user()->hasPermission('view-walkin-requests') ||
+                auth()->user()->hasPermission('view-material-logs') ||
+                auth()->user()->hasPermission('view-department-inventory') ||
+                auth()->user()->hasPermission('view-inventory-movements')
+            )
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Walk-In & Inventory Logs
+            </div>
+
+            @endif
+
             <!-- Walk-In Issuance -->
 
             @if(auth()->user()->hasPermission('create-walkin-requests'))
@@ -513,84 +592,6 @@
 
             @endif
 
-
-            <!-- Divider -->
-            <div class="border-t my-2"></div>
-
-            <!-- INVENTORY SETTINGS -->
-
-            @if(
-                auth()->user()->hasPermission('create-materials') ||
-                auth()->user()->hasPermission('view-categories') ||
-                auth()->user()->hasPermission('view-units') ||
-                auth()->user()->hasPermission('view-departments') ||
-                auth()->user()->hasPermission('view-inventory-movements')
-            )
-
-            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-6 mb-2">
-                Inventory Settings
-            </div>
-
-            @endif
-
-            <!-- Add Material -->
-
-            @if(auth()->user()->hasPermission('create-materials'))
-
-                <a href="{{ route('materials.create') }}"
-                class="block px-3 py-2 rounded
-                {{ request()->is('materials/create') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-
-                    ➕ Add Material
-
-                </a>
-
-            @endif
-
-            <!-- Categories -->
-
-            @if(auth()->user()->hasPermission('view-categories'))
-
-                <a href="{{ route('categories.index') }}"
-                class="block px-3 py-2 rounded
-                {{ request()->is('categories*')
-                    ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
-                    : 'hover:bg-green-100' }}">
-
-                    🗂️ Categories
-
-                </a>
-
-            @endif
-
-            <!-- Units -->
-
-            @if(auth()->user()->hasPermission('view-units'))
-
-                <a href="{{ route('units.index') }}"
-                class="block px-3 py-2 rounded
-                {{ request()->is('units*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-
-                    📏 Units
-
-                </a>
-
-            @endif
-
-            <!-- Departments -->
-
-            @if(auth()->user()->hasPermission('view-departments'))
-
-                <a href="{{ route('supervisor.departments.index') }}"
-                class="block px-3 py-2 rounded
-                {{ request()->is('supervisor/departments*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-
-                    🏢 Departments
-
-                </a>
-
-            @endif
-
             <!-- Inventory Movements -->
 
             @if(auth()->user()->hasPermission('view-inventory-movements'))
@@ -604,6 +605,7 @@
                 </a>
 
             @endif
+
 
             <!-- Divider -->
             <div class="border-t my-2"></div>
@@ -724,8 +726,111 @@
 
             @endif
 
+                @if(in_array(Auth::user()->role, ['personnel', 'supervisor']))
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2 mt-3">
+                        Job Request Services
+                    </div>
+
+                    <a href="{{ route('job-requests.create') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('job-requests.create') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        🛠️ Job Request
+                    </a>
+
+                    <a href="{{ route('job-requests.history') }}"
+                    class="flex items-center justify-between px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('job-requests.history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                        <span>📜 My Job Requests</span>
+
+                        @if($myJobRequestsInProgressCount > 0)
+                        <span class="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                            {{ $myJobRequestsInProgressCount }}
+                        </span>
+                        @endif
+
+                    </a>
+
+                    <a href="{{ route('job-requests.my-assigned') }}"
+                    class="flex items-center justify-between px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('job-requests.my-assigned') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                        <span>🔧 My Assigned Jobs</span>
+
+                        @if($myAssignedJobsPendingCount > 0)
+                        <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                            {{ $myAssignedJobsPendingCount }}
+                        </span>
+                        @endif
+
+                    </a>
+
+                @endif
+
+                @if(in_array(Auth::user()->role, ['personnel', 'supervisor']))
+
+                    <div class="border-t my-2"></div>
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
+                        Property Services
+                    </div>
+
+                    <a href="{{ route('property-issuances.mine') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('property-issuances.mine') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        🧾 My Property Accountability
+                    </a>
+
+                    <a href="{{ route('sports-equipment.my-borrows') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('sports-equipment.my-borrows') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        🏀 My Borrowed Equipment
+                    </a>
+
+                @endif
+
+                {{-- Utility & Maintenance Staff only (e.g. Rony, Aldrin) —
+                     not every personnel/supervisor account, since a
+                     duty roster only applies to this specific pool. --}}
+                @if($isUtilityStaffMember)
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2 mt-3">
+                        Utility Scheduling
+                    </div>
+
+                    <a href="{{ route('utility-schedule.my') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('utility-schedule.my') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📅 My Schedule
+                    </a>
+
+                    <a href="{{ route('utility-dtr.my') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('utility-dtr.my') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        🗓️ My DTR
+                    </a>
+
+                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2 mt-3">
+                        Leave Services
+                    </div>
+
+                    <a href="{{ route('leave.index') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('leave.index') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📝 Apply Leave
+                    </a>
+
+                    <a href="{{ route('leave.history') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('leave.history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📄 Leave History
+                    </a>
+
+                @endif
+
         <!-- ===================================================== -->
-        <!-- SYSTEM ADMINISTRATION -->
+        <!-- SYSTEM ADMINISTRATION (kept last in the sidebar) -->
         <!-- ===================================================== -->
 
         @if(auth()->user()->hasPermission('manage-roles')
@@ -737,7 +842,9 @@
             || auth()->user()->hasPermission('manage-system-settings')
             || auth()->user()->role === 'supervisor')
 
-        <div class="mt-8 mb-2 px-3">
+        <div class="border-t my-2"></div>
+
+        <div class="mt-4 mb-2 px-3">
             <p class="text-xs font-bold uppercase tracking-wider text-gray-400">
                 System Administration
             </p>
@@ -865,134 +972,6 @@
         </a>
 
         @endif
-
-
-                <!-- PERSONNEL -->
-                {{-- Hidden entirely for users who already have real inventory-management
-                     access (e.g. Inventory Custodian) — the self-service personnel/leave/
-                     material-request flows don't apply to their designation. --}}
-                @php
-                    $isSelfServicePersonnel = Auth::user()->role === 'personnel' && !auth()->user()->hasPermission('view-materials');
-                    $isUtilityStaffMember = Auth::user()->personnel
-                        && \App\Models\Personnel::utilityStaff()->where('id', Auth::user()->personnel->id)->exists();
-                @endphp
-
-                @if($isSelfServicePersonnel)
-
-                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
-                        Inventory Services
-                    </div>
-
-                    <a href="/material-request"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->is('material-request') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        📦 Material Request
-                    </a>
-
-                    <a href="{{ route('material-request.history') }}"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->is('material-request/history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        📜 Request History
-                    </a>
-
-                @endif
-
-                @if(in_array(Auth::user()->role, ['personnel', 'supervisor']))
-
-                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2 mt-3">
-                        Job Request Services
-                    </div>
-
-                    <a href="{{ route('job-requests.create') }}"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->routeIs('job-requests.create') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        🛠️ Job Request
-                    </a>
-
-                    <a href="{{ route('job-requests.history') }}"
-                    class="flex items-center justify-between px-4 py-3 rounded-xl transition
-                    {{ request()->routeIs('job-requests.history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-
-                        <span>📜 My Job Requests</span>
-
-                        @if($myJobRequestsInProgressCount > 0)
-                        <span class="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
-                            {{ $myJobRequestsInProgressCount }}
-                        </span>
-                        @endif
-
-                    </a>
-
-                    <a href="{{ route('job-requests.my-assigned') }}"
-                    class="flex items-center justify-between px-4 py-3 rounded-xl transition
-                    {{ request()->routeIs('job-requests.my-assigned') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-
-                        <span>🔧 My Assigned Jobs</span>
-
-                        @if($myAssignedJobsPendingCount > 0)
-                        <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                            {{ $myAssignedJobsPendingCount }}
-                        </span>
-                        @endif
-
-                    </a>
-
-                @endif
-
-                @if(in_array(Auth::user()->role, ['personnel', 'supervisor']))
-
-                    <div class="border-t my-2"></div>
-
-                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2">
-                        Property Services
-                    </div>
-
-                    <a href="{{ route('property-issuances.mine') }}"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->routeIs('property-issuances.mine') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        🧾 My Property Accountability
-                    </a>
-
-                @endif
-
-                {{-- Utility & Maintenance Staff only (e.g. Rony, Aldrin) —
-                     not every personnel/supervisor account, since a
-                     duty roster only applies to this specific pool. --}}
-                @if($isUtilityStaffMember)
-
-                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2 mt-3">
-                        Utility Scheduling
-                    </div>
-
-                    <a href="{{ route('utility-schedule.my') }}"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->routeIs('utility-schedule.my') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        📅 My Schedule
-                    </a>
-
-                    <a href="{{ route('utility-dtr.my') }}"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->routeIs('utility-dtr.my') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        🗓️ My DTR
-                    </a>
-
-                    <div class="text-xs font-bold text-gray-400 uppercase px-3 mb-2 mt-3">
-                        Leave Services
-                    </div>
-
-                    <a href="{{ route('leave.index') }}"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->routeIs('leave.index') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        📝 Apply Leave
-                    </a>
-
-                    <a href="{{ route('leave.history') }}"
-                    class="block px-4 py-3 rounded-xl transition
-                    {{ request()->routeIs('leave.history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-                        📄 Leave History
-                    </a>
-
-                @endif
 
             </nav>
 

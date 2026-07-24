@@ -339,6 +339,25 @@ class PermissionSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
+            | Sports Equipment Borrowing — catalog managed by Inventory
+            | Custodian, borrow requests (submitted by any user from the
+            | Material Request page) approved/returned by Property Custodian.
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Sports Equipment Borrowing',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Sports Equipment Inventory', 'slug' => 'manage-sports-equipment-inventory'],
+                    ['name' => 'Approve Sports Equipment Borrows', 'slug' => 'approve-sports-equipment-borrows'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
             | Walk-In Issuance
             |--------------------------------------------------------------------------
             */

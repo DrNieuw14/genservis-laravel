@@ -4,6 +4,31 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
+<style>
+
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+        background: #16a34a;
+        border-color: #16a34a;
+    }
+
+    .flatpickr-day.today {
+        border-color: #16a34a;
+    }
+
+    .flatpickr-day:hover {
+        background: #dcfce7;
+    }
+
+    /* Compact sizing so the alt-formatted date fits the Date Acquired
+       column without blowing up the dense item-row table. */
+    .date-acquired-alt-input {
+        font-size: 14px !important;
+    }
+
+</style>
+
 <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
     <div class="flex items-center justify-between mb-6">
@@ -188,12 +213,20 @@
             <td class="p-2"><input type="text" name="items[${i}][property_number]" class="w-full border rounded-lg p-2"></td>
             <td class="p-2"><input type="number" name="items[${i}][quantity]" min="1" value="1" class="w-full border rounded-lg p-2 text-center"></td>
             <td class="p-2"><input type="number" name="items[${i}][unit_cost]" step="0.01" min="0" class="w-full border rounded-lg p-2 text-center"></td>
-            <td class="p-2"><input type="date" name="items[${i}][date_acquired]" class="w-full border rounded-lg p-2"></td>
+            <td class="p-2"><input type="text" name="items[${i}][date_acquired]" class="date-acquired-input w-full border rounded-lg p-2 cursor-pointer bg-white" placeholder="Select date" readonly autocomplete="off"></td>
             <td class="p-2"><input type="text" name="items[${i}][estimated_useful_life]" class="w-full border rounded-lg p-2" placeholder="e.g. 5 years"></td>
             <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove()" class="text-red-600 hover:underline text-sm">🗑</button></td>
         `;
 
         tbody.appendChild(tr);
+
+        flatpickr(tr.querySelector('.date-acquired-input'), {
+            altInput: true,
+            altInputClass: 'date-acquired-alt-input w-full border rounded-lg p-2 cursor-pointer bg-white',
+            altFormat: 'M j, Y',
+            dateFormat: 'Y-m-d',
+            maxDate: 'today',
+        });
     }
 
     // Start with one blank row so the form isn't empty on first load.

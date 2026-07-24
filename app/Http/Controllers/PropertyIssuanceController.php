@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewNotificationEvent;
+use App\Models\Notification;
 use App\Models\Personnel;
 use App\Models\PropertyIssuance;
 use App\Models\PropertyIssuancePhoto;
@@ -165,6 +167,27 @@ class PropertyIssuanceController extends Controller
 
             return $issuance;
         });
+
+        // 🔔 Notify the recipient (visible on their "My Property
+        // Accountability" page) — only if they have a real login account;
+        // some recipients on older/backfilled slips have none.
+        $recipient = Personnel::find($validated['recipient_personnel_id']);
+
+        if ($recipient && $recipient->user_id) {
+
+            $notif = Notification::create([
+                'user_id' => $recipient->user_id,
+                'type' => 'property_issuance',
+                'title' => 'New Property Endorsed to You',
+                'url' => route('property-issuances.mine'),
+                'message' =>
+                    (Auth::user()->fullname ?? Auth::user()->username)
+                    . ' endorsed property to you under slip ' . $slipNo . '.',
+                'is_read' => 0,
+            ]);
+
+            event(new NewNotificationEvent($notif));
+        }
 
         return redirect()
             ->route('property-issuances.show', $issuance->id)

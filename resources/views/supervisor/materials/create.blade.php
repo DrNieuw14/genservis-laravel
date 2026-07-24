@@ -105,13 +105,22 @@
 
                 <div>
 
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    <div class="flex items-center justify-between mb-2">
 
-                        Department
+                        <label class="block text-sm font-semibold text-gray-700">
+                            Department
+                        </label>
 
-                    </label>
+                        <button type="button"
+                                onclick="openDepartmentQuickAddModal()"
+                                class="text-sm text-blue-600 hover:text-blue-800 font-semibold">
+                            ➕ Add New Department
+                        </button>
+
+                    </div>
 
                     <select name="department_id"
+                            id="departmentSelect"
                             class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
                             required>
 
@@ -136,11 +145,22 @@
                 <!-- CATEGORY -->
                 <div>
 
-                    <label class="block text-gray-700 font-semibold mb-2">
-                        Category
-                    </label>
+                    <div class="flex items-center justify-between mb-2">
+
+                        <label class="block text-gray-700 font-semibold">
+                            Category
+                        </label>
+
+                        <button type="button"
+                                onclick="openCategoryQuickAddModal()"
+                                class="text-sm text-blue-600 hover:text-blue-800 font-semibold">
+                            ➕ Add New Category
+                        </button>
+
+                    </div>
 
                     <select name="category_id"
+                            id="categorySelect"
                             class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400"
                             required>
 
@@ -161,11 +181,22 @@
                 <!-- UNIT -->
                 <div>
 
-                    <label class="block text-gray-700 font-semibold mb-2">
-                        Unit
-                    </label>
+                    <div class="flex items-center justify-between mb-2">
+
+                        <label class="block text-gray-700 font-semibold">
+                            Unit
+                        </label>
+
+                        <button type="button"
+                                onclick="openUnitQuickAddModal()"
+                                class="text-sm text-blue-600 hover:text-blue-800 font-semibold">
+                            ➕ Add New Unit
+                        </button>
+
+                    </div>
 
                     <select name="unit_id"
+                            id="unitSelect"
                             class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400"
                             required>
 
@@ -274,5 +305,7 @@
     }
 
 </script>
+
+@include('supervisor.materials._quick_add_modals')
 
 @endsection

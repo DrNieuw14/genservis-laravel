@@ -7,14 +7,39 @@
     <!-- PAGE HEADER -->
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
+            <h2 id="pageTitle" class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
                 📦 Material Request
             </h2>
 
-            <p class="text-gray-500 mt-1 text-lg">
+            <p id="pageSubtitle" class="text-gray-500 mt-1 text-lg">
                 Request materials from the Centralized Stockroom for your department.
             </p>
         </div>
+    </div>
+
+    <!-- MODE TOGGLE -->
+    <div class="flex gap-2 mb-6 border-b">
+
+        <button
+            type="button"
+            id="modeTabMaterials"
+            onclick="switchMode('materials')"
+            class="px-5 py-3 font-semibold text-lg border-b-4 border-blue-600 text-blue-700">
+
+            📦 Request Materials
+
+        </button>
+
+        <button
+            type="button"
+            id="modeTabBorrow"
+            onclick="switchMode('borrow')"
+            class="px-5 py-3 font-semibold text-lg border-b-4 border-transparent text-gray-500 hover:text-gray-700">
+
+            🏀 Borrow Sports Equipment
+
+        </button>
+
     </div>
 
     @if(session('success'))
@@ -39,41 +64,10 @@
         </div>
     @endif
 
+    <div id="materialsModeSection">
+
     <form id="materialRequestForm" method="POST" action="/material-request">
         @csrf
-
-        <!-- DEPARTMENT -->
-        <div class="mb-6">
-
-            <label class="block mb-2 font-semibold text-lg">
-                Destination Department / Office
-            </label>
-
-            <p class="text-gray-500 text-base mb-2">
-                Materials will be requested from the Centralized Stockroom and assigned to the selected department.
-            </p>
-
-            <select
-                id="departmentSelect"
-                name="department_id"
-                class="w-full border rounded-lg p-4 text-lg"
-                required>
-
-                <option value="">
-                    -- Select Department --
-                </option>
-
-                @foreach($departments as $department)
-
-                    <option value="{{ $department->id }}">
-                        {{ $department->department_name }}
-                    </option>
-
-                @endforeach
-
-            </select>
-
-        </div>
 
         <!-- SOURCE & DESTINATION -->
         <div class="border border-blue-200 bg-blue-50 rounded-xl p-5 mb-6">
@@ -271,6 +265,39 @@
 
         </div>
 
+        <!-- DEPARTMENT -->
+        <div class="mb-6">
+
+            <label class="block mb-2 font-semibold text-lg">
+                Destination Department / Office
+            </label>
+
+            <p class="text-gray-500 text-base mb-2">
+                Materials will be requested from the Centralized Stockroom and assigned to the selected department.
+            </p>
+
+            <select
+                id="departmentSelect"
+                name="department_id"
+                class="w-full border rounded-lg p-4 text-lg"
+                required>
+
+                <option value="">
+                    -- Select Department --
+                </option>
+
+                @foreach($departments as $department)
+
+                    <option value="{{ $department->id }}">
+                        {{ $department->department_name }}
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
         <!-- ACTION BUTTONS -->
         <div class="flex gap-3">
 
@@ -293,6 +320,226 @@
         </div>
 
     </form>
+
+    </div>
+    <!-- /materialsModeSection -->
+
+    <!-- BORROW SPORTS EQUIPMENT MODE -->
+    <div id="borrowModeSection" class="hidden">
+
+    <form id="borrowForm" method="POST" action="{{ route('sports-equipment.borrows.store') }}">
+        @csrf
+
+        <!-- SOURCE & DESTINATION -->
+        <div class="border border-orange-200 bg-orange-50 rounded-xl p-5 mb-6">
+
+            <h3 class="text-xl font-semibold text-orange-700 mb-4">
+                🏢 Source & Destination
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                <div>
+                    <p class="text-gray-500 text-base">
+                        Source Location
+                    </p>
+
+                    <p class="font-bold text-xl">
+                        Centralized Stockroom
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-gray-500 text-base">
+                        Requested For
+                    </p>
+
+                    <p id="borrowDepartmentPreview" class="font-bold text-xl">
+                        Selected Department / Office
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- EQUIPMENT NEEDED -->
+        <div class="border rounded-lg p-5 mb-6 bg-gray-50">
+
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+
+                <h3 class="text-xl font-semibold text-orange-700 flex items-center gap-2">
+                    🏀 Equipment Needed
+                    <span id="borrow-item-count-badge" class="text-sm bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-semibold">
+                        1 item
+                    </span>
+                </h3>
+
+            </div>
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full border rounded-lg overflow-hidden" id="borrowItemsTable">
+
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-3 text-left text-lg">Equipment</th>
+                            <th class="p-3 text-left text-lg w-48">Quantity</th>
+                            <th class="p-3 text-center text-lg w-32">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="borrow-items-container" class="divide-y-2 divide-gray-300">
+
+                        <tr class="borrow-item-row">
+
+                            <td class="p-3 align-top">
+
+                                <select name="sports_equipment_id[]" class="equipment-select w-full" required>
+                                    <option value="">🔍 Click to search equipment...</option>
+                                </select>
+
+                                <div class="flex items-start gap-2 mt-1">
+                                    <img class="equipment-thumb hidden w-12 h-12 object-cover rounded-lg border flex-shrink-0" alt="">
+                                    <p class="equipment-meta text-base text-gray-500"></p>
+                                </div>
+
+                            </td>
+
+                            <td class="p-3 align-top">
+
+                                <input type="number"
+                                    name="quantity[]"
+                                    min="1"
+                                    class="borrow-quantity-input w-full border rounded-lg p-4 text-lg"
+                                    required>
+
+                                <p class="borrow-stock-warning text-red-500 text-base mt-1 hidden">
+                                    Exceeds available quantity.
+                                </p>
+
+                            </td>
+
+                            <td class="p-3 text-center align-top">
+                                <button
+                                    type="button"
+                                    class="remove-borrow-item hidden bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg text-base font-semibold">
+                                    Remove
+                                </button>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <button
+                type="button"
+                id="add-borrow-item"
+                class="mt-4 bg-orange-600 hover:bg-orange-700 text-white px-5 py-3 rounded-lg text-lg font-semibold">
+                ➕ Add Equipment
+            </button>
+
+        </div>
+
+        <!-- REQUEST DETAILS -->
+        <div class="border rounded-lg p-5 mb-6 bg-gray-50">
+
+            <h3 class="text-xl font-semibold text-green-700 mb-4">
+                📝 Request Details
+            </h3>
+
+            <label class="block mb-2 font-semibold text-lg">
+                Room / Location
+            </label>
+
+            <p class="text-gray-500 text-base mb-2">
+                Optional — where the equipment will be used, e.g. "Covered Court".
+            </p>
+
+            <input
+                type="text"
+                name="room"
+                placeholder="Example: Covered Court"
+                class="w-full border rounded-lg p-4 text-lg mb-4">
+
+            <label class="block mb-2 font-semibold text-lg">
+                Purpose of Borrowing
+            </label>
+
+            <textarea
+                name="purpose"
+                rows="4"
+                placeholder="Example: Intramurals basketball tournament"
+                class="w-full border rounded-lg p-4 text-lg mb-4"
+                required></textarea>
+
+            <label class="block mb-2 font-semibold text-lg">
+                Expected Return Date
+            </label>
+
+            <input
+                type="text"
+                name="expected_return_date"
+                id="expectedReturnDate"
+                placeholder="Click to pick a date"
+                class="w-full border rounded-lg p-4 text-lg cursor-pointer bg-white"
+                autocomplete="off"
+                required>
+
+        </div>
+
+        <!-- DEPARTMENT -->
+        <div class="mb-6">
+
+            <label class="block mb-2 font-semibold text-lg">
+                Destination Department / Office
+            </label>
+
+            <p class="text-gray-500 text-base mb-2">
+                The office accountable for returning the borrowed equipment.
+            </p>
+
+            <select
+                id="borrowDepartmentSelect"
+                name="department_id"
+                class="w-full border rounded-lg p-4 text-lg"
+                required>
+
+                <option value="">-- Select Department --</option>
+
+                @foreach($departments as $department)
+                    <option value="{{ $department->id }}">{{ $department->department_name }}</option>
+                @endforeach
+
+            </select>
+
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex gap-3">
+
+            <button
+                type="button"
+                onclick="showBorrowConfirmationModal()"
+                class="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-8 py-4 rounded-lg shadow text-lg">
+                🏀 Submit Borrow Request
+            </button>
+
+            <a href="{{ route('sports-equipment.my-borrows') }}"
+               class="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-8 py-4 rounded-lg shadow text-lg">
+                📋 View My Borrowed Equipment
+            </a>
+
+        </div>
+
+    </form>
+
+    </div>
+    <!-- /borrowModeSection -->
 
 </div>
 
@@ -442,6 +689,141 @@
 
 </div>
 
+<!-- Borrow Confirmation Modal -->
+<div
+    id="borrowConfirmationModal"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-[9999] p-4">
+
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6 lg:p-8">
+
+        <h2 class="text-2xl font-bold text-yellow-600 mb-4">
+            ⚠ Confirm Borrow Request
+        </h2>
+
+        <div class="space-y-2 text-gray-700 text-lg">
+
+            <p>
+                <strong>Source Location:</strong>
+                Centralized Stockroom
+            </p>
+
+            <p>
+                <strong>Destination:</strong>
+                <span id="borrowConfirmDepartment"></span>
+            </p>
+
+            <p id="borrowConfirmRoomRow">
+                <strong>Room / Location:</strong>
+                <span id="borrowConfirmRoom"></span>
+            </p>
+
+            <p>
+                <strong>Purpose:</strong>
+                <span id="borrowConfirmPurpose"></span>
+            </p>
+
+            <p>
+                <strong>Expected Return Date:</strong>
+                <span id="borrowConfirmReturnDate"></span>
+            </p>
+
+        </div>
+
+        <div class="mt-5">
+
+            <h3 class="font-semibold text-gray-800 mb-2 text-lg">
+                Equipment
+            </h3>
+
+            <div class="border rounded-lg p-3 bg-gray-50 max-h-64 overflow-y-auto">
+
+                <table class="w-full text-lg">
+
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-2">Equipment</th>
+                            <th class="text-right py-2">Qty</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="borrowConfirmItems"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+
+            <button
+                id="cancelBorrowBtn"
+                type="button"
+                onclick="closeBorrowConfirmationModal()"
+                class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg text-lg">
+                Cancel
+            </button>
+
+            <button
+                id="confirmBorrowBtn"
+                type="button"
+                onclick="submitBorrowForm()"
+                class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg text-lg">
+                Confirm Borrow Request
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Borrow Processing Modal -->
+<div
+    id="borrowProcessingModal"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-[9999]">
+
+    <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md text-center">
+
+        <div class="flex justify-center mb-4">
+
+            <svg
+                class="animate-spin h-12 w-12 text-orange-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24">
+
+                <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4">
+                </circle>
+
+                <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                </path>
+
+            </svg>
+
+        </div>
+
+        <h2 class="text-xl font-bold text-orange-700">
+            Submitting Borrow Request
+        </h2>
+
+        <p class="text-gray-600 mt-2 text-lg">
+            Please wait...
+        </p>
+
+    </div>
+
+</div>
+
 <!-- Tom Select CSS -->
 <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
 
@@ -508,6 +890,45 @@
 
 <!-- Tom Select JS -->
 <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+<!-- Flatpickr — calendar picker for Expected Return Date (Borrow mode) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<style>
+
+    .expected-return-alt-input {
+        border-radius: 0.5rem !important;
+        border: 1px solid #d1d5db !important;
+        padding: 1rem !important;
+        font-size: 18px !important;
+        width: 100%;
+        cursor: pointer;
+        background: white;
+    }
+
+    .expected-return-alt-input:focus {
+        border-color: #fb923c !important;
+        box-shadow: 0 0 0 2px rgba(251,146,60,0.3) !important;
+        outline: none;
+    }
+
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+        background: #ea580c;
+        border-color: #ea580c;
+    }
+
+    .flatpickr-day.today {
+        border-color: #ea580c;
+    }
+
+    .flatpickr-day:hover {
+        background: #ffedd5;
+    }
+
+</style>
 
 <script>
 
@@ -1130,6 +1551,424 @@ function submitMaterialRequestForm()
         'materialRequestForm'
     ).submit();
 }
+
+</script>
+
+<script>
+
+    // ✅ MODE TOGGLE (Request Materials vs Borrow Sports Equipment)
+    function switchMode(mode)
+    {
+        const materialsSection = document.getElementById('materialsModeSection');
+        const borrowSection = document.getElementById('borrowModeSection');
+
+        const materialsTab = document.getElementById('modeTabMaterials');
+        const borrowTab = document.getElementById('modeTabBorrow');
+
+        const pageTitle = document.getElementById('pageTitle');
+        const pageSubtitle = document.getElementById('pageSubtitle');
+
+        if (mode === 'borrow') {
+
+            materialsSection.classList.add('hidden');
+            borrowSection.classList.remove('hidden');
+
+            materialsTab.classList.remove('border-blue-600', 'text-blue-700');
+            materialsTab.classList.add('border-transparent', 'text-gray-500');
+
+            borrowTab.classList.remove('border-transparent', 'text-gray-500');
+            borrowTab.classList.add('border-orange-600', 'text-orange-700');
+
+            pageTitle.innerHTML = '🏀 Borrow Sports Equipment';
+            pageSubtitle.textContent = 'Borrow sports equipment for your department, team, or activity.';
+
+        } else {
+
+            borrowSection.classList.add('hidden');
+            materialsSection.classList.remove('hidden');
+
+            borrowTab.classList.remove('border-orange-600', 'text-orange-700');
+            borrowTab.classList.add('border-transparent', 'text-gray-500');
+
+            materialsTab.classList.remove('border-transparent', 'text-gray-500');
+            materialsTab.classList.add('border-blue-600', 'text-blue-700');
+
+            pageTitle.innerHTML = '📦 Material Request';
+            pageSubtitle.textContent = 'Request materials from the Centralized Stockroom for your department.';
+
+        }
+    }
+
+    // ✅ Expected Return Date — Flatpickr calendar, can't be in the past
+    flatpickr('#expectedReturnDate', {
+        altInput: true,
+        altInputClass: 'expected-return-alt-input',
+        altFormat: 'M j, Y',
+        dateFormat: 'Y-m-d',
+        minDate: 'today',
+        disableMobile: true,
+    });
+
+    // ✅ SPORTS EQUIPMENT MASTER DATA
+    const allSportsEquipment = @json($sportsEquipmentForJs);
+
+    const equipmentsById = {};
+
+    allSportsEquipment.forEach(function (eq) {
+        equipmentsById[eq.id] = eq;
+    });
+
+    function getSelectedBorrowDepartmentId()
+    {
+        const value = document.getElementById('borrowDepartmentSelect').value;
+        return value ? parseInt(value) : null;
+    }
+
+    function populateEquipmentSelect(tom)
+    {
+        const currentValue = tom.getValue();
+
+        tom.clear(true);
+        tom.clearOptions();
+
+        tom.addOption({
+            value: '',
+            text: '🔍 Click to search equipment...'
+        });
+
+        allSportsEquipment.forEach(function (eq) {
+
+            let text = eq.name + ' — Available: ' + eq.available + ' ' + eq.unit;
+
+            let disabled = false;
+
+            if (eq.available <= 0) {
+                text += ' (None Available)';
+                disabled = true;
+            }
+
+            tom.addOption({
+                value: String(eq.id),
+                text: text,
+                disabled: disabled
+            });
+
+        });
+
+        tom.refreshOptions(false);
+
+        if (currentValue && equipmentsById[currentValue]) {
+            tom.setValue(currentValue, true);
+        }
+    }
+
+    function initEquipmentTomSelect(element)
+    {
+        const tom = new TomSelect(element, {
+            create: false,
+            dropdownParent: 'body',
+            disabledField: 'disabled',
+            sortField: {
+                field: 'text',
+                direction: 'asc'
+            }
+        });
+
+        populateEquipmentSelect(tom);
+
+        element.addEventListener('change', function () {
+
+            const equipment = equipmentsById[element.value];
+
+            const row = element.closest('.borrow-item-row');
+
+            const quantityInput = row.querySelector('.borrow-quantity-input');
+
+            const meta = row.querySelector('.equipment-meta');
+
+            const thumb = row.querySelector('.equipment-thumb');
+
+            if (!meta) return;
+
+            if (!equipment) {
+                meta.innerHTML = '';
+                quantityInput.max = 0;
+
+                if (thumb) {
+                    thumb.classList.add('hidden');
+                    thumb.src = '';
+                }
+
+                return;
+            }
+
+            if (thumb) {
+
+                if (equipment.image_url) {
+                    thumb.src = equipment.image_url;
+                    thumb.alt = equipment.name;
+                    thumb.classList.remove('hidden');
+                } else {
+                    thumb.classList.add('hidden');
+                    thumb.src = '';
+                }
+
+            }
+
+            meta.innerHTML =
+                `Unit: <strong>${equipment.unit}</strong> &nbsp;•&nbsp; Available: <strong>${equipment.available} ${equipment.unit}</strong>`;
+
+            quantityInput.max = equipment.available;
+
+        });
+    }
+
+    document.querySelectorAll('.equipment-select').forEach(select => {
+        initEquipmentTomSelect(select);
+    });
+
+    // ✅ ADD EQUIPMENT ROW
+    document.getElementById('add-borrow-item').addEventListener('click', function () {
+
+        const tbody = document.getElementById('borrow-items-container');
+
+        const newRow = document.createElement('tr');
+
+        newRow.className = 'borrow-item-row';
+
+        newRow.innerHTML = `
+
+            <td class="p-3 align-top">
+
+                <select name="sports_equipment_id[]" class="equipment-select w-full" required>
+                    <option value="">🔍 Click to search equipment...</option>
+                </select>
+
+                <div class="flex items-start gap-2 mt-1">
+                    <img class="equipment-thumb hidden w-12 h-12 object-cover rounded-lg border flex-shrink-0" alt="">
+                    <p class="equipment-meta text-base text-gray-500"></p>
+                </div>
+
+            </td>
+
+            <td class="p-3 align-top">
+
+                <input type="number"
+                    name="quantity[]"
+                    min="1"
+                    class="borrow-quantity-input w-full border rounded-lg p-4 text-lg"
+                    required>
+
+                <p class="borrow-stock-warning text-red-500 text-base mt-1 hidden">
+                    Exceeds available quantity.
+                </p>
+
+            </td>
+
+            <td class="p-3 text-center align-top">
+                <button
+                    type="button"
+                    class="remove-borrow-item bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg text-base font-semibold">
+                    Remove
+                </button>
+            </td>
+        `;
+
+        tbody.appendChild(newRow);
+
+        initEquipmentTomSelect(
+            newRow.querySelector('.equipment-select')
+        );
+
+        updateBorrowItemCount();
+
+    });
+
+    // ✅ REMOVE EQUIPMENT ROW
+    document.addEventListener('click', function (e) {
+
+        if (e.target.closest('.remove-borrow-item')) {
+
+            const rows = document.querySelectorAll('.borrow-item-row');
+
+            if (rows.length > 1) {
+                e.target.closest('.borrow-item-row').remove();
+                updateBorrowItemCount();
+            }
+
+        }
+
+    });
+
+    // ✅ DUPLICATE EQUIPMENT GUARD
+    document.addEventListener('change', function (e) {
+
+        if (!e.target.classList.contains('equipment-select')) return;
+
+        const currentSelect = e.target;
+        const currentValue = currentSelect.value;
+
+        if (currentValue === '') return;
+
+        let duplicateFound = false;
+
+        document.querySelectorAll('.equipment-select').forEach(select => {
+            if (select !== currentSelect && select.value === currentValue) {
+                duplicateFound = true;
+            }
+        });
+
+        if (duplicateFound) {
+
+            alert('This equipment is already selected.');
+
+            if (currentSelect.tomselect) {
+                currentSelect.tomselect.clear();
+            } else {
+                currentSelect.value = '';
+            }
+
+        }
+
+    });
+
+    // ✅ LIVE QUANTITY VALIDATION
+    document.addEventListener('input', function (e) {
+
+        if (!e.target.classList.contains('borrow-quantity-input')) return;
+
+        const input = e.target;
+        const row = input.closest('.borrow-item-row');
+        const warning = row.querySelector('.borrow-stock-warning');
+        const max = parseInt(input.max || 0);
+        const value = parseInt(input.value || 0);
+
+        if (value > max) {
+            warning.classList.remove('hidden');
+            input.classList.add('border-red-500', 'ring-2', 'ring-red-300');
+        } else {
+            warning.classList.add('hidden');
+            input.classList.remove('border-red-500', 'ring-2', 'ring-red-300');
+        }
+
+    });
+
+    // ✅ ITEM COUNT BADGE
+    function updateBorrowItemCount()
+    {
+        const badge = document.getElementById('borrow-item-count-badge');
+        const rowCount = document.querySelectorAll('.borrow-item-row').length;
+
+        if (badge) {
+            badge.innerText = rowCount + (rowCount === 1 ? ' item' : ' items');
+        }
+    }
+
+    document.addEventListener('change', updateBorrowItemCount);
+
+    // ✅ DEPARTMENT PREVIEW SYNC
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const departmentSelect = document.getElementById('borrowDepartmentSelect');
+        const departmentPreview = document.getElementById('borrowDepartmentPreview');
+
+        departmentSelect.addEventListener('change', function () {
+            departmentPreview.textContent = this.options[this.selectedIndex].text;
+        });
+
+    });
+
+    function showBorrowConfirmationModal()
+    {
+        const departmentSelect = document.getElementById('borrowDepartmentSelect');
+
+        const department = departmentSelect.options[departmentSelect.selectedIndex].text;
+
+        const room = document.querySelector('#borrowForm input[name="room"]').value;
+
+        const purpose = document.querySelector('#borrowForm textarea[name="purpose"]').value;
+
+        const returnDate = document.getElementById('expectedReturnDate').value;
+
+        if (!departmentSelect.value || !purpose || !returnDate) {
+            alert('Please complete the department, purpose, and expected return date fields.');
+            return;
+        }
+
+        let itemRows = '';
+
+        const emptyRows = [];
+
+        document.querySelectorAll('#borrowItemsTable tbody tr').forEach(row => {
+
+            const select = row.querySelector('.equipment-select');
+            const quantity = row.querySelector('input[name="quantity[]"]');
+
+            if (select.value && parseInt(quantity.value) > 0) {
+
+                itemRows += `
+                    <tr class="border-b">
+                        <td class="py-2">${select.options[select.selectedIndex].text}</td>
+                        <td class="text-right py-2">${quantity.value}</td>
+                    </tr>
+                `;
+
+            } else {
+                emptyRows.push(row);
+            }
+
+        });
+
+        if (itemRows === '') {
+            alert('Please add at least one equipment item to borrow.');
+            return;
+        }
+
+        emptyRows.forEach(row => row.remove());
+
+        updateBorrowItemCount();
+
+        document.getElementById('borrowConfirmDepartment').textContent = department;
+
+        document.getElementById('borrowConfirmRoomRow').classList.toggle('hidden', !room);
+
+        document.getElementById('borrowConfirmRoom').textContent = room;
+
+        document.getElementById('borrowConfirmPurpose').textContent = purpose;
+
+        document.getElementById('borrowConfirmReturnDate').textContent = returnDate;
+
+        document.getElementById('borrowConfirmItems').innerHTML = itemRows;
+
+        document.getElementById('borrowConfirmationModal').classList.remove('hidden');
+        document.getElementById('borrowConfirmationModal').classList.add('flex');
+    }
+
+    function closeBorrowConfirmationModal()
+    {
+        document.getElementById('borrowConfirmationModal').classList.add('hidden');
+        document.getElementById('borrowConfirmationModal').classList.remove('flex');
+    }
+
+    let isBorrowSubmitting = false;
+
+    function submitBorrowForm()
+    {
+        if (isBorrowSubmitting) return;
+
+        isBorrowSubmitting = true;
+
+        document.getElementById('confirmBorrowBtn').disabled = true;
+        document.getElementById('cancelBorrowBtn').disabled = true;
+
+        document.getElementById('borrowConfirmationModal').classList.add('hidden');
+        document.getElementById('borrowConfirmationModal').classList.remove('flex');
+
+        document.getElementById('borrowProcessingModal').classList.remove('hidden');
+        document.getElementById('borrowProcessingModal').classList.add('flex');
+
+        document.getElementById('borrowForm').submit();
+    }
 
 </script>
 
