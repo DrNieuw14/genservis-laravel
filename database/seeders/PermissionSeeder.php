@@ -114,6 +114,13 @@ class PermissionSeeder extends Seeder
                     ['name' => 'Edit PRE', 'slug' => 'edit-pre'],
                     ['name' => 'Delete PRE', 'slug' => 'delete-pre'],
 
+                    // Purchase Requests (PR)
+                    ['name' => 'View Purchase Requests', 'slug' => 'view-purchase-requests'],
+                    ['name' => 'Create Purchase Requests', 'slug' => 'create-purchase-requests'],
+                    ['name' => 'Edit Purchase Requests', 'slug' => 'edit-purchase-requests'],
+                    ['name' => 'Delete Purchase Requests', 'slug' => 'delete-purchase-requests'],
+                    ['name' => 'Approve Purchase Requests', 'slug' => 'approve-purchase-requests'],
+
                 ]
             ],
 

@@ -43,6 +43,7 @@ use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementPlanItemController;
 use App\Http\Controllers\Supervisor\Procurement\ProcurementReportController;
 use App\Http\Controllers\Supervisor\Procurement\ProgramReceiptExpenditureController;
+use App\Http\Controllers\Supervisor\Procurement\PurchaseRequestController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EmployeeProfileController;
 use App\Http\Controllers\ProfileController;
@@ -1266,6 +1267,16 @@ Route::middleware(['auth'])->group(function () {
                         [ProcurementPlanItemController::class, 'toggleApproval']
                     )->name('plans.items.toggle-approval');
 
+                    Route::get(
+                        'plans/{plan}/bulk-tag-ppa',
+                        [ProcurementPlanItemController::class, 'bulkTagPpaForm']
+                    )->name('plans.items.bulk-tag-ppa.form');
+
+                    Route::post(
+                        'plans/{plan}/bulk-tag-ppa',
+                        [ProcurementPlanItemController::class, 'bulkTagPpa']
+                    )->name('plans.items.bulk-tag-ppa');
+
                 });
 
                 /*
@@ -1343,6 +1354,74 @@ Route::middleware(['auth'])->group(function () {
                     'pre/{pre}/allocations',
                     [ProgramReceiptExpenditureController::class, 'updateAllocations']
                 )->middleware('permission:create-pre,edit-pre')->name('pre.allocations.update');
+
+                Route::middleware('permission:create-pre,edit-pre')->group(function () {
+
+                    Route::post(
+                        'pre/{pre}/allocation-lines/{line}/utilization-entries',
+                        [ProgramReceiptExpenditureController::class, 'storeUtilizationEntry']
+                    )->name('pre.utilization-entries.store');
+
+                    Route::delete(
+                        'pre/{pre}/allocation-lines/{line}/utilization-entries/{entry}',
+                        [ProgramReceiptExpenditureController::class, 'destroyUtilizationEntry']
+                    )->name('pre.utilization-entries.destroy');
+
+                });
+
+                /*
+                |--------------------------------------------------------------------------
+                | Purchase Requests (PR)
+                |--------------------------------------------------------------------------
+                | The actual document that consumes a PPMP item's PRE ceiling —
+                | Approved/Completed PR items count as "utilized" on the PRE page.
+                */
+
+                Route::resource(
+                    'purchase-requests',
+                    PurchaseRequestController::class
+                )
+                    ->middlewareFor(
+                        ['index', 'show'],
+                        'permission:view-purchase-requests'
+                    )
+                    ->middlewareFor(
+                        ['create', 'store', 'edit', 'update'],
+                        'permission:create-purchase-requests,edit-purchase-requests'
+                    )
+                    ->middlewareFor(
+                        'destroy',
+                        'permission:delete-purchase-requests'
+                    );
+
+                Route::middleware('permission:create-purchase-requests,edit-purchase-requests')->group(function () {
+
+                    Route::post(
+                        'purchase-requests/{pr}/items',
+                        [PurchaseRequestController::class, 'addItem']
+                    )->name('purchase-requests.items.store');
+
+                    Route::delete(
+                        'purchase-requests/{pr}/items/{item}',
+                        [PurchaseRequestController::class, 'removeItem']
+                    )->name('purchase-requests.items.destroy');
+
+                    Route::post(
+                        'purchase-requests/{pr}/reject',
+                        [PurchaseRequestController::class, 'reject']
+                    )->name('purchase-requests.reject');
+
+                });
+
+                Route::post(
+                    'purchase-requests/{pr}/approve',
+                    [PurchaseRequestController::class, 'approve']
+                )->middleware('permission:approve-purchase-requests')->name('purchase-requests.approve');
+
+                Route::post(
+                    'purchase-requests/{pr}/complete',
+                    [PurchaseRequestController::class, 'complete']
+                )->middleware('permission:approve-purchase-requests')->name('purchase-requests.complete');
 
             });
 

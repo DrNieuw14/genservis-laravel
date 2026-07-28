@@ -82,4 +82,42 @@ class ProgramReceiptExpenditure extends Model
             ->where('allotment_class', '!=', 'Personal Services')
             ->sum('amount');
     }
+
+    /**
+     * Actual utilization against one UACS+PPA line — Purchase Request item
+     * costs (PRs that have reached the obligation point, Approved or
+     * Completed, never Draft/Rejected) PLUS manually logged entries against
+     * that same line (for spending that never goes through a PR at all —
+     * Personal Services always, but also plenty of real MOOE lines like
+     * utility bills or service contracts). This is "money actually spoken
+     * for," distinct from the PPMP's merely-planned amount. Kept in sync
+     * with the equivalent logic in ProgramReceiptExpenditureController —
+     * that controller computes this per-row itself (to get the drill-down
+     * detail list in the same pass), this method is the standalone version
+     * for any other caller.
+     */
+    public function utilizedForUacs(string $ppa, string $uacsCode): float
+    {
+        $prTotal = (float) PurchaseRequestItem::query()
+            ->whereHas(
+                'purchaseRequest',
+                fn ($q) => $q->whereIn('status', ['Approved', 'Completed'])
+            )
+            ->whereHas(
+                'planItem',
+                fn ($q) => $q->where('ppa', $ppa)
+                    ->whereHas(
+                        'material.classification',
+                        fn ($q2) => $q2->where('uacs_code', $uacsCode)
+                    )
+            )
+            ->sum('total_cost');
+
+        $manualTotal = (float) $this->allocationLines
+            ->where('ppa', $ppa)
+            ->where('uacs_code', $uacsCode)
+            ->reduce(fn ($carry, $line) => $carry + $line->utilizationEntries->sum('amount'), 0.0);
+
+        return $prTotal + $manualTotal;
+    }
 }

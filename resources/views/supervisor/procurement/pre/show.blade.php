@@ -79,6 +79,8 @@
                         <th class="text-right px-3 py-2">{{ $ppa }}</th>
                         @endforeach
                         <th class="text-right px-3 py-2 font-bold">Total</th>
+                        <th class="text-right px-3 py-2 font-bold text-purple-700">Utilized</th>
+                        <th class="text-right px-3 py-2 font-bold text-gray-700">Remaining</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,6 +94,17 @@
                         </td>
                         @endforeach
                         <td class="px-3 py-2 text-right font-semibold">{{ number_format($row['total'], 2) }}</td>
+                        <td class="px-3 py-2 text-right">
+                            <button type="button"
+                                    onclick="showUtilizationDetail('{{ $row['row_key'] }}')"
+                                    class="text-purple-700 underline hover:text-purple-900">
+                                {{ $row['total_utilized'] > 0 ? number_format($row['total_utilized'], 2) : '— (view/log)' }}
+                            </button>
+                        </td>
+                        <td class="px-3 py-2 text-right font-semibold
+                            {{ ($row['total'] - $row['total_utilized']) < 0 ? 'text-red-600' : 'text-gray-700' }}">
+                            {{ number_format($row['total'] - $row['total_utilized'], 2) }}
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -238,5 +251,190 @@
     @endif
 
 </div>
+
+<!-- Utilization Detail / Log Entry Modal (shared across all rows) -->
+<div id="utilizationModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
+
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto">
+
+        <div class="flex justify-between items-center border-b px-6 py-4">
+            <h3 id="utilizationModalTitle" class="text-xl font-bold">Utilization Detail</h3>
+            <button type="button" onclick="closeUtilizationModal()" class="text-gray-500 hover:text-red-600 text-xl">✕</button>
+        </div>
+
+        <div class="p-6">
+
+            <table class="min-w-full text-sm mb-4">
+                <thead>
+                    <tr class="border-b text-left text-gray-500">
+                        <th class="py-1 pr-3">PPA</th>
+                        <th class="py-1 pr-3">Source</th>
+                        <th class="py-1 pr-3">Date</th>
+                        <th class="py-1 pr-3">Description</th>
+                        <th class="py-1 pr-3 text-right">Amount</th>
+                        <th class="py-1"></th>
+                    </tr>
+                </thead>
+                <tbody id="utilizationDetailBody">
+                </tbody>
+            </table>
+
+            <p id="utilizationEmptyNote" class="text-gray-400 text-sm hidden">No utilization recorded yet.</p>
+
+            <!-- Add Entry form — Personal Services rows only -->
+            <div id="utilizationAddEntrySection" class="border-t pt-4 mt-4">
+
+                <h4 class="font-semibold text-gray-700 mb-3">➕ Log Utilization Entry</h4>
+
+                <form id="utilizationAddEntryForm" method="POST">
+                    @csrf
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+
+                        <div>
+                            <label class="text-sm font-semibold">PPA</label>
+                            <select id="utilizationPpaSelect" class="w-full border rounded mt-1" onchange="updateUtilizationFormAction()"></select>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold">Amount</label>
+                            <input type="number" step="0.01" min="0" name="amount" class="w-full border rounded mt-1" required>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold">Date</label>
+                            <input type="date" name="entry_date" value="{{ date('Y-m-d') }}" class="w-full border rounded mt-1" required>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-semibold">Note</label>
+                            <input type="text" name="note" placeholder="e.g. Payroll, Jan-Jun" class="w-full border rounded mt-1">
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="mt-3 bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-semibold">
+                        Log Entry
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const utilizationData = @json($utilizationData);
+
+    const preId = {{ $pre->id }};
+    const storeUrlTemplate = "/procurement/pre/{{ $pre->id }}/allocation-lines/:line/utilization-entries";
+    const destroyUrlTemplate = "/procurement/pre/{{ $pre->id }}/allocation-lines/:line/utilization-entries/:entry";
+
+    function showUtilizationDetail(rowKey)
+    {
+        const data = utilizationData[rowKey];
+
+        if (!data) {
+            return;
+        }
+
+        document.getElementById('utilizationModalTitle').innerText = data.uacs_code + ' — ' + data.description;
+
+        const body = document.getElementById('utilizationDetailBody');
+        body.innerHTML = '';
+
+        if (data.detail.length === 0) {
+            document.getElementById('utilizationEmptyNote').classList.remove('hidden');
+        } else {
+            document.getElementById('utilizationEmptyNote').classList.add('hidden');
+        }
+
+        data.detail.forEach(entry => {
+
+            const tr = document.createElement('tr');
+            tr.className = 'border-t';
+
+            let deleteCell = '';
+
+            if (entry.entry_id) {
+                deleteCell = `<button type="button" onclick="deleteUtilizationEntry(${entry.line_id}, ${entry.entry_id})" class="text-red-600 hover:underline text-xs">Remove</button>`;
+            }
+
+            tr.innerHTML = `
+                <td class="py-1 pr-3 font-medium">${entry.ppa}</td>
+                <td class="py-1 pr-3">${entry.source}</td>
+                <td class="py-1 pr-3">${entry.date}</td>
+                <td class="py-1 pr-3">${entry.description}</td>
+                <td class="py-1 pr-3 text-right">${Number(entry.amount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td class="py-1">${deleteCell}</td>
+            `;
+
+            body.appendChild(tr);
+
+        });
+
+        // Manual entries can be logged against any line now (Personal
+        // Services, MOOE, or Capital Outlay) — plenty of real MOOE lines
+        // (utility bills, service contracts) never go through a Purchase
+        // Request either, so this isn't limited to PS anymore.
+        const select = document.getElementById('utilizationPpaSelect');
+        select.innerHTML = '';
+
+        Object.entries(data.line_ids).forEach(([ppa, lineId]) => {
+            if (lineId) {
+                const option = document.createElement('option');
+                option.value = lineId;
+                option.text = ppa;
+                select.appendChild(option);
+            }
+        });
+
+        updateUtilizationFormAction();
+
+        document.getElementById('utilizationModal').classList.remove('hidden');
+    }
+
+    function updateUtilizationFormAction()
+    {
+        const lineId = document.getElementById('utilizationPpaSelect').value;
+        document.getElementById('utilizationAddEntryForm').action = storeUrlTemplate.replace(':line', lineId);
+    }
+
+    function closeUtilizationModal()
+    {
+        document.getElementById('utilizationModal').classList.add('hidden');
+    }
+
+    function deleteUtilizationEntry(lineId, entryId)
+    {
+        Swal.fire({
+            title: 'Remove this utilization entry?',
+            showCancelButton: true,
+            confirmButtonText: 'Remove',
+            confirmButtonColor: '#d33'
+        }).then((result) => {
+
+            if (!result.isConfirmed) {
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = destroyUrlTemplate.replace(':line', lineId).replace(':entry', entryId);
+
+            form.innerHTML = `@csrf @method('DELETE')`;
+
+            document.body.appendChild(form);
+            form.submit();
+
+        });
+    }
+
+</script>
 
 @endsection

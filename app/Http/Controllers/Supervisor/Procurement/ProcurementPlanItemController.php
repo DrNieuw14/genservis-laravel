@@ -472,6 +472,43 @@ class ProcurementPlanItemController extends Controller
     }
 
     /**
+     * Bulk PPA tagging screen — for plans imported/entered without per-item
+     * PPA data (e.g. the real PPMP-2026-059 A, whose paper source has no PPA
+     * breakdown at all), letting whoever manages the plan tag many items to
+     * the same PPA in one action instead of editing 200 items one by one.
+     */
+    public function bulkTagPpaForm(ProcurementPlan $plan)
+    {
+        $items = $plan->items()
+            ->with(['unit', 'material.classification'])
+            ->orderBy('material_name')
+            ->get();
+
+        return view(
+            'supervisor.procurement.plans.bulk-tag-ppa',
+            compact('plan', 'items')
+        );
+    }
+
+    public function bulkTagPpa(Request $request, ProcurementPlan $plan)
+    {
+        $validated = $request->validate([
+            'item_ids' => 'required|array|min:1',
+            'item_ids.*' => 'exists:procurement_plan_items,id',
+            'ppa' => 'required|in:GASS,STO,MFO1,MFO2,MFO3,MFO4',
+        ]);
+
+        $count = $plan->items()
+            ->whereIn('id', $validated['item_ids'])
+            ->update(['ppa' => $validated['ppa']]);
+
+        return back()->with(
+            'success',
+            "{$count} item(s) tagged as {$validated['ppa']}."
+        );
+    }
+
+    /**
      * Notify the user who originally added this item, unless they're the
      * one making the change themselves.
      */

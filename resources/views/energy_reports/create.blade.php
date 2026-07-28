@@ -45,7 +45,7 @@
 
                 @if($existingMonths->isNotEmpty())
                     <p class="text-xs text-gray-400 mt-1">
-                        Already reported: {{ $existingMonths->map(fn($m) => \Illuminate\Support\Carbon::parse($m . '-01')->format('M Y'))->join(', ') }}
+                        Already reported: {{ $existingMonths->map(fn($m) => (new \App\Models\EnergyConservationReport(['report_month' => $m]))->monthLabel())->join(', ') }}
                     </p>
                 @endif
             </div>

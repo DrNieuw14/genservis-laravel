@@ -232,6 +232,10 @@ class RolePermissionSeeder extends Seeder
                     'create-pre',
                     'edit-pre',
 
+                    'view-purchase-requests',
+                    'create-purchase-requests',
+                    'edit-purchase-requests',
+
                     'view-reports',
 
                 ])->pluck('id')->toArray()

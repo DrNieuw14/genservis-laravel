@@ -46,7 +46,22 @@ Working Document
 
 </div>
 
+<div class="flex items-center gap-3">
+
+@if(auth()->user()->hasPermission('view-ppmp'))
+
+<a href="{{ route('procurement.plans.items.bulk-tag-ppa.form', $plan->id) }}"
+   class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap">
+
+    🏷 Bulk-Tag PPA
+
+</a>
+
+@endif
+
 @include('supervisor.procurement.plans.partials._status_badge', ['status' => $plan->status, 'size' => 'lg'])
+
+</div>
 
 </div>
 

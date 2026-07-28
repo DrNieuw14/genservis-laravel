@@ -24,4 +24,9 @@ class PreAllocationLine extends Model
     {
         return $this->belongsTo(ProgramReceiptExpenditure::class, 'pre_id');
     }
+
+    public function utilizationEntries()
+    {
+        return $this->hasMany(PreUtilizationEntry::class);
+    }
 }

@@ -79,6 +79,11 @@ class ProcurementPlanItem extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function purchaseRequestItems()
+    {
+        return $this->hasMany(PurchaseRequestItem::class, 'procurement_plan_item_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Helper Methods

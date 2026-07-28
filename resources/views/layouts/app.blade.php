@@ -618,16 +618,6 @@
                 Procurement Planning
             </div>
 
-            <!-- Dashboard -->
-
-            <a href="{{ route('procurement.dashboard') }}"
-            class="block px-3 py-2 rounded
-            {{ request()->routeIs('procurement.dashboard') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
-
-                🏠 Dashboard
-
-            </a>
-
             <!-- Annual PPMP -->
 
             <a href="{{ route('procurement.plans.index') }}"
@@ -651,6 +641,22 @@
                 : 'hover:bg-green-100' }}">
 
                 💰 Program of Receipts (PRE)
+
+            </a>
+
+            @endif
+
+            <!-- Purchase Requests (PR) -->
+
+            @if(auth()->user()->hasPermission('view-purchase-requests'))
+
+            <a href="{{ route('procurement.purchase-requests.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('procurement.purchase-requests.*')
+                ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
+                : 'hover:bg-green-100' }}">
+
+                🧾 Purchase Requests
 
             </a>
 

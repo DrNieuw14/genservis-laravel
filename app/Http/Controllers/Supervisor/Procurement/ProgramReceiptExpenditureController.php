@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Supervisor\Procurement;
 
 use App\Http\Controllers\Controller;
 use App\Models\PreAllocation;
+use App\Models\PreAllocationLine;
+use App\Models\PreUtilizationEntry;
 use App\Models\ProcurementPlan;
 use App\Models\ProgramReceiptExpenditure;
+use App\Models\PurchaseRequestItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,23 +67,47 @@ class ProgramReceiptExpenditureController extends Controller
         // Capital Outlay), each row a UACS line with per-PPA amounts.
         $ppaOrder = ['GASS', 'STO', 'MFO1', 'MFO2', 'MFO3', 'MFO4'];
 
+        $utilizationData = [];
+
         $allocationLines = $pre->allocationLines
             ->groupBy('allotment_class')
-            ->map(function ($rows) use ($ppaOrder) {
+            ->map(function ($rows, $class) use ($ppaOrder, &$utilizationData) {
                 return $rows
                     ->groupBy(fn ($row) => $row->uacs_code . '|' . $row->description)
-                    ->map(function ($cells) use ($ppaOrder) {
+                    ->values()
+                    ->map(function ($cells, $rowIndex) use ($ppaOrder, $class, &$utilizationData) {
+
                         $byPpa = $cells->keyBy('ppa');
-                        return [
-                            'uacs_code' => $cells->first()->uacs_code,
+                        $uacsCode = $cells->first()->uacs_code;
+
+                        [$utilizedPerPpa, $detail] = $this->utilizationBreakdown($uacsCode, $byPpa, $ppaOrder);
+
+                        $lineIds = collect($ppaOrder)->mapWithKeys(
+                            fn ($ppa) => [$ppa => $byPpa[$ppa]->id ?? null]
+                        );
+
+                        $rowKey = \Illuminate\Support\Str::slug($class) . '-' . $rowIndex;
+
+                        $utilizationData[$rowKey] = [
+                            'uacs_code' => $uacsCode,
                             'description' => $cells->first()->description,
+                            'is_personal_services' => $class === 'Personal Services',
+                            'line_ids' => $lineIds,
+                            'detail' => $detail,
+                        ];
+
+                        return [
+                            'row_key' => $rowKey,
+                            'uacs_code' => $uacsCode,
+                            'description' => $cells->first()->description,
+                            'is_personal_services' => $class === 'Personal Services',
                             'amounts' => collect($ppaOrder)->mapWithKeys(
                                 fn ($ppa) => [$ppa => (float) ($byPpa[$ppa]->amount ?? 0)]
                             ),
                             'total' => $cells->sum('amount'),
+                            'total_utilized' => array_sum($utilizedPerPpa),
                         ];
-                    })
-                    ->values();
+                    });
             });
 
         // Reconciliation — every campus-wide PPMP for the same year, tagged items only.
@@ -95,7 +122,7 @@ class ProgramReceiptExpenditureController extends Controller
 
         return view(
             'supervisor.procurement.pre.show',
-            compact('pre', 'allocations', 'allocationLines', 'ppaOrder', 'plans')
+            compact('pre', 'allocations', 'allocationLines', 'ppaOrder', 'plans', 'utilizationData')
         );
     }
 
@@ -138,6 +165,124 @@ class ProgramReceiptExpenditureController extends Controller
         return redirect()
             ->route('procurement.pre.index')
             ->with('success', 'Program of Receipts and Expenditures deleted.');
+    }
+
+    /**
+     * Per-UACS-line utilization. Two sources feed every line now, added
+     * together: Approved/Completed Purchase Requests (for whatever was
+     * actually procured through the PPMP — mainly goods/equipment/repairs),
+     * and manually logged entries (for everything that never goes through a
+     * PR at all — salaries, but also plenty of real MOOE lines like
+     * Electricity/Security Services/Insurance that are recurring contractual
+     * payments, not discrete purchases). Personal Services simply never has
+     * PR hits (PPMP items are never classified under a PS UACS code), so in
+     * practice it ends up manual-entry-only without needing a special case.
+     * Returns both the per-PPA totals AND the flat contributing-record list
+     * in one pass (avoids running the same queries twice for the summary
+     * number and its drill-down).
+     *
+     * @return array{0: array<string, float>, 1: array<int, array>}
+     */
+    private function utilizationBreakdown(string $uacsCode, $byPpa, array $ppaOrder): array
+    {
+        $perPpa = [];
+        $detail = [];
+
+        foreach ($ppaOrder as $ppa) {
+
+            if (! isset($byPpa[$ppa])) {
+                $perPpa[$ppa] = 0.0;
+                continue;
+            }
+
+            $lineTotal = 0.0;
+
+            $entries = $byPpa[$ppa]->utilizationEntries()->with('recordedBy')->get();
+
+            $lineTotal += (float) $entries->sum('amount');
+
+            foreach ($entries as $entry) {
+                $detail[] = [
+                    'ppa' => $ppa,
+                    'source' => 'Manual Entry',
+                    'date' => $entry->entry_date->format('M d, Y'),
+                    'description' => $entry->note ?: '—',
+                    'amount' => (float) $entry->amount,
+                    'recorded_by' => $entry->recordedBy->name ?? '—',
+                    'entry_id' => $entry->id,
+                    'line_id' => $byPpa[$ppa]->id,
+                ];
+            }
+
+            $items = PurchaseRequestItem::query()
+                ->whereHas('purchaseRequest', fn ($q) => $q->whereIn('status', ['Approved', 'Completed']))
+                ->whereHas('planItem', fn ($q) => $q->where('ppa', $ppa)->whereHas(
+                    'material.classification',
+                    fn ($q2) => $q2->where('uacs_code', $uacsCode)
+                ))
+                ->with(['purchaseRequest', 'planItem'])
+                ->get();
+
+            $lineTotal += (float) $items->sum('total_cost');
+
+            foreach ($items as $item) {
+                $detail[] = [
+                    'ppa' => $ppa,
+                    'source' => $item->purchaseRequest->pr_number,
+                    'date' => $item->purchaseRequest->pr_date->format('M d, Y'),
+                    'description' => $item->planItem->material_name,
+                    'amount' => (float) $item->total_cost,
+                    'recorded_by' => null,
+                    'entry_id' => null,
+                    'line_id' => null,
+                ];
+            }
+
+            $perPpa[$ppa] = $lineTotal;
+
+        }
+
+        return [$perPpa, $detail];
+    }
+
+    /**
+     * Log a manual Personal Services utilization entry (e.g. a payroll
+     * disbursement) against one specific PPA+UACS line.
+     */
+    public function storeUtilizationEntry(Request $request, string $id, string $lineId)
+    {
+        $pre = ProgramReceiptExpenditure::findOrFail($id);
+
+        $line = PreAllocationLine::where('pre_id', $pre->id)->findOrFail($lineId);
+
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'entry_date' => 'required|date',
+            'note' => 'nullable|string|max:255',
+        ]);
+
+        PreUtilizationEntry::create([
+            'pre_allocation_line_id' => $line->id,
+            'amount' => $validated['amount'],
+            'entry_date' => $validated['entry_date'],
+            'note' => $validated['note'] ?? null,
+            'recorded_by' => Auth::id(),
+        ]);
+
+        return back()->with('success', 'Utilization entry logged.');
+    }
+
+    public function destroyUtilizationEntry(string $id, string $lineId, string $entryId)
+    {
+        $pre = ProgramReceiptExpenditure::findOrFail($id);
+
+        $line = PreAllocationLine::where('pre_id', $pre->id)->findOrFail($lineId);
+
+        PreUtilizationEntry::where('pre_allocation_line_id', $line->id)
+            ->where('id', $entryId)
+            ->delete();
+
+        return back()->with('success', 'Utilization entry removed.');
     }
 
     /**

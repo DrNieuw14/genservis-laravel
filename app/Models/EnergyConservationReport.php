@@ -97,9 +97,29 @@ class EnergyConservationReport extends Model
         return round(($this->consumptionDifference() / $this->previous_month_consumption) * 100, 2);
     }
 
+    // The electric bill's actual reading cycle doesn't align with the
+    // calendar month — it runs the 22nd of the prior month through the
+    // 21st of report_month (e.g. report_month '2026-07' → "22 Jun – 21 Jul
+    // 2026"), matching the utility's real billing period. report_month
+    // itself still just identifies which cycle this is, unchanged.
+    public function periodStart(): \Illuminate\Support\Carbon
+    {
+        return $this->periodEnd()->subMonth()->addDay();
+    }
+
+    public function periodEnd(): \Illuminate\Support\Carbon
+    {
+        return \Illuminate\Support\Carbon::parse($this->report_month . '-21');
+    }
+
     public function monthLabel(): string
     {
-        return \Illuminate\Support\Carbon::parse($this->report_month . '-01')->format('F Y');
+        $start = $this->periodStart();
+        $end = $this->periodEnd();
+
+        $startFormat = $start->year === $end->year ? 'd M' : 'd M Y';
+
+        return $start->format($startFormat) . ' – ' . $end->format('d M Y');
     }
 
     // The report for the calendar month right before this one, if it
