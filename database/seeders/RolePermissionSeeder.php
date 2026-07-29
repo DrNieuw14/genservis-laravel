@@ -412,6 +412,32 @@ class RolePermissionSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
+        | Thesis Adviser
+        |--------------------------------------------------------------------------
+        |
+        | Personal advisee roster + manuscript in/out log. Held by Mark as an
+        | additional role alongside GSO, same pattern as Energy Focal Person.
+        |
+        */
+
+        $thesisAdviser = Role::where('name', 'Thesis Adviser')->first();
+
+        if ($thesisAdviser) {
+
+            $thesisAdviser->permissions()->sync(
+
+                Permission::whereIn('slug', [
+
+                    'manage-thesis-monitoring',
+
+                ])->pluck('id')->toArray()
+
+            );
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
         | Health Consultation — Health Service (Kris's primary role) and the
         | Nurse rank ladder (future nurses onboarded onto Nurse I-VII) both
         | get this, same "two roles share one permission" pattern as GSO/PPS
@@ -456,6 +482,29 @@ class RolePermissionSeeder extends Seeder
                 Permission::whereIn('slug', [
 
                     'manage-admission-applicants',
+
+                ])->pluck('id')->toArray()
+
+            );
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Registrar — Joseph's role, the Class Scheduling system's owner.
+        |--------------------------------------------------------------------------
+        */
+
+        $registrar = Role::where('name', 'Registrar')->first();
+
+        if ($registrar) {
+
+            $registrar->permissions()->sync(
+
+                Permission::whereIn('slug', [
+
+                    'view-class-schedule',
+                    'manage-class-schedule',
 
                 ])->pluck('id')->toArray()
 

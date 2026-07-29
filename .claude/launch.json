@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ugamesdoc-serve",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "127.0.0.1:8010", "-t", "C:/xampp/htdocs/ugamesdoc/public"],
+      "port": 8010
+    }
+  ]
+}

@@ -11,6 +11,10 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\JobRequestController;
 use App\Http\Controllers\UtilityScheduleController;
+use App\Http\Controllers\ClassScheduleController;
+use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\SectionController;
+use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ProjectEstimateController;
 use App\Http\Controllers\AttendanceKioskController;
 use App\Http\Controllers\BuildingInspectionController;
@@ -27,6 +31,7 @@ use App\Http\Controllers\ProgramRankingController;
 use App\Http\Controllers\ReapplicationController;
 use App\Http\Controllers\FinalAdmissionController;
 use App\Http\Controllers\WaterMeterController;
+use App\Http\Controllers\ThesisMonitoringController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Supervisor\MaterialController;
@@ -248,6 +253,53 @@ Route::middleware(['auth'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| CLASS SCHEDULING — Joseph (Registrar) builds the per-section schedule;
+| the room and faculty views are read-only derived pivots of the same data,
+| matching the real "Schedule-First-Semester" workbook's own three views.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:view-class-schedule'])->group(function () {
+
+    Route::get('/class-schedule', [ClassScheduleController::class, 'index'])
+        ->name('class-schedule.index');
+
+    Route::get('/class-schedule/rooms', [ClassScheduleController::class, 'roomView'])
+        ->name('class-schedule.rooms');
+
+    Route::get('/class-schedule/faculty', [ClassScheduleController::class, 'facultyView'])
+        ->name('class-schedule.faculty');
+
+});
+
+Route::middleware(['auth', 'permission:manage-class-schedule'])->group(function () {
+
+    Route::post('/class-schedule', [ClassScheduleController::class, 'store'])
+        ->name('class-schedule.store');
+
+    Route::get('/class-schedule/check-availability', [ClassScheduleController::class, 'checkAvailability'])
+        ->name('class-schedule.check-availability');
+
+    Route::put('/class-schedule/{classSchedule}', [ClassScheduleController::class, 'update'])
+        ->name('class-schedule.update');
+
+    Route::delete('/class-schedule/{classSchedule}', [ClassScheduleController::class, 'destroy'])
+        ->name('class-schedule.destroy');
+
+    Route::put('/class-schedule/faculty/{personnel}/profile', [ClassScheduleController::class, 'updateFacultyProfile'])
+        ->name('class-schedule.faculty.profile.update');
+
+    Route::post('/class-schedule/faculty/link', [ClassScheduleController::class, 'linkFacultyName'])
+        ->name('class-schedule.faculty.link');
+
+    Route::resource('programs', ProgramController::class)->except(['show']);
+    Route::resource('sections', SectionController::class)->except(['show']);
+    Route::resource('subjects', SubjectController::class)->except(['show']);
+
+});
+
+/*
+|--------------------------------------------------------------------------
 | PROJECT DETAILED ESTIMATES — Mark's own tool for costing repair/
 | rehabilitation projects, modeled on the real PPLS estimate form.
 |--------------------------------------------------------------------------
@@ -356,6 +408,31 @@ Route::middleware(['auth', 'permission:manage-building-inspections'])->group(fun
 
     Route::delete('/building-inspections/{id}/items/{itemId}/photos/{photoId}', [BuildingInspectionController::class, 'destroyPhoto'])
         ->name('building-inspections.items.photos.destroy');
+
+});
+
+Route::middleware(['auth', 'permission:manage-thesis-monitoring'])->group(function () {
+
+    Route::get('/thesis-monitoring', [ThesisMonitoringController::class, 'index'])
+        ->name('thesis-monitoring.index');
+
+    Route::post('/thesis-monitoring', [ThesisMonitoringController::class, 'store'])
+        ->name('thesis-monitoring.store');
+
+    Route::get('/thesis-monitoring/{thesisAdvisee}', [ThesisMonitoringController::class, 'show'])
+        ->name('thesis-monitoring.show');
+
+    Route::put('/thesis-monitoring/{thesisAdvisee}', [ThesisMonitoringController::class, 'update'])
+        ->name('thesis-monitoring.update');
+
+    Route::delete('/thesis-monitoring/{thesisAdvisee}', [ThesisMonitoringController::class, 'destroy'])
+        ->name('thesis-monitoring.destroy');
+
+    Route::post('/thesis-monitoring/{thesisAdvisee}/movements', [ThesisMonitoringController::class, 'storeMovement'])
+        ->name('thesis-monitoring.movements.store');
+
+    Route::delete('/thesis-monitoring/{thesisAdvisee}/movements/{movement}', [ThesisMonitoringController::class, 'destroyMovement'])
+        ->name('thesis-monitoring.movements.destroy');
 
 });
 

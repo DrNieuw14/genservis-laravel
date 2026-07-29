@@ -263,6 +263,50 @@
 
             @endif
 
+            @if(auth()->user()->hasPermission('view-class-schedule'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Class Scheduling
+            </div>
+
+            <a href="{{ route('class-schedule.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('class-schedule.index') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🗓 Class Schedule
+
+            </a>
+
+            <a href="{{ route('class-schedule.rooms') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('class-schedule.rooms') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🏫 Room View
+
+            </a>
+
+            <a href="{{ route('class-schedule.faculty') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('class-schedule.faculty') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🧑‍🏫 Faculty View
+
+            </a>
+
+            @if(auth()->user()->hasPermission('manage-class-schedule'))
+
+            <a href="{{ route('programs.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('programs.*') || request()->routeIs('sections.*') || request()->routeIs('subjects.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                ⚙ Programs / Sections / Subjects
+
+            </a>
+
+            @endif
+
+            @endif
+
             @if(auth()->user()->hasPermission('manage-project-estimates'))
 
             <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
@@ -432,6 +476,22 @@
             </a>
 
             @endif
+
+            @endif
+
+            @if(auth()->user()->hasPermission('manage-thesis-monitoring'))
+
+            <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
+                Thesis Monitoring
+            </div>
+
+            <a href="{{ route('thesis-monitoring.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('thesis-monitoring.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                🎓 My Advisees
+
+            </a>
 
             @endif
 

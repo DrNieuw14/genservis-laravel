@@ -21,4 +21,9 @@ class Department extends Model
     {
         return $this->hasMany(Material::class);
     }
+
+    public function programs()
+    {
+        return $this->hasMany(Program::class);
+    }
 }

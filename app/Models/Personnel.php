@@ -60,6 +60,17 @@ class Personnel extends Model
         return $this->hasMany(UtilitySchedule::class);
     }
 
+    // ✅ Class schedule entries taught (faculty)
+    public function classSchedules()
+    {
+        return $this->hasMany(ClassSchedule::class);
+    }
+
+    public function facultyProfile()
+    {
+        return $this->hasOne(FacultyProfile::class);
+    }
+
     /**
      * Utility & Maintenance Staff pool — an explicit, HR-edit-proof flag
      * (`is_utility_staff`), toggled by whoever holds manage-utility-schedule

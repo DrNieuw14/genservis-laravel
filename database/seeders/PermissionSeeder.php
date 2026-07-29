@@ -161,6 +161,23 @@ class PermissionSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
+            | Class Scheduling
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Class Scheduling',
+
+                'permissions' => [
+
+                    ['name' => 'View Class Schedule', 'slug' => 'view-class-schedule'],
+                    ['name' => 'Manage Class Schedule', 'slug' => 'manage-class-schedule'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
             | Project Detailed Estimates
             |--------------------------------------------------------------------------
             */
@@ -382,6 +399,25 @@ class PermissionSeeder extends Seeder
 
                     ['name' => 'View Walk-In Requests', 'slug' => 'view-walkin-requests'],
                     ['name' => 'Create Walk-In Requests', 'slug' => 'create-walkin-requests'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Thesis Monitoring — personal advisee roster + manuscript in/out
+            | log for a thesis adviser (Mark's Thesis Adviser role, separate
+            | from his General Services Officer primary role, same pattern as
+            | his Energy Focal Person / Physical Plant additional roles).
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Thesis Monitoring',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Thesis Monitoring', 'slug' => 'manage-thesis-monitoring'],
 
                 ]
             ],
