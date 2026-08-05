@@ -47,6 +47,21 @@ return [
             'report' => false,
         ],
 
+        // Rooted directly inside public/ instead of storage/app/public — no
+        // "public/storage" symlink involved at all, so files uploaded here
+        // survive a plain folder copy-paste to a new machine (symlinks
+        // usually don't). Used for Material images specifically; other
+        // uploads (Job Request attachments, Project Estimate photos, etc.)
+        // still use the 'public' disk above, unchanged.
+        'uploads' => [
+            'driver' => 'local',
+            'root' => public_path('uploads'),
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/uploads',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

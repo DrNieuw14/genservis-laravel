@@ -323,7 +323,7 @@ class MaterialController extends Controller
         ]);
 
         $imagePath = $request->hasFile('image')
-            ? $request->file('image')->store('materials', 'public')
+            ? $request->file('image')->store('materials', 'uploads')
             : null;
 
         $material = Material::create([
@@ -494,14 +494,14 @@ class MaterialController extends Controller
         if ($request->hasFile('image')) {
 
             if ($material->image) {
-                Storage::disk('public')->delete($material->image);
+                Storage::disk('uploads')->delete($material->image);
             }
 
-            $imagePath = $request->file('image')->store('materials', 'public');
+            $imagePath = $request->file('image')->store('materials', 'uploads');
 
         } elseif ($request->boolean('remove_image') && $material->image) {
 
-            Storage::disk('public')->delete($material->image);
+            Storage::disk('uploads')->delete($material->image);
 
             $imagePath = null;
         }
@@ -533,10 +533,10 @@ class MaterialController extends Controller
         $material = Material::findOrFail($id);
 
         if ($material->image) {
-            Storage::disk('public')->delete($material->image);
+            Storage::disk('uploads')->delete($material->image);
         }
 
-        $path = $validated['image']->store('materials', 'public');
+        $path = $validated['image']->store('materials', 'uploads');
 
         $material->update(['image' => $path]);
 

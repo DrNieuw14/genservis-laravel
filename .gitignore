@@ -16,6 +16,13 @@
 /public/build
 /public/hot
 /public/storage
+
+# Material images live directly in public/uploads (see config/filesystems.php's
+# 'uploads' disk) so they survive a plain folder copy-paste — but the actual
+# uploaded files are runtime data, not source, so only the folder structure
+# itself is tracked (via .gitkeep), not what gets uploaded into it.
+/public/uploads/materials/*
+!/public/uploads/materials/.gitkeep
 /storage/*.key
 /storage/pail
 /vendor
