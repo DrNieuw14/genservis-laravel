@@ -6,6 +6,18 @@
       "runtimeExecutable": "php",
       "runtimeArgs": ["-S", "127.0.0.1:8010", "-t", "C:/xampp/htdocs/ugamesdoc/public"],
       "port": 8010
+    },
+    {
+      "name": "triage-laravel-serve",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "127.0.0.1:8020", "-t", "C:/xampp/htdocs/triage-decision-support/laravel-app/public"],
+      "port": 8020
+    },
+    {
+      "name": "triage-python-api",
+      "runtimeExecutable": "C:/xampp/htdocs/triage-decision-support/ml/venv/Scripts/python.exe",
+      "runtimeArgs": ["C:/xampp/htdocs/triage-decision-support/ml/api.py"],
+      "port": 5055
     }
   ]
 }

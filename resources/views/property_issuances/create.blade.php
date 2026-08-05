@@ -142,8 +142,8 @@
 
             <div>
                 <label class="block mb-2 font-semibold">Received By (Personnel)</label>
-                <select name="recipient_personnel_id" class="w-full border rounded-lg p-4" required>
-                    <option value="">Select personnel</option>
+                <select name="recipient_personnel_id" id="recipientPersonnelSelect" class="w-full" required>
+                    <option value="">🔍 Click to search personnel...</option>
                     @foreach($personnel as $person)
                         <option value="{{ $person->id }}" {{ (string) old('recipient_personnel_id') === (string) $person->id ? 'selected' : '' }}>
                             {{ $person->fullname }}
@@ -231,6 +231,76 @@
 
     // Start with one blank row so the form isn't empty on first load.
     addItemRow();
+
+</script>
+
+<!-- Tom Select — searchable Received By (Personnel) dropdown, same pattern as Material Request's material picker -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+
+<style>
+
+    .ts-control {
+        border-radius: 0.5rem !important;
+        border: 1px solid #d1d5db !important;
+        padding: 1rem !important;
+        min-height: 58px !important;
+        box-shadow: none !important;
+        font-size: 18px !important;
+        --ts-pr-min: 2.75rem;
+    }
+
+    .ts-control input {
+        font-size: 18px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .ts-wrapper.single .ts-control {
+        background: white !important;
+        position: relative;
+    }
+
+    .ts-wrapper.single .ts-control::after {
+        content: "";
+        position: absolute;
+        right: 1.1rem;
+        top: 50%;
+        width: 10px;
+        height: 10px;
+        margin-top: -6px;
+        border-right: 2px solid #6b7280;
+        border-bottom: 2px solid #6b7280;
+        transform: rotate(45deg);
+        pointer-events: none;
+    }
+
+    .ts-control:focus-within {
+        border-color: #60a5fa !important;
+        box-shadow: 0 0 0 2px rgba(96,165,250,0.3) !important;
+    }
+
+    .ts-dropdown {
+        border-radius: 0.5rem !important;
+        border: 1px solid #d1d5db !important;
+        overflow: hidden;
+        font-size: 17px !important;
+    }
+
+    .ts-dropdown .option {
+        padding: 0.6rem 1rem !important;
+    }
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+<script>
+
+    new TomSelect('#recipientPersonnelSelect', {
+        create: false,
+        dropdownParent: 'body',
+        sortField: { field: 'text', direction: 'asc' },
+    });
 
 </script>
 

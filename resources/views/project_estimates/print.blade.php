@@ -117,6 +117,12 @@
 
         }
 
+        .photo-group{
+
+            page-break-before:always;
+
+        }
+
         .photo-grid{
 
             display:flex;
@@ -328,27 +334,40 @@ width="80">
         <h2 class="text-center">ANNEX — PHOTO DOCUMENTATION</h2>
         <p class="text-center">{{ $estimate->reference_no }} — {{ $estimate->project_name }}</p>
 
+        @php $isFirstPhotoGroup = true; @endphp
+
         @foreach(['before' => 'Before (Current Status)', 'receipt' => 'Receipts', 'work_done' => 'Work Done', 'other' => 'Other'] as $type => $groupLabel)
 
             @php $groupPhotos = $estimate->photos->where('type', $type); @endphp
 
             @if($groupPhotos->isNotEmpty())
 
-                <div class="section-title">{{ $groupLabel }}</div>
+                {{-- Space-saving layout: Before + Receipts share a page, then
+                     Work Done starts a fresh page with Other right under it —
+                     only "work_done" forces a page break, and only when it's
+                     not already the first group on the sheet (avoids a blank
+                     leading page when Before/Receipts have no photos). --}}
+                <div class="{{ ($type === 'work_done' && ! $isFirstPhotoGroup) ? 'photo-group' : '' }}">
 
-                <div class="photo-grid">
+                    <div class="section-title">{{ $groupLabel }}</div>
 
-                    @foreach($groupPhotos as $photo)
+                    <div class="photo-grid">
 
-                        <div class="photo-card">
-                            <img src="{{ $photo->url }}" alt="{{ $groupLabel }}">
-                            <div class="photo-caption">{{ $photo->created_at->format('M d, Y') }}</div>
-                            <div class="photo-uploader">{{ $photo->uploader->fullname ?? $photo->uploader->name ?? '-' }}</div>
-                        </div>
+                        @foreach($groupPhotos as $photo)
 
-                    @endforeach
+                            <div class="photo-card">
+                                <img src="{{ $photo->url }}" alt="{{ $groupLabel }}">
+                                <div class="photo-caption">{{ $photo->created_at->format('M d, Y') }}</div>
+                                <div class="photo-uploader">{{ $photo->uploader->fullname ?? $photo->uploader->name ?? '-' }}</div>
+                            </div>
+
+                        @endforeach
+
+                    </div>
 
                 </div>
+
+                @php $isFirstPhotoGroup = false; @endphp
 
             @endif
 
