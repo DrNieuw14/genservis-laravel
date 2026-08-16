@@ -9,6 +9,15 @@
     </div>
     @endif
 
+    <!-- ERROR MESSAGE (e.g. session expired) -->
+    @if(session('error'))
+    <div class="mb-6 text-center">
+        <div class="inline-block px-4 py-2 bg-red-500 text-white rounded-lg shadow">
+            {{ session('error') }}
+        </div>
+    </div>
+    @endif
+
     <!-- TITLE -->
     <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome Back</h2>
     <p class="text-sm text-gray-500 mb-6">Login to your account</p>

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class EnergyConservationReportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $reports = EnergyConservationReport::orderByDesc('report_month')->paginate(12);
 
@@ -18,10 +18,25 @@ class EnergyConservationReportController extends Controller
         // which need every report regardless of which page the table is on.
         $allReports = EnergyConservationReport::orderBy('report_month')->get();
 
-        $chartData = $allReports->map(fn ($r) => [
+        // Cycle range filter for the trend chart only — report_month strings
+        // sort lexicographically the same as chronologically (Y-m), so plain
+        // string comparison is safe here.
+        $from = $request->query('from');
+        $to = $request->query('to');
+
+        $chartReports = $allReports
+            ->when($from, fn ($reports) => $reports->where('report_month', '>=', $from))
+            ->when($to, fn ($reports) => $reports->where('report_month', '<=', $to));
+
+        $chartData = $chartReports->map(fn ($r) => [
             'month' => $r->monthLabel(),
             'bill' => $r->current_month_bill,
             'consumption' => $r->current_month_consumption,
+        ])->values();
+
+        $cycleOptions = $allReports->map(fn ($r) => [
+            'value' => $r->report_month,
+            'label' => $r->monthLabel(),
         ])->values();
 
         $yearlyTotals = $allReports
@@ -34,7 +49,7 @@ class EnergyConservationReportController extends Controller
             ->sortKeysDesc()
             ->values();
 
-        return view('energy_reports.index', compact('reports', 'chartData', 'yearlyTotals'));
+        return view('energy_reports.index', compact('reports', 'chartData', 'yearlyTotals', 'cycleOptions', 'from', 'to'));
     }
 
     public function create()

@@ -98,56 +98,45 @@
 
     </form>
 
-    <!-- KPI CARDS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-blue-100">Total Water Bill</p>
-                    <h2 class="text-3xl font-extrabold mt-3">₱{{ number_format($totalWaterBill, 2) }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">🚰</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-teal-100">Total ESF</p>
-                    <h2 class="text-3xl font-extrabold mt-3">₱{{ number_format($totalEsf, 2) }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">💧</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-purple-100">Total Usage</p>
-                    <h2 class="text-3xl font-extrabold mt-3">{{ number_format($totalUsage, 2) }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">📊</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-red-100">Overdue Bills</p>
-                    <h2 class="text-3xl font-extrabold mt-3">{{ $overdueCount }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">⚠️</div>
-            </div>
-        </div>
-
-    </div>
-
     <!-- TREND CHART -->
-    @if($chartData->count() > 0)
+    @if($chartMonthOptions->isNotEmpty())
         <div class="border rounded-lg p-5 mb-6">
             <h3 class="font-bold text-lg mb-3">📊 Water Bill Trend</h3>
-            <canvas id="waterBillTrendChart" height="90"></canvas>
+
+            <form method="GET" action="{{ route('water-bills.index') }}" class="flex flex-wrap items-end gap-3 mb-4">
+                <input type="hidden" name="meter_id" value="{{ $meterId }}">
+                <input type="hidden" name="month_from" value="{{ $monthFrom }}">
+                <input type="hidden" name="month_to" value="{{ $monthTo }}">
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">From month</label>
+                    <select name="chart_from" class="border rounded-lg p-2">
+                        <option value="">Earliest</option>
+                        @foreach($chartMonthOptions as $opt)
+                            <option value="{{ $opt['value'] }}" {{ $chartFrom === $opt['value'] ? 'selected' : '' }}>{{ $opt['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">To month</label>
+                    <select name="chart_to" class="border rounded-lg p-2">
+                        <option value="">Latest</option>
+                        @foreach($chartMonthOptions as $opt)
+                            <option value="{{ $opt['value'] }}" {{ $chartTo === $opt['value'] ? 'selected' : '' }}>{{ $opt['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Filter</button>
+                @if($chartFrom || $chartTo)
+                    <a href="{{ route('water-bills.index', array_filter(['meter_id' => $meterId, 'month_from' => $monthFrom, 'month_to' => $monthTo])) }}" class="text-sm text-gray-500 hover:underline">Clear</a>
+                @endif
+            </form>
+
+            @if($chartData->count() > 0)
+                <canvas id="waterBillTrendChart" height="90"></canvas>
+            @else
+                <p class="text-gray-500 text-sm">No bills fall within the selected month range.</p>
+            @endif
         </div>
     @endif
 

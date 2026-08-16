@@ -73,51 +73,6 @@
 
     </form>
 
-    <!-- KPI CARDS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-
-        <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-green-100">Completed Jobs</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $totalCompleted }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">🏁</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-blue-100">Physical Plant</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $physicalPlantCount }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">🏗️</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-purple-100">Utility</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $utilityCount }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">🧹</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-teal-100">Evidence Photos</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $totalPhotos }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">📸</div>
-            </div>
-        </div>
-
-    </div>
-
     <!-- TABLE -->
     <div class="overflow-x-auto border rounded-lg">
 

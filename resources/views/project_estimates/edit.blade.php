@@ -48,6 +48,8 @@
 
         </div>
 
+        @include('project_estimates._template_suggestions')
+
         <div class="mt-6">
             <label class="block mb-2 font-semibold">Scope of Work (optional)</label>
             <textarea name="scope_of_work" rows="3" class="w-full border rounded-lg p-4">{{ old('scope_of_work', $estimate->scope_of_work) }}</textarea>

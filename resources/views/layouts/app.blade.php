@@ -131,6 +131,17 @@
 
             @endif
 
+            @if(auth()->user()->hasPermission('manage-letter-tracking'))
+
+            <!-- Letter/Document Tracking -->
+            <a href="{{ route('letter-tracking.index') }}"
+            class="block px-3 py-2 rounded
+            {{ request()->routeIs('letter-tracking.*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                ✉️ Letter Tracking
+            </a>
+
+            @endif
+
             <!-- Divider -->
             <div class="border-t my-2"></div>
 

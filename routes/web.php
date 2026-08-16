@@ -21,6 +21,7 @@ use App\Http\Controllers\BuildingInspectionController;
 use App\Http\Controllers\UtilityLeaveController;
 use App\Http\Controllers\UtilityDtrController;
 use App\Http\Controllers\EnergyConservationReportController;
+use App\Http\Controllers\LetterTrackingController;
 use App\Http\Controllers\WaterBillController;
 use App\Http\Controllers\HealthConsultationController;
 use App\Http\Controllers\ClinicMedicineController;
@@ -760,6 +761,32 @@ Route::middleware(['auth', 'permission:manage-energy-reports'])->group(function 
 
     Route::delete('/energy-reports/{energyReport}/attachments/{attachment}', [EnergyConservationReportController::class, 'destroyAttachment'])
         ->name('energy-reports.attachments.destroy');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Letter / Document Tracking — HR log of letters/documents that pass
+| through the Campus Administrator for signature (incoming and outgoing).
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'permission:manage-letter-tracking'])->group(function () {
+
+    Route::get('/letter-tracking', [LetterTrackingController::class, 'index'])
+        ->name('letter-tracking.index');
+
+    Route::post('/letter-tracking', [LetterTrackingController::class, 'store'])
+        ->name('letter-tracking.store');
+
+    Route::put('/letter-tracking/{letterTracking}', [LetterTrackingController::class, 'update'])
+        ->name('letter-tracking.update');
+
+    Route::put('/letter-tracking/{letterTracking}/advance', [LetterTrackingController::class, 'advance'])
+        ->name('letter-tracking.advance');
+
+    Route::delete('/letter-tracking/{letterTracking}', [LetterTrackingController::class, 'destroy'])
+        ->name('letter-tracking.destroy');
 
 });
 

@@ -296,6 +296,23 @@ class PermissionSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
+            | Letter / Document Tracking — HR log of letters/documents routed
+            | through the Campus Administrator for signature. HR Officer only.
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Letter / Document Tracking',
+
+                'permissions' => [
+
+                    ['name' => 'Manage Letter Tracking', 'slug' => 'manage-letter-tracking'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
             | Health Consultation — Campus Health Services clinic visit
             | record, built from the real CvSU Consultation Form. Held by
             | the Health Service role and the Nurse rank ladder.

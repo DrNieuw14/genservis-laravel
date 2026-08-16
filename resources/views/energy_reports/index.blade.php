@@ -45,10 +45,40 @@
     @endif
 
     <!-- CONSUMPTION TREND CHART -->
-    @if($chartData->count() > 0)
+    @if($cycleOptions->isNotEmpty())
         <div class="border rounded-lg p-5 mb-6">
             <h3 class="font-bold text-lg mb-3">📊 Consumption Trend</h3>
-            <canvas id="consumptionTrendChart" height="90"></canvas>
+
+            <form method="GET" action="{{ route('energy-reports.index') }}" class="flex flex-wrap items-end gap-3 mb-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">From cycle</label>
+                    <select name="from" class="border rounded-lg p-2">
+                        <option value="">Earliest</option>
+                        @foreach($cycleOptions as $opt)
+                            <option value="{{ $opt['value'] }}" {{ $from === $opt['value'] ? 'selected' : '' }}>{{ $opt['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">To cycle</label>
+                    <select name="to" class="border rounded-lg p-2">
+                        <option value="">Latest</option>
+                        @foreach($cycleOptions as $opt)
+                            <option value="{{ $opt['value'] }}" {{ $to === $opt['value'] ? 'selected' : '' }}>{{ $opt['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Filter</button>
+                @if($from || $to)
+                    <a href="{{ route('energy-reports.index') }}" class="text-sm text-gray-500 hover:underline">Clear</a>
+                @endif
+            </form>
+
+            @if($chartData->count() > 0)
+                <canvas id="consumptionTrendChart" height="90"></canvas>
+            @else
+                <p class="text-gray-500 text-sm">No reports fall within the selected cycle range.</p>
+            @endif
         </div>
     @endif
 

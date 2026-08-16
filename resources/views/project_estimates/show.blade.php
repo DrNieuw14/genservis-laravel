@@ -74,7 +74,7 @@
 
     </div>
 
-    @if(session('success'))
+    @if(session('success') && !session('estimate_created'))
         <div class="bg-green-500 text-white p-4 mb-6 rounded-lg text-lg">
             {{ session('success') }}
         </div>
@@ -446,6 +446,20 @@
     @if(session('reopen_add_item'))
         document.addEventListener('DOMContentLoaded', function () {
             openItemModal('add');
+        });
+    @endif
+
+    @if(session('estimate_created'))
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: 'success',
+                iconColor: '#16a34a',
+                title: 'Estimate Created! 🎉',
+                html: 'Reference No. <strong>{{ $estimate->reference_no }}</strong> is ready — add your cost items below.',
+                confirmButtonText: "Let's go 🚀",
+                confirmButtonColor: '#16a34a',
+                background: 'linear-gradient(160deg, #fff, #f0fdf4)',
+            });
         });
     @endif
 

@@ -81,6 +81,11 @@ class RolePermissionSeeder extends Seeder
                     // (Employee verifies -> Mark checks -> HR approves).
                     'approve-dtr',
 
+                    // Letter/Document Tracking — HR's log of letters/
+                    // documents (incoming and outgoing) that pass through
+                    // the Campus Administrator for signature.
+                    'manage-letter-tracking',
+
                 ])->pluck('id')->toArray()
 
             );

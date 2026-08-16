@@ -113,6 +113,8 @@
 
         </div>
 
+        @include('job_requests._template_suggestions')
+
         <!-- NATURE OF REQUEST -->
         <div class="mt-6">
             <label class="block mb-2 font-semibold">

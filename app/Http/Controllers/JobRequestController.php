@@ -611,15 +611,11 @@ class JobRequestController extends Controller
             ->get();
 
         $totalCompleted = $completedJobs->count();
-        $physicalPlantCount = $completedJobs->where('category', 'physical_plant')->count();
-        $utilityCount = $completedJobs->where('category', 'utility')->count();
         $totalPhotos = $completedJobs->sum(fn ($job) => $job->photos->count());
 
         return [
             'completedJobs' => $completedJobs,
             'totalCompleted' => $totalCompleted,
-            'physicalPlantCount' => $physicalPlantCount,
-            'utilityCount' => $utilityCount,
             'totalPhotos' => $totalPhotos,
             'dateFrom' => $dateFrom?->format('Y-m-d'),
             'dateTo' => $dateTo?->format('Y-m-d'),

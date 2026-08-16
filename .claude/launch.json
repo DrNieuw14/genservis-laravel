@@ -18,6 +18,12 @@
       "runtimeExecutable": "C:/xampp/htdocs/triage-decision-support/ml/venv/Scripts/python.exe",
       "runtimeArgs": ["C:/xampp/htdocs/triage-decision-support/ml/api.py"],
       "port": 5055
+    },
+    {
+      "name": "genservis-serve",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "127.0.0.1:8030", "-t", "C:/xampp/htdocs/genservis-laravel/public"],
+      "port": 8030
     }
   ]
 }

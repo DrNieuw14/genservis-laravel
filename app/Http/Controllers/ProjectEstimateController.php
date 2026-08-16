@@ -64,7 +64,8 @@ class ProjectEstimateController extends Controller
 
         return redirect()
             ->route('project-estimates.show', $estimate->id)
-            ->with('success', 'Project estimate created. Add line items below.');
+            ->with('success', 'Project estimate created. Add line items below.')
+            ->with('estimate_created', true);
     }
 
     public function show($id)

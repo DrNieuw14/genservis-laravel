@@ -20,11 +20,6 @@ class WaterBillController extends Controller
             ->when($monthFrom, fn ($q) => $q->where('report_month', '>=', $monthFrom))
             ->when($monthTo, fn ($q) => $q->where('report_month', '<=', $monthTo));
 
-        $totalWaterBill = (clone $baseQuery)->sum('water_bill');
-        $totalEsf = (clone $baseQuery)->sum('esf');
-        $totalUsage = (clone $baseQuery)->get()->sum(fn ($b) => $b->usage() ?? 0);
-        $overdueCount = (clone $baseQuery)->get()->filter(fn ($b) => $b->isOverdue())->count();
-
         $bills = (clone $baseQuery)
             ->with('meter')
             ->orderByDesc('report_month')
@@ -35,12 +30,32 @@ class WaterBillController extends Controller
         // which page/filter the table is currently on.
         $allBills = WaterBill::orderBy('report_month')->get();
 
-        $chartData = $allBills
+        // Separate range filter for the trend chart, same pattern as the
+        // Energy Conservation Report's From/To cycle dropdowns — report_month
+        // strings sort lexicographically the same as chronologically (Y-m).
+        $chartFrom = $request->query('chart_from');
+        $chartTo = $request->query('chart_to');
+
+        $chartBills = $allBills
+            ->when($chartFrom, fn ($bills) => $bills->where('report_month', '>=', $chartFrom))
+            ->when($chartTo, fn ($bills) => $bills->where('report_month', '<=', $chartTo));
+
+        $chartData = $chartBills
             ->groupBy('report_month')
             ->map(fn ($group, $month) => [
                 'month' => \Illuminate\Support\Carbon::parse($month . '-01')->format('M Y'),
                 'bill' => $group->sum('water_bill'),
                 'usage' => $group->sum(fn ($b) => $b->usage() ?? 0),
+            ])
+            ->values();
+
+        $chartMonthOptions = $allBills
+            ->pluck('report_month')
+            ->unique()
+            ->sort()
+            ->map(fn ($month) => [
+                'value' => $month,
+                'label' => \Illuminate\Support\Carbon::parse($month . '-01')->format('F Y'),
             ])
             ->values();
 
@@ -50,11 +65,10 @@ class WaterBillController extends Controller
             'meterId' => $meterId,
             'monthFrom' => $monthFrom,
             'monthTo' => $monthTo,
-            'totalWaterBill' => $totalWaterBill,
-            'totalEsf' => $totalEsf,
-            'totalUsage' => $totalUsage,
-            'overdueCount' => $overdueCount,
             'chartData' => $chartData,
+            'chartMonthOptions' => $chartMonthOptions,
+            'chartFrom' => $chartFrom,
+            'chartTo' => $chartTo,
         ]);
     }
 
