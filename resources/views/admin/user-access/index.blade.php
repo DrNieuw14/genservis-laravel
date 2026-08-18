@@ -17,35 +17,6 @@
 
     </div>
 
-    <!-- SUMMARY CARDS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
-
-        <!-- Total Users -->
-        <div class="bg-blue-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">👥 Total Users</div>
-            <div class="text-4xl font-bold">{{ $totalUsers }}</div>
-        </div>
-
-        <!-- Active Users -->
-        <div class="bg-green-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">🟢 Active Users</div>
-            <div class="text-4xl font-bold">{{ $activeUsers }}</div>
-        </div>
-
-        <!-- Pending Users -->
-        <div class="bg-yellow-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">🟡 Pending Users</div>
-            <div class="text-4xl font-bold">{{ $pendingUsers }}</div>
-        </div>
-
-        <!-- System Roles -->
-        <div class="bg-purple-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">🛡️ System Roles</div>
-            <div class="text-4xl font-bold">{{ $roles->count() }}</div>
-        </div>
-
-    </div>
-
     <!-- SEARCH -->
     <form
         method="GET"

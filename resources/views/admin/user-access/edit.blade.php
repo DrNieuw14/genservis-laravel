@@ -20,7 +20,25 @@
 
         </div>
 
-        <x-back-button :href="route('admin.user-access.show', $user)" />
+        <div class="flex items-center gap-3">
+
+            @if(auth()->user()->hasPermission('manage-roles'))
+
+                <button
+                    type="button"
+                    x-data=""
+                    x-on:click.prevent="$dispatch('open-modal', 'create-role')"
+                    class="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-lg shadow font-semibold text-lg text-center">
+
+                    + Add New Role
+
+                </button>
+
+            @endif
+
+            <x-back-button :href="route('admin.user-access.show', $user)" />
+
+        </div>
 
     </div>
 
@@ -160,6 +178,74 @@
             </div>
 
         </form>
+
+        @if(auth()->user()->hasPermission('manage-roles'))
+
+            <x-modal name="create-role" :show="$errors->createRole->isNotEmpty()" focusable>
+
+                <form method="POST" action="{{ route('roles.store') }}" class="p-6">
+
+                    @csrf
+
+                    <input type="hidden" name="redirect_to" value="{{ request()->getRequestUri() }}">
+                    <input type="hidden" name="status" value="1">
+
+                    <h2 class="text-lg font-medium text-gray-900">
+                        Add New Role
+                    </h2>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Creates the role immediately so you can select it below without leaving this page.
+                    </p>
+
+                    <div class="mt-6">
+
+                        <x-input-label for="new_role_name" value="Role Name" />
+
+                        <x-text-input
+                            id="new_role_name"
+                            name="name"
+                            type="text"
+                            class="mt-1 block w-full"
+                            :value="old('name')"
+                            required
+                            autofocus />
+
+                        <x-input-error :messages="$errors->createRole->get('name')" class="mt-2" />
+
+                    </div>
+
+                    <div class="mt-6">
+
+                        <x-input-label for="new_role_description" value="Description (optional)" />
+
+                        <textarea
+                            id="new_role_description"
+                            name="description"
+                            rows="2"
+                            class="w-full mt-1 rounded-lg border-gray-300 focus:border-green-500 focus:ring-green-500">{{ old('description') }}</textarea>
+
+                        <x-input-error :messages="$errors->createRole->get('description')" class="mt-2" />
+
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-3">
+
+                        <x-secondary-button x-on:click="$dispatch('close')">
+                            Cancel
+                        </x-secondary-button>
+
+                        <x-primary-button>
+                            Create Role
+                        </x-primary-button>
+
+                    </div>
+
+                </form>
+
+            </x-modal>
+
+        @endif
 
 </div>
 

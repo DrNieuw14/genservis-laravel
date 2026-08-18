@@ -19,29 +19,6 @@
         </div>
     @endif
 
-    <!-- STATS -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
-        <!-- PENDING -->
-        <div class="bg-yellow-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">Pending Users</div>
-            <div class="text-4xl font-bold">{{ $pendingCount }}</div>
-        </div>
-
-        <!-- APPROVED -->
-        <div class="bg-green-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">Approved Users</div>
-            <div class="text-4xl font-bold">{{ $approvedCount }}</div>
-        </div>
-
-        <!-- REJECTED -->
-        <div class="bg-red-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">Rejected Users</div>
-            <div class="text-4xl font-bold">{{ $rejectedCount }}</div>
-        </div>
-
-    </div>
-
     <!-- TABLE -->
     <div class="border rounded-lg overflow-hidden">
 

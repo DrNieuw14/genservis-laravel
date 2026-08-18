@@ -28,9 +28,6 @@ class UserApprovalController extends Controller
 
         return view('admin.users.pending', [
             'users' => $users,
-            'approvedCount' => User::where('status', 'approved')->count(),
-            'rejectedCount' => User::where('status', 'rejected')->count(),
-            'pendingCount'  => User::where('status', 'pending')->count(),
         ]);
     }
 
