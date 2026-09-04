@@ -79,32 +79,7 @@ class MaterialRequestController extends Controller
         ->latest()
         ->get();
 
-        $pendingCount = $requests
-            ->where('status', 'pending')
-            ->count();
-
-        $approvedCount = $requests
-            ->where('status', 'approved')
-            ->count();
-
-        $releasedCount = $requests
-            ->where('status', 'released')
-            ->count();
-
-        $rejectedCount = $requests
-            ->where('status', 'rejected')
-            ->count();
-
-        return view(
-            'material_request.history',
-            compact(
-                'requests',
-                'pendingCount',
-                'approvedCount',
-                'releasedCount',
-                'rejectedCount'
-            )
-        );
+        return view('material_request.history', compact('requests'));
     }
 
     // 🖨 Request Slip
@@ -308,32 +283,7 @@ class MaterialRequestController extends Controller
                 'items.material'
             ])->latest()->get();
 
-            $pendingCount = $requests
-                ->where('status', 'pending')
-                ->count();
-
-            $approvedCount = $requests
-                ->where('status', 'approved')
-                ->count();
-
-            $releasedCount = $requests
-                ->where('status', 'released')
-                ->count();
-
-            $rejectedCount = $requests
-                ->where('status', 'rejected')
-                ->count();
-
-            return view(
-                'material_request.admin',
-                compact(
-                    'requests',
-                    'pendingCount',
-                    'approvedCount',
-                    'releasedCount',
-                    'rejectedCount'
-                )
-            );
+            return view('material_request.admin', compact('requests'));
         }
 
         

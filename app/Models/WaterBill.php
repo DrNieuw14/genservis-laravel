@@ -79,6 +79,42 @@ class WaterBill extends Model
         return (float) $this->water_bill + (float) $this->esf;
     }
 
+    // Effective rate per cubic meter for this bill — same "bill divided by
+    // usage" convention as Energy Conservation Report's currentRate().
+    public function currentRate(): ?float
+    {
+        if (!$this->usage() || $this->water_bill === null) {
+            return null;
+        }
+
+        return round($this->water_bill / $this->usage(), 2);
+    }
+
+    // Same meter's previous bill's rate — used to see whether the utility's
+    // per-unit charge itself moved, separate from usage volume.
+    public function previousRate(): ?float
+    {
+        return $this->previousBill()?->currentRate();
+    }
+
+    public function rateDifference(): ?float
+    {
+        if ($this->currentRate() === null || $this->previousRate() === null) {
+            return null;
+        }
+
+        return round($this->currentRate() - $this->previousRate(), 2);
+    }
+
+    public function rateDifferencePercent(): ?float
+    {
+        if (!$this->previousRate() || $this->rateDifference() === null) {
+            return null;
+        }
+
+        return round(($this->rateDifference() / $this->previousRate()) * 100, 2);
+    }
+
     public function monthLabel(): string
     {
         return \Illuminate\Support\Carbon::parse($this->report_month . '-01')->format('F Y');

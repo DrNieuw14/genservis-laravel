@@ -19,10 +19,6 @@
 
     </div>
 
-    @if(session('success'))
-    <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded mb-6 text-lg">{{ session('success') }}</div>
-    @endif
-
     @if($advisees->isEmpty())
 
     <p class="text-gray-500 text-center py-12">No advisees yet — click "Add Advisee" to start tracking a thesis.</p>
@@ -55,7 +51,7 @@
 
                     $badgeClass = match(true) {
                         $holder === 'With Adviser' => 'bg-blue-100 text-blue-700',
-                        $holder === 'With Student' => 'bg-purple-100 text-purple-700',
+                        $holder === 'Out to Student' => 'bg-purple-100 text-purple-700',
                         default => 'bg-gray-100 text-gray-500',
                     };
 
@@ -88,7 +84,7 @@
                     </td>
                     <td class="p-3 text-right whitespace-nowrap">
                         <button type="button" onclick='openEditModal(@json($advisee->id), @json($advisee->members->pluck("student_name")), @json($advisee->program), @json($advisee->year_level), @json($advisee->thesis_title))' class="text-blue-600 hover:underline text-xs mr-2">Edit</button>
-                        <form action="{{ route('thesis-monitoring.destroy', $advisee->id) }}" method="POST" class="inline" onsubmit="return confirm('Remove this advisee and their entire movement log?')">
+                        <form action="{{ route('thesis-monitoring.destroy', $advisee->id) }}" method="POST" class="inline" onsubmit="return genservisConfirm(event, 'Remove this advisee and their entire movement log?')">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-600 hover:underline text-xs">Remove</button>
                         </form>
@@ -154,6 +150,18 @@
 </div>
 
 <script>
+
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: 'success',
+                title: @json(session('success')),
+                confirmButtonColor: '#16a34a',
+                timer: 2500,
+                timerProgressBar: true,
+            });
+        });
+    @endif
 
     function addMemberInput(value)
     {

@@ -41,8 +41,8 @@ class ThesisAdvisee extends Model
     }
 
     // "With Adviser" when the last movement was IN (student handed it over),
-    // "With Student" when OUT (returned for revision), null before any
-    // movement has been logged at all.
+    // "Out to Student" when OUT (already returned for revision — not a
+    // pending pickup), null before any movement has been logged at all.
     public function currentHolder(): ?string
     {
         $last = $this->latestMovement();
@@ -51,7 +51,7 @@ class ThesisAdvisee extends Model
             return null;
         }
 
-        return $last->direction === 'in' ? 'With Adviser' : 'With Student';
+        return $last->direction === 'in' ? 'With Adviser' : 'Out to Student';
     }
 
     public function daysSinceLastMovement(): ?int

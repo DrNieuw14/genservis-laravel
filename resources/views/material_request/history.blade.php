@@ -15,31 +15,6 @@
         </p>
     </div>
 
-    <!-- REQUEST SUMMARY -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-
-        <div class="bg-yellow-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">Pending Requests</div>
-            <div class="text-4xl font-bold">{{ $pendingCount }}</div>
-        </div>
-
-        <div class="bg-green-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">Approved Requests</div>
-            <div class="text-4xl font-bold">{{ $approvedCount }}</div>
-        </div>
-
-        <div class="bg-blue-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">Released Requests</div>
-            <div class="text-4xl font-bold">{{ $releasedCount }}</div>
-        </div>
-
-        <div class="bg-red-500 text-white rounded-xl p-5 shadow-lg">
-            <div class="text-base">Rejected Requests</div>
-            <div class="text-4xl font-bold">{{ $rejectedCount }}</div>
-        </div>
-
-    </div>
-
     <!-- TABLE -->
     <div class="border rounded-lg overflow-hidden">
 

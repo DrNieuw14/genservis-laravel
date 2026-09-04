@@ -354,6 +354,12 @@ class RolePermissionSeeder extends Seeder
                     'approve-job-requests-physical-plant',
                     'assign-job-request-personnel',
 
+                    // Problem Reports — the intake queue for quick issue
+                    // reports (busted light, broken door knob, etc.) that
+                    // this role decides whether to convert into a real Job
+                    // Request.
+                    'review-problem-reports',
+
                 ])->pluck('id')->toArray()
 
             );

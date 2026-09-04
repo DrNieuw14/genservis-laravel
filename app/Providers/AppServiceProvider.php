@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Notification;
 use App\Models\Personnel;
 use App\Models\JobRequest;
+use App\Models\ProblemReport;
 use App\Models\ProjectEstimate;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
             $myJobRequestsInProgressCount = 0;
             $myAssignedJobsPendingCount = 0;
             $myOngoingProjectEstimatesCount = 0;
+            $pendingProblemReportCount = 0;
 
             if (Auth::check()) {
 
@@ -100,6 +102,10 @@ class AppServiceProvider extends ServiceProvider
                 $myOngoingProjectEstimatesCount = ProjectEstimate::where('prepared_by', Auth::id())
                     ->where('status', 'ongoing')
                     ->count();
+
+                if ($user->hasPermission('review-problem-reports')) {
+                    $pendingProblemReportCount = ProblemReport::where('status', 'reported')->count();
+                }
             }
 
             $view->with([
@@ -110,6 +116,7 @@ class AppServiceProvider extends ServiceProvider
                 'myJobRequestsInProgressCount' => $myJobRequestsInProgressCount,
                 'myAssignedJobsPendingCount' => $myAssignedJobsPendingCount,
                 'myOngoingProjectEstimatesCount' => $myOngoingProjectEstimatesCount,
+                'pendingProblemReportCount' => $pendingProblemReportCount,
             ]);
         });
 

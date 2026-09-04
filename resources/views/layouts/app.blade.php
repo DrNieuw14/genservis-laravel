@@ -17,6 +17,10 @@
         body {
             background: linear-gradient(to right, #0f766e, #1e3a8a);
         }
+
+        #sidebar.sidebar-hidden {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -25,12 +29,19 @@
     <div class="flex min-h-screen">
 
         <!-- SIDEBAR -->
-        <aside class="w-64 bg-white shadow-lg hidden md:flex flex-col">
+        <aside id="sidebar" class="w-64 bg-white shadow-lg hidden md:flex flex-col">
 
             <!-- LOGO -->
-            <div class="p-4 border-b flex items-center space-x-2">
-                <img src="/images/logo.png" class="h-10 w-auto">
-                <span class="font-bold text-lg">GenServis</span>
+            <div class="p-4 border-b flex items-center justify-between space-x-2">
+                <div class="flex items-center space-x-2">
+                    <img src="{{ asset('images/logo.png') }}" class="h-10 w-auto">
+                    <span class="font-bold text-lg">GenServis</span>
+                </div>
+
+                <button onclick="toggleSidebar()" title="Hide sidebar"
+                    class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 text-lg font-bold leading-none transition">
+                    «
+                </button>
             </div>
 
             <!-- MENU -->
@@ -194,7 +205,8 @@
 
             @if(auth()->user()->hasPermission('approve-job-requests-physical-plant')
                 || auth()->user()->hasPermission('approve-job-requests-utility')
-                || auth()->user()->hasPermission('view-utility-staff'))
+                || auth()->user()->hasPermission('view-utility-staff')
+                || auth()->user()->hasPermission('review-problem-reports'))
 
             <div class="text-xs font-bold text-gray-400 uppercase px-3 mt-4 mb-2">
                 Job Request Management
@@ -223,6 +235,26 @@
             {{ request()->routeIs('job-requests.reports*') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
 
                 📊 Job Request Reports
+
+            </a>
+
+            @endif
+
+            @if(auth()->user()->hasPermission('review-problem-reports'))
+
+            <!-- Problem Reports -->
+
+            <a href="{{ route('problem-reports.index') }}"
+            class="flex items-center justify-between px-3 py-2 rounded
+            {{ request()->routeIs('problem-reports.index') || request()->routeIs('problem-reports.show') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+
+                <span>🔍 Problem Reports</span>
+
+                @if($pendingProblemReportCount > 0)
+                <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    {{ $pendingProblemReportCount }}
+                </span>
+                @endif
 
             </a>
 
@@ -831,6 +863,18 @@
                         🛠️ Job Request
                     </a>
 
+                    <a href="{{ route('problem-reports.create') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('problem-reports.create') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📢 Report a Problem
+                    </a>
+
+                    <a href="{{ route('problem-reports.my') }}"
+                    class="block px-4 py-3 rounded-xl transition
+                    {{ request()->routeIs('problem-reports.my') || request()->routeIs('problem-reports.show') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
+                        📜 My Problem Reports
+                    </a>
+
                     <a href="{{ route('job-requests.history') }}"
                     class="flex items-center justify-between px-4 py-3 rounded-xl transition
                     {{ request()->routeIs('job-requests.history') ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' : 'hover:bg-green-100' }}">
@@ -1083,9 +1127,16 @@
             <!-- TOP NAVBAR -->
             <nav class="bg-white shadow px-6 py-3 flex justify-between items-center">
 
-                <span class="font-semibold text-lg">
-                    {{ Auth::user()->role === 'supervisor' ? 'Supervisor Panel' : 'Personnel Panel' }}
-                </span>
+                <div class="flex items-center gap-3">
+                    <button id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar"
+                        class="hidden text-gray-500 hover:text-gray-800 text-xl leading-none">
+                        »
+                    </button>
+
+                    <span class="font-semibold text-lg">
+                        {{ Auth::user()->role === 'supervisor' ? 'Supervisor Panel' : 'Personnel Panel' }}
+                    </span>
+                </div>
 
                 <div class="flex items-center space-x-4">
 
@@ -1259,10 +1310,24 @@
         dropdown.classList.toggle('hidden');
     }
 
+    // Sidebar hide/show — state remembered in localStorage since this is a
+    // server-rendered app (no SPA state to persist it across page loads).
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const hidden = sidebar.classList.toggle('sidebar-hidden');
+        document.getElementById('sidebarShowBtn').classList.toggle('hidden', !hidden);
+        localStorage.setItem('sidebarHidden', hidden);
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('confirmBtn').addEventListener('click', function () {
             if (selectedForm) selectedForm.submit();
         });
+
+        if (localStorage.getItem('sidebarHidden') === 'true') {
+            document.getElementById('sidebar').classList.add('sidebar-hidden');
+            document.getElementById('sidebarShowBtn').classList.remove('hidden');
+        }
     });
 
     document.addEventListener('click', function (e) {

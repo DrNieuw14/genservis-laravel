@@ -4,33 +4,64 @@
 
 <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-    <div class="flex flex-wrap justify-between items-start gap-4 mb-6">
+    <!-- REPORT HEADER -->
+    <div class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 rounded-2xl shadow-lg p-6 lg:p-8 text-white mb-6">
 
-        <div>
-            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3">
-                🧾 {{ $estimate->project_name }}
+        <div class="flex flex-wrap justify-between items-start gap-6">
 
-                <span class="text-sm font-semibold px-3 py-1 rounded-full {{ $estimate->status === 'done' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
-                    {{ $estimate->statusLabel() }}
-                </span>
-            </h2>
+            <div>
+                <p class="uppercase tracking-widest text-xs text-blue-100 font-semibold mb-1">🧾 Project Detailed Estimate</p>
 
-            <p class="text-gray-500 mt-1 text-lg">
-                {{ $estimate->reference_no }}
-                @if($estimate->location)
-                    — {{ $estimate->location }}
-                @endif
-            </p>
+                <h2 class="text-2xl lg:text-3xl font-bold flex items-center gap-3 flex-wrap">
+                    {{ $estimate->reference_no }}
 
-            @if($estimate->status_updated_at)
-                <p class="text-xs text-gray-400 mt-1">
-                    Status updated by {{ $estimate->statusUpdatedBy->fullname ?? $estimate->statusUpdatedBy->name ?? '-' }}
-                    on {{ $estimate->status_updated_at->format('M d, Y h:i A') }}
-                </p>
-            @endif
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full border {{ $estimate->status === 'done' ? 'bg-green-400/20 text-green-50 border-green-300/40' : 'bg-yellow-400/20 text-yellow-50 border-yellow-300/40' }}">
+                        {{ $estimate->statusLabel() }}
+                    </span>
+                </h2>
+
+                <p class="text-blue-50 mt-2 text-lg font-medium">{{ $estimate->project_name }}</p>
+            </div>
+
+            <div class="text-right">
+                <p class="uppercase tracking-widest text-xs text-blue-100 font-semibold mb-1">Current Estimated Total</p>
+                <p class="text-3xl font-extrabold">₱{{ number_format($estimate->grandTotal(), 2) }}</p>
+            </div>
+
         </div>
 
-        <div class="flex gap-2">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-white/20">
+
+            <div>
+                <p class="text-xs text-blue-100 uppercase tracking-wide">Location</p>
+                <p class="font-semibold mt-0.5">{{ $estimate->location ?: '-' }}</p>
+            </div>
+
+            <div>
+                <p class="text-xs text-blue-100 uppercase tracking-wide">Prepared By</p>
+                <p class="font-semibold mt-0.5">{{ $estimate->preparer->fullname ?? $estimate->preparer->name ?? '-' }}</p>
+            </div>
+
+            <div>
+                <p class="text-xs text-blue-100 uppercase tracking-wide">Date Created</p>
+                <p class="font-semibold mt-0.5">{{ $estimate->created_at->format('M d, Y') }}</p>
+            </div>
+
+            @if($estimate->status_updated_at)
+                <div>
+                    <p class="text-xs text-blue-100 uppercase tracking-wide">Status Last Updated</p>
+                    <p class="font-semibold mt-0.5">
+                        {{ $estimate->status_updated_at->format('M d, Y') }}
+                        by {{ $estimate->statusUpdatedBy->fullname ?? $estimate->statusUpdatedBy->name ?? '-' }}
+                    </p>
+                </div>
+            @endif
+
+        </div>
+
+    </div>
+
+    <div class="flex flex-wrap justify-end gap-2 mb-6">
 
             <form method="POST" action="{{ route('project-estimates.status.update', $estimate->id) }}">
                 @csrf
@@ -69,8 +100,6 @@
                     🗑 Delete
                 </button>
             </form>
-
-        </div>
 
     </div>
 
@@ -456,7 +485,7 @@
                 iconColor: '#16a34a',
                 title: 'Estimate Created! 🎉',
                 html: 'Reference No. <strong>{{ $estimate->reference_no }}</strong> is ready — add your cost items below.',
-                confirmButtonText: "Let's go 🚀",
+                confirmButtonText: "Let's go",
                 confirmButtonColor: '#16a34a',
                 background: 'linear-gradient(160deg, #fff, #f0fdf4)',
             });

@@ -9,7 +9,7 @@
 
     <style>
         body {
-            background: url('/images/bg.jpg') no-repeat center center;
+            background: url('{{ asset('images/bg.jpg') }}') no-repeat center center;
             background-size: cover;
         }
 
@@ -30,7 +30,7 @@
         <!-- LEFT SIDE -->
         <div class="bg-green-700 text-white p-10 flex flex-col justify-center items-center text-center">
 
-            <img src="/images/logo.png" class="h-24 w-auto object-contain mb-6">
+            <img src="{{ asset('images/logo.png') }}" class="h-24 w-auto object-contain mb-6">
 
             <h2 class="text-2xl font-bold">
                 Cavite State University

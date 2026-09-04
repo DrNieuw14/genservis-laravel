@@ -39,7 +39,6 @@
 
         .form-table td{
 
-            border:1px solid #000;
             padding:8px;
             vertical-align:top;
 
@@ -50,6 +49,13 @@
             font-weight:bold;
             width:180px;
             background:#f3f4f6;
+
+        }
+
+        .header-table{
+
+            width:auto;
+            margin:0 auto;
 
         }
 
@@ -76,6 +82,15 @@
             text-align:right;
             font-size:11px;
             font-weight:bold;
+
+        }
+
+        .form-footer{
+
+            position:fixed;
+            bottom:10mm;
+            right:15mm;
+            font-size:10px;
 
         }
 
@@ -180,11 +195,11 @@ width="80">
 
 </td>
 
-<td class="text-center">
+<td class="text-center" style="font-size:11px;">
 
 <div>Republic of the Philippines</div>
 
-<h2>CAVITE STATE UNIVERSITY</h2>
+<h2 style="font-size:14px;">CAVITE STATE UNIVERSITY</h2>
 
 <div>CvSU Carmona Campus</div>
 
@@ -193,14 +208,6 @@ width="80">
 <div>(046) 487-6328</div>
 
 <div><a href="https://www.cvsu.edu.ph" style="color:#000;text-decoration:none;">www.cvsu.edu.ph</a></div>
-
-</td>
-
-<td width="90">
-
-<img
-src="{{ asset('images/bagong-pilipinas.png') }}"
-width="80">
 
 </td>
 
@@ -217,10 +224,8 @@ width="80">
 <table class="form-table" style="margin-top:15px;">
 
 <tr>
-    <td class="label">Reference No.</td>
-    <td>{{ $jobRequest->reference_no }}</td>
     <td class="label">Date</td>
-    <td>{{ $jobRequest->created_at->format('d F Y') }}</td>
+    <td colspan="3">{{ $jobRequest->created_at->format('d F Y') }}</td>
 </tr>
 
 <tr>
@@ -242,6 +247,20 @@ width="80">
     <td class="label">Work Summary</td>
     <td colspan="3">{{ $jobRequest->work_summary }}</td>
 </tr>
+
+</table>
+
+<div style="text-align:right;margin:10px 0 20px;">
+    <p style="font-style:italic;margin:0 0 30px;">Approved by:</p>
+    <div style="display:inline-block;text-align:center;min-width:220px;">
+        <div style="border-top:1px solid #000;padding-top:4px;">
+            {{ strtoupper($jobRequest->approver->fullname ?? $jobRequest->approver->name ?? '') }}
+        </div>
+        <div style="font-size:11px;">Campus PPS</div>
+    </div>
+</div>
+
+<table class="form-table">
 
 <tr>
     <td class="label">Work Category</td>
@@ -268,27 +287,15 @@ width="80">
 
 </table>
 
-<table class="signature-table" style="margin-top:60px;">
-
-<tr>
-
-<td>
-    <div class="signature-name"><strong>{{ strtoupper($jobRequest->approver->fullname ?? $jobRequest->approver->name ?? '') }}</strong></div>
-    <div class="signature-line">
-        Approved By — {{ $jobRequest->approverRoleLabel() }}
+<div style="text-align:right;margin:60px 0 20px;">
+    <p style="font-style:italic;margin:0 0 30px;">Noted by:</p>
+    <div style="display:inline-block;text-align:center;min-width:220px;">
+        <div style="border-top:1px solid #000;padding-top:4px;">
+            &nbsp;
+        </div>
+        <div style="font-size:11px;">Requesting Party</div>
     </div>
-</td>
-
-<td>
-    <div class="signature-name">&nbsp;</div>
-    <div class="signature-line">
-        Noted By — Requesting Party
-    </div>
-</td>
-
-</tr>
-
-</table>
+</div>
 
 @if($jobRequest->photos->isNotEmpty())
 
@@ -326,6 +333,10 @@ width="80">
     </div>
 
 @endif
+
+<div class="form-footer">
+    V01-2018-06-05
+</div>
 
 </body>
 

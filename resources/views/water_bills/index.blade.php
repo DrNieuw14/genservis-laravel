@@ -98,11 +98,9 @@
 
     </form>
 
-    <!-- TREND CHART -->
+    <!-- TREND CHARTS -->
     @if($chartMonthOptions->isNotEmpty())
-        <div class="border rounded-lg p-5 mb-6">
-            <h3 class="font-bold text-lg mb-3">📊 Water Bill Trend</h3>
-
+        <div class="mb-6">
             <form method="GET" action="{{ route('water-bills.index') }}" class="flex flex-wrap items-end gap-3 mb-4">
                 <input type="hidden" name="meter_id" value="{{ $meterId }}">
                 <input type="hidden" name="month_from" value="{{ $monthFrom }}">
@@ -133,7 +131,79 @@
             </form>
 
             @if($chartData->count() > 0)
-                <canvas id="waterBillTrendChart" height="90"></canvas>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                    <div class="border rounded-lg p-5">
+                        <h3 class="font-bold text-lg mb-3">📊 Water Bill and Usage Trend</h3>
+                        <canvas id="waterBillTrendChart" height="110"></canvas>
+                    </div>
+                    <div class="border rounded-lg p-5">
+                        <h3 class="font-bold text-lg mb-3">📉 Usage Change vs. Previous Month</h3>
+                        <canvas id="usageChangeChart" height="110"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="border rounded-lg p-5">
+                        <h3 class="font-bold text-lg mb-3">💧 Water Cost per m³</h3>
+                        <canvas id="waterRateChart" height="110"></canvas>
+                    </div>
+
+                    <div class="border rounded-lg p-5">
+                        <h3 class="font-bold text-lg mb-3">
+                            💰 Rate Charge This Month
+                            @if($latestChartRow)
+                                ({{ $latestChartRow['month'] }})
+                            @endif
+                        </h3>
+
+                        @php
+                            $prevRate = $previousChartRow['rate'] ?? null;
+                            $curRate = $latestChartRow['rate'] ?? null;
+                            $waterRateDiff = ($prevRate !== null && $curRate !== null) ? round($curRate - $prevRate, 2) : null;
+                            $waterRateDiffPercent = ($waterRateDiff !== null && $prevRate) ? round(($waterRateDiff / $prevRate) * 100, 2) : null;
+                            $maxWaterRateScale = max($prevRate ?? 0, $curRate ?? 0, 1);
+                            $waterRateDown = $waterRateDiff !== null && $waterRateDiff <= 0;
+                        @endphp
+
+                        @if($prevRate === null || $curRate === null)
+                            <p class="text-gray-500 text-sm">Not enough data yet to compare rates — needs both this month's and the previous month's bill/usage figures.</p>
+                        @else
+                            <div class="space-y-4 mt-4">
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold mb-1">
+                                        <span>Previous Rate (₱/m³)</span>
+                                        <span>₱{{ number_format($prevRate, 2) }}</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-6">
+                                        <div class="bg-gray-400 h-6 rounded-full" style="width: {{ $prevRate / $maxWaterRateScale * 100 }}%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold mb-1">
+                                        <span>Current Rate (₱/m³)</span>
+                                        <span>₱{{ number_format($curRate, 2) }}</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-6">
+                                        <div class="{{ $waterRateDown ? 'bg-green-500' : 'bg-red-500' }} h-6 rounded-full" style="width: {{ $curRate / $maxWaterRateScale * 100 }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 p-4 rounded-lg {{ $waterRateDown ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200' }}">
+                                <p class="font-semibold {{ $waterRateDown ? 'text-green-700' : 'text-red-700' }}">
+                                    {{ $waterRateDown ? '✅' : '⚠️' }}
+                                    Rate {{ $waterRateDown ? 'decreased' : 'increased' }} by ₱{{ number_format(abs($waterRateDiff), 2) }}/m³
+                                    {{ $waterRateDown ? '— RATE DOWN' : '— RATE UP' }}
+                                </p>
+                                <p class="text-sm {{ $waterRateDown ? 'text-green-600' : 'text-red-600' }} mt-1">
+                                    The utility's charge is {{ number_format(abs($waterRateDiffPercent), 1) }}% {{ $waterRateDown ? 'lower' : 'higher' }} than last month.
+                                    {{ $waterRateDown ? 'Good news for the budget.' : 'This is the utility rate itself, not usage — conservation measures won\'t offset it.' }}
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             @else
                 <p class="text-gray-500 text-sm">No bills fall within the selected month range.</p>
             @endif
@@ -164,6 +234,7 @@
                     <th class="p-3 text-center">Prev → Present</th>
                     <th class="p-3 text-center">Usage</th>
                     <th class="p-3 text-center">vs Previous Month</th>
+                    <th class="p-3 text-center">Rate (₱/m³)</th>
                     <th class="p-3 text-center">Water Bill (₱)</th>
                     <th class="p-3 text-center">ESF (₱)</th>
                     <th class="p-3 text-center">Total Due (₱)</th>
@@ -198,6 +269,7 @@
                                 <span class="text-xs px-2 py-1 rounded-full font-semibold bg-gray-100 text-gray-600">No change</span>
                             @endif
                         </td>
+                        <td class="p-3 text-center">{{ $bill->currentRate() !== null ? number_format($bill->currentRate(), 2) : '-' }}</td>
                         <td class="p-3 text-center">{{ $bill->water_bill !== null ? number_format($bill->water_bill, 2) : '-' }}</td>
                         <td class="p-3 text-center">{{ $bill->esf !== null ? number_format($bill->esf, 2) : '-' }}</td>
                         <td class="p-3 text-center font-semibold">{{ $bill->totalDue() !== null ? number_format($bill->totalDue(), 2) : '-' }}</td>
@@ -224,7 +296,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="p-6 text-center text-gray-500">No water bills recorded yet.</td>
+                        <td colspan="11" class="p-6 text-center text-gray-500">No water bills recorded yet.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -332,6 +404,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
 
@@ -504,6 +577,96 @@
                 scales: {
                     yBill: { type: 'linear', position: 'left', title: { display: true, text: '₱' } },
                     yUsage: { type: 'linear', position: 'right', title: { display: true, text: 'Usage' }, grid: { drawOnChartArea: false } },
+                },
+            },
+        });
+
+        // Percent change is null for the first month in range (no prior
+        // month to compare against) — plot it as a zero-height bar rather
+        // than breaking the chart; the datalabel below still shows "-" for it.
+        const usageChangeValues = trendData.map(d => d.usagePercentChange);
+        const usageChangeData = usageChangeValues.map(v => v ?? 0);
+
+        new Chart(document.getElementById('usageChangeChart'), {
+            type: 'bar',
+            data: {
+                labels: trendData.map(d => d.month),
+                datasets: [
+                    {
+                        label: '% Change',
+                        data: usageChangeData,
+                        backgroundColor: usageChangeData.map(v => v > 0 ? '#ef4444' : '#16a34a'),
+                        borderRadius: 4,
+                    },
+                ],
+            },
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => (ctx.raw > 0 ? '+' : '') + ctx.raw + '%',
+                        },
+                    },
+                    datalabels: {
+                        anchor: (ctx) => usageChangeValues[ctx.dataIndex] === null ? 'center' : (usageChangeValues[ctx.dataIndex] > 0 ? 'end' : 'start'),
+                        align: (ctx) => usageChangeValues[ctx.dataIndex] === null ? 'center' : (usageChangeValues[ctx.dataIndex] > 0 ? 'end' : 'start'),
+                        color: '#374151',
+                        font: { weight: 'bold' },
+                        formatter: (v, ctx) => {
+                            const raw = usageChangeValues[ctx.dataIndex];
+                            if (raw === null) return '-';
+                            return (raw > 0 ? '+' : '') + raw + '%';
+                        },
+                    },
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: '% Change' },
+                        ticks: { callback: (v) => v + '%' },
+                    },
+                },
+            },
+        });
+
+        new Chart(document.getElementById('waterRateChart'), {
+            type: 'bar',
+            data: {
+                labels: trendData.map(d => d.month),
+                datasets: [
+                    {
+                        label: '₱ / m³',
+                        data: trendData.map(d => d.rate),
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4,
+                    },
+                ],
+            },
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => '₱' + ctx.raw + ' / m³',
+                        },
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        color: '#374151',
+                        font: { weight: 'bold' },
+                        formatter: (v) => v === null ? '-' : v.toFixed(2),
+                    },
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: '₱ / m³' },
+                        beginAtZero: true,
+                    },
                 },
             },
         });

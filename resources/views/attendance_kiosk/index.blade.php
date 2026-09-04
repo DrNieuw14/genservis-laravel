@@ -134,7 +134,7 @@
 <body>
 
     <div class="header">
-        <img src="/images/logo.png" alt="CvSU Logo">
+        <img src="{{ asset('images/logo.png') }}" alt="CvSU Logo">
         <h1>Utility Attendance Scan</h1>
         <p>Cavite State University — Carmona Campus</p>
     </div>

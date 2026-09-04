@@ -145,6 +145,24 @@ class PermissionSeeder extends Seeder
 
             /*
             |--------------------------------------------------------------------------
+            | Problem Reports — quick "there's a busted light / broken door
+            | knob" intake, reviewed by Physical Plant and Services before
+            | deciding whether it needs a real Job Request.
+            |--------------------------------------------------------------------------
+            */
+
+            [
+                'module' => 'Problem Reports',
+
+                'permissions' => [
+
+                    ['name' => 'Review Problem Reports', 'slug' => 'review-problem-reports'],
+
+                ]
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
             | Utility Scheduling
             |--------------------------------------------------------------------------
             */

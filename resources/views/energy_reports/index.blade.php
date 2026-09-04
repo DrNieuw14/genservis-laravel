@@ -44,11 +44,9 @@
         </div>
     @endif
 
-    <!-- CONSUMPTION TREND CHART -->
+    <!-- CONSUMPTION TREND CHARTS -->
     @if($cycleOptions->isNotEmpty())
-        <div class="border rounded-lg p-5 mb-6">
-            <h3 class="font-bold text-lg mb-3">📊 Consumption Trend</h3>
-
+        <div class="mb-6">
             <form method="GET" action="{{ route('energy-reports.index') }}" class="flex flex-wrap items-end gap-3 mb-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">From cycle</label>
@@ -75,7 +73,79 @@
             </form>
 
             @if($chartData->count() > 0)
-                <canvas id="consumptionTrendChart" height="90"></canvas>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                    <div class="border rounded-lg p-5">
+                        <h3 class="font-bold text-lg mb-3">📊 Consumption and Electricity Bill Trend</h3>
+                        <canvas id="consumptionTrendChart" height="110"></canvas>
+                    </div>
+                    <div class="border rounded-lg p-5">
+                        <h3 class="font-bold text-lg mb-3">📉 Consumption Change vs. Previous Cycle</h3>
+                        <canvas id="consumptionChangeChart" height="110"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="border rounded-lg p-5">
+                        <h3 class="font-bold text-lg mb-3">⚡ Electricity Cost per kWh</h3>
+                        <canvas id="rateChart" height="110"></canvas>
+                    </div>
+
+                    <div class="border rounded-lg p-5">
+                        <h3 class="font-bold text-lg mb-3">
+                            💰 Rate Charge This Month
+                            @if($latestReport)
+                                ({{ $latestReport->chartMonthLabel() }})
+                            @endif
+                        </h3>
+
+                        @php
+                            $prevRate = $latestReport?->previousRate();
+                            $curRate = $latestReport?->currentRate();
+                            $rateDiff = $latestReport?->rateDifference();
+                            $rateDiffPercent = $latestReport?->rateDifferencePercent();
+                            $maxRateScale = max($prevRate ?? 0, $curRate ?? 0, 1);
+                            $rateDown = $rateDiff !== null && $rateDiff <= 0;
+                        @endphp
+
+                        @if($prevRate === null || $curRate === null)
+                            <p class="text-gray-500 text-sm">Not enough data yet to compare rates — needs both this cycle's and the previous cycle's bill/consumption figures.</p>
+                        @else
+                            <div class="space-y-4 mt-4">
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold mb-1">
+                                        <span>Previous Rate (₱/kWh)</span>
+                                        <span>₱{{ number_format($prevRate, 2) }}</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-6">
+                                        <div class="bg-gray-400 h-6 rounded-full" style="width: {{ $prevRate / $maxRateScale * 100 }}%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold mb-1">
+                                        <span>Current Rate (₱/kWh)</span>
+                                        <span>₱{{ number_format($curRate, 2) }}</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-6">
+                                        <div class="{{ $rateDown ? 'bg-green-500' : 'bg-red-500' }} h-6 rounded-full" style="width: {{ $curRate / $maxRateScale * 100 }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 p-4 rounded-lg {{ $rateDown ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200' }}">
+                                <p class="font-semibold {{ $rateDown ? 'text-green-700' : 'text-red-700' }}">
+                                    {{ $rateDown ? '✅' : '⚠️' }}
+                                    Rate {{ $rateDown ? 'decreased' : 'increased' }} by ₱{{ number_format(abs($rateDiff), 2) }}/kWh
+                                    {{ $rateDown ? '— RATE DOWN' : '— RATE UP' }}
+                                </p>
+                                <p class="text-sm {{ $rateDown ? 'text-green-600' : 'text-red-600' }} mt-1">
+                                    The utility's charge is {{ number_format(abs($rateDiffPercent), 1) }}% {{ $rateDown ? 'lower' : 'higher' }} than last cycle.
+                                    {{ $rateDown ? 'Good news for the budget.' : 'This is the utility rate itself, not usage — conservation measures won\'t offset it.' }}
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             @else
                 <p class="text-gray-500 text-sm">No reports fall within the selected cycle range.</p>
             @endif
@@ -90,6 +160,7 @@
                 <tr>
                     <th class="p-3 text-left">Reporting Month</th>
                     <th class="p-3 text-left">Campus</th>
+                    <th class="p-3 text-center">Rate (₱/kWh)</th>
                     <th class="p-3 text-center">Electricity Bill (₱)</th>
                     <th class="p-3 text-center">vs Previous Month (₱)</th>
                     <th class="p-3 text-center">Consumption (kWh)</th>
@@ -111,6 +182,7 @@
                     <tr class="hover:bg-gray-50">
                         <td class="p-3 font-semibold">{{ $report->monthLabel() }}</td>
                         <td class="p-3">{{ $report->campus }}</td>
+                        <td class="p-3 text-center">{{ $report->currentRate() !== null ? number_format($report->currentRate(), 2) : '-' }}</td>
                         <td class="p-3 text-center">{{ $report->current_month_bill !== null ? number_format($report->current_month_bill, 2) : '-' }}</td>
                         <td class="p-3 text-center">
                             @if($billDiff === null)
@@ -179,6 +251,7 @@
 
 @if($chartData->count() > 0)
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
         const trendData = @json($chartData);
 
@@ -219,6 +292,96 @@
                         position: 'right',
                         title: { display: true, text: 'kWh' },
                         grid: { drawOnChartArea: false },
+                    },
+                },
+            },
+        });
+
+        // Percent change is null for the first cycle in range (no prior
+        // cycle to compare against) — plot it as a zero-height bar rather
+        // than breaking the chart; the datalabel below still shows "-" for it.
+        const changeValues = trendData.map(d => d.consumptionPercentChange);
+        const changeData = changeValues.map(v => v ?? 0);
+
+        new Chart(document.getElementById('consumptionChangeChart'), {
+            type: 'bar',
+            data: {
+                labels: trendData.map(d => d.month),
+                datasets: [
+                    {
+                        label: '% Change',
+                        data: changeData,
+                        backgroundColor: changeData.map(v => v > 0 ? '#ef4444' : '#16a34a'),
+                        borderRadius: 4,
+                    },
+                ],
+            },
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => (ctx.raw > 0 ? '+' : '') + ctx.raw + '%',
+                        },
+                    },
+                    datalabels: {
+                        anchor: (ctx) => changeValues[ctx.dataIndex] === null ? 'center' : (changeValues[ctx.dataIndex] > 0 ? 'end' : 'start'),
+                        align: (ctx) => changeValues[ctx.dataIndex] === null ? 'center' : (changeValues[ctx.dataIndex] > 0 ? 'end' : 'start'),
+                        color: '#374151',
+                        font: { weight: 'bold' },
+                        formatter: (v, ctx) => {
+                            const raw = changeValues[ctx.dataIndex];
+                            if (raw === null) return '-';
+                            return (raw > 0 ? '+' : '') + raw + '%';
+                        },
+                    },
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: '% Change' },
+                        ticks: { callback: (v) => v + '%' },
+                    },
+                },
+            },
+        });
+
+        new Chart(document.getElementById('rateChart'), {
+            type: 'bar',
+            data: {
+                labels: trendData.map(d => d.month),
+                datasets: [
+                    {
+                        label: '₱ / kWh',
+                        data: trendData.map(d => d.rate),
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4,
+                    },
+                ],
+            },
+            plugins: [ChartDataLabels],
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => '₱' + ctx.raw + ' / kWh',
+                        },
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        color: '#374151',
+                        font: { weight: 'bold' },
+                        formatter: (v) => v === null ? '-' : v.toFixed(2),
+                    },
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: '₱ / kWh' },
+                        beginAtZero: true,
                     },
                 },
             },

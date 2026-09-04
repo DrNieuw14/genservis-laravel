@@ -29,10 +29,16 @@ class EnergyConservationReportController extends Controller
             ->when($to, fn ($reports) => $reports->where('report_month', '<=', $to));
 
         $chartData = $chartReports->map(fn ($r) => [
-            'month' => $r->monthLabel(),
+            'month' => $r->chartMonthLabel(),
             'bill' => $r->current_month_bill,
             'consumption' => $r->current_month_consumption,
+            'consumptionPercentChange' => $r->consumptionPercentChange(),
+            'rate' => $r->currentRate(),
         ])->values();
+
+        // Target card always reflects the most recent cycle in the
+        // selected range, matching what the trend charts beside it show.
+        $latestReport = $chartReports->last();
 
         $cycleOptions = $allReports->map(fn ($r) => [
             'value' => $r->report_month,
@@ -49,7 +55,7 @@ class EnergyConservationReportController extends Controller
             ->sortKeysDesc()
             ->values();
 
-        return view('energy_reports.index', compact('reports', 'chartData', 'yearlyTotals', 'cycleOptions', 'from', 'to'));
+        return view('energy_reports.index', compact('reports', 'chartData', 'yearlyTotals', 'cycleOptions', 'from', 'to', 'latestReport'));
     }
 
     public function create()

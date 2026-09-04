@@ -183,6 +183,65 @@ class JobRequestController extends Controller
         return view('job_requests.show', compact('jobRequest', 'canApprove', 'canAssign', 'isOwner', 'isAssignedWorker'));
     }
 
+    // ✏️ Edit request details — office/department/nature/summary/work
+    // category/target date. Deliberately NOT category (physical_plant vs
+    // utility): that decides who approves the job, and changing it after
+    // the fact would leave an approval on record from the wrong team.
+    // Same "owner/approver/assigner" audience as evidence management.
+    public function edit($id)
+    {
+        $jobRequest = JobRequest::findOrFail($id);
+
+        $user = Auth::user();
+
+        $isOwner = $jobRequest->user_id === $user->id;
+        $canApprove = $user->hasPermission($jobRequest->approvalPermission());
+        $canAssign = $user->hasPermission('assign-job-request-personnel');
+
+        if (!$isOwner && !$canApprove && !$canAssign) {
+            abort(403);
+        }
+
+        $departments = Department::orderBy('department_name')->get();
+
+        return view('job_requests.edit', compact('jobRequest', 'departments'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $jobRequest = JobRequest::findOrFail($id);
+
+        $user = Auth::user();
+
+        $isOwner = $jobRequest->user_id === $user->id;
+        $canApprove = $user->hasPermission($jobRequest->approvalPermission());
+        $canAssign = $user->hasPermission('assign-job-request-personnel');
+
+        if (!$isOwner && !$canApprove && !$canAssign) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'department_id' => 'nullable|exists:departments,id',
+            'office_unit_project' => 'required|string|max:150',
+            'nature_of_request' => 'required|string|max:200',
+            'work_summary' => 'required|string|max:2000',
+            'work_category' => 'nullable|string|max:150',
+            'target_date' => 'nullable|date',
+            'remarks' => 'nullable|string|max:2000',
+        ], [
+            'office_unit_project.required' => 'Please enter the office, unit, or project location.',
+            'nature_of_request.required' => 'Please give a short title for this request.',
+            'work_summary.required' => 'Please describe the work needed.',
+        ]);
+
+        $jobRequest->update($validated);
+
+        return redirect()
+            ->route('job-requests.show', $jobRequest->id)
+            ->with('success', 'Request details updated.');
+    }
+
     public function approve(Request $request, $id)
     {
         $jobRequest = JobRequest::findOrFail($id);
@@ -351,11 +410,22 @@ class JobRequestController extends Controller
 
         $user = Auth::user();
 
-        if (!$jobRequest->isAssignedTo($user)) {
+        // Same "owner/approver/assigner" audience as the general evidence
+        // and receipt photos above it — not just the assigned crew, since
+        // the requester (often Mark himself on self-submitted jobs) or the
+        // approver may want to confirm/document the work too.
+        $isOwner = $jobRequest->user_id === $user->id;
+        $canApprove = $user->hasPermission($jobRequest->approvalPermission());
+        $canAssign = $user->hasPermission('assign-job-request-personnel');
+
+        if (!$jobRequest->isAssignedTo($user) && !$isOwner && !$canApprove && !$canAssign) {
             abort(403);
         }
 
-        if (!in_array($jobRequest->status, ['assigned', 'work_done'])) {
+        // 'completed' is allowed too so evidence can still be backfilled
+        // for the record after sign-off (isFirstConfirmation below stays
+        // false in that case, so this never re-triggers a status change).
+        if (!in_array($jobRequest->status, ['assigned', 'work_done', 'completed'])) {
             return back()->with('error', 'This job isn\'t in a state where work can be marked done.');
         }
 

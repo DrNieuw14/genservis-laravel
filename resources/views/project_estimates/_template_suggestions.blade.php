@@ -79,7 +79,7 @@
             title: 'Replace current wording?',
             html: 'This will replace the current text in <strong>Scope of Work</strong>, <strong>Assumptions</strong>, and <strong>Exclusions</strong>.',
             showCancelButton: true,
-            confirmButtonText: 'Yes, replace it 💜',
+            confirmButtonText: 'Yes, replace it',
             cancelButtonText: 'Cancel',
             confirmButtonColor: '#a855f7',
             cancelButtonColor: '#6b7280',

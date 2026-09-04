@@ -131,7 +131,7 @@
                     <td class="p-3 text-gray-600">{{ $movement->remarks ?? '—' }}</td>
                     <td class="p-3 text-gray-500">{{ $movement->loggedBy->username ?? '—' }}</td>
                     <td class="p-3 text-right">
-                        <form action="{{ route('thesis-monitoring.movements.destroy', [$thesisAdvisee->id, $movement->id]) }}" method="POST" class="inline" onsubmit="return confirm('Remove this log entry?')">
+                        <form action="{{ route('thesis-monitoring.movements.destroy', [$thesisAdvisee->id, $movement->id]) }}" method="POST" class="inline" onsubmit="return genservisConfirm(event, 'Remove this log entry?')">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-600 hover:underline text-xs">Remove</button>
                         </form>

@@ -40,7 +40,7 @@ class WaterBillController extends Controller
             ->when($chartFrom, fn ($bills) => $bills->where('report_month', '>=', $chartFrom))
             ->when($chartTo, fn ($bills) => $bills->where('report_month', '<=', $chartTo));
 
-        $chartData = $chartBills
+        $chartRows = $chartBills
             ->groupBy('report_month')
             ->map(fn ($group, $month) => [
                 'month' => \Illuminate\Support\Carbon::parse($month . '-01')->format('M Y'),
@@ -48,6 +48,21 @@ class WaterBillController extends Controller
                 'usage' => $group->sum(fn ($b) => $b->usage() ?? 0),
             ])
             ->values();
+
+        // Blended rate and usage % change per month, computed across all
+        // meters combined — same "rate" and "percent change vs previous
+        // cycle" logic as Energy Conservation Report, applied here at the
+        // aggregate (all-meters) level since a water bill row is per-meter.
+        $chartData = $chartRows->map(function ($row, $index) use ($chartRows) {
+            $row['rate'] = $row['usage'] > 0 ? round($row['bill'] / $row['usage'], 2) : null;
+
+            $previous = $index > 0 ? $chartRows[$index - 1] : null;
+            $row['usagePercentChange'] = ($previous && $previous['usage'] > 0)
+                ? round((($row['usage'] - $previous['usage']) / $previous['usage']) * 100, 2)
+                : null;
+
+            return $row;
+        })->values();
 
         $chartMonthOptions = $allBills
             ->pluck('report_month')
@@ -59,6 +74,12 @@ class WaterBillController extends Controller
             ])
             ->values();
 
+        // Rate Charge card always reflects the latest two months in the
+        // selected chart range, same convention as Energy Conservation
+        // Report's "latest report" target/rate cards.
+        $latestChartRow = $chartData->count() > 0 ? $chartData->last() : null;
+        $previousChartRow = $chartData->count() > 1 ? $chartData[$chartData->count() - 2] : null;
+
         return view('water_bills.index', [
             'bills' => $bills,
             'meters' => WaterMeter::with('bills:id,water_meter_id,report_month')->orderBy('label')->get(),
@@ -69,6 +90,8 @@ class WaterBillController extends Controller
             'chartMonthOptions' => $chartMonthOptions,
             'chartFrom' => $chartFrom,
             'chartTo' => $chartTo,
+            'latestChartRow' => $latestChartRow,
+            'previousChartRow' => $previousChartRow,
         ]);
     }
 

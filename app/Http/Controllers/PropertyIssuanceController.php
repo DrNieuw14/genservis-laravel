@@ -27,10 +27,6 @@ class PropertyIssuanceController extends Controller
             ->when($dateTo, fn ($q) => $q->whereDate('issued_at', '<=', $dateTo))
             ->when($roomId, fn ($q) => $q->where('room_id', $roomId));
 
-        $totalSlips = (clone $baseQuery)->count();
-        $totalIcs = (clone $baseQuery)->whereIn('form_type', ['ics_5k_below', 'ics_mid'])->count();
-        $totalPar = (clone $baseQuery)->where('form_type', 'par')->count();
-
         $issuances = (clone $baseQuery)
             ->with(['room', 'recipient', 'items'])
             ->orderByDesc('issued_at')
@@ -43,9 +39,6 @@ class PropertyIssuanceController extends Controller
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
             'roomId' => $roomId,
-            'totalSlips' => $totalSlips,
-            'totalIcs' => $totalIcs,
-            'totalPar' => $totalPar,
         ]);
     }
 

@@ -59,63 +59,6 @@
     </div>
 
 
-    <!-- KPI Cards -->
-
-    @php
-        $healthGradients = [
-            'green' => 'from-green-600 to-green-700',
-            'blue' => 'from-blue-600 to-blue-700',
-            'yellow' => 'from-yellow-500 to-yellow-600',
-            'red' => 'from-red-600 to-red-700',
-        ];
-    @endphp
-
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-
-        <div class="bg-gradient-to-r {{ $healthGradients[$statusColor] ?? $healthGradients['red'] }} rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-white/80">Inventory Health</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $inventoryHealth }}%</h2>
-                    <p class="text-white/80 mt-1">{{ $healthStatus }}</p>
-                </div>
-                <div class="text-5xl opacity-70">📈</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-blue-100">Available Materials</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $availableMaterials }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">✅</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-red-100">Needs Attention</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $criticalStock + $lowStock + $outOfStock }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">⚠️</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-purple-100">Expiring Soon</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $expiringSoon }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">⏳</div>
-            </div>
-        </div>
-
-    </div>
-
-
     <!-- Executive Assessment -->
 
     <div class="bg-blue-50 border border-blue-200 rounded-xl shadow-sm p-6 mb-8">

@@ -24,6 +24,12 @@
       "runtimeExecutable": "php",
       "runtimeArgs": ["-S", "127.0.0.1:8030", "-t", "C:/xampp/htdocs/genservis-laravel/public"],
       "port": 8030
+    },
+    {
+      "name": "cvsu-lms-carmona-serve",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "127.0.0.1:8040", "-t", "C:/xampp/htdocs/cvsu-lms-carmona/public"],
+      "port": 8040
     }
   ]
 }

@@ -79,6 +79,13 @@ class JobRequest extends Model
         return $this->hasMany(JobRequestPhoto::class);
     }
 
+    // The Problem Report this Job Request was converted from, if any —
+    // most Job Requests are submitted directly and won't have one.
+    public function problemReport()
+    {
+        return $this->hasOne(ProblemReport::class);
+    }
+
     /**
      * Is this account one of the workers assigned to this job? Drives both
      * the "Mark Work Done" button and the My Assigned Jobs listing.

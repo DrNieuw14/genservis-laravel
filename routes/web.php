@@ -10,6 +10,7 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\JobRequestController;
+use App\Http\Controllers\ProblemReportController;
 use App\Http\Controllers\UtilityScheduleController;
 use App\Http\Controllers\ClassScheduleController;
 use App\Http\Controllers\ProgramController;
@@ -199,6 +200,70 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/job-requests/{id}/print', [JobRequestController::class, 'print'])
         ->name('job-requests.print');
+
+    Route::get('/job-requests/{id}/edit', [JobRequestController::class, 'edit'])
+        ->name('job-requests.edit');
+
+    Route::put('/job-requests/{id}', [JobRequestController::class, 'update'])
+        ->name('job-requests.update');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Problem Reports — quick "there's a busted light / broken door knob"
+| intake, reviewed by Physical Plant and Services before deciding whether
+| it needs a real Job Request (budget/items) or can just be fixed outright.
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/problem-reports/create', [ProblemReportController::class, 'create'])
+        ->name('problem-reports.create');
+
+    Route::post('/problem-reports', [ProblemReportController::class, 'store'])
+        ->name('problem-reports.store');
+
+    Route::get('/problem-reports/my', [ProblemReportController::class, 'my'])
+        ->name('problem-reports.my');
+
+    Route::get('/problem-reports/{id}/edit', [ProblemReportController::class, 'edit'])
+        ->name('problem-reports.edit');
+
+    Route::put('/problem-reports/{id}', [ProblemReportController::class, 'update'])
+        ->name('problem-reports.update');
+
+    Route::delete('/problem-reports/{id}', [ProblemReportController::class, 'destroy'])
+        ->name('problem-reports.destroy');
+
+});
+
+Route::middleware(['auth', 'permission:review-problem-reports'])->group(function () {
+
+    Route::get('/problem-reports', [ProblemReportController::class, 'index'])
+        ->name('problem-reports.index');
+
+    Route::post('/problem-reports/{id}/review', [ProblemReportController::class, 'review'])
+        ->name('problem-reports.review');
+
+    Route::post('/problem-reports/{id}/convert-to-job-request', [ProblemReportController::class, 'convertToJobRequest'])
+        ->name('problem-reports.convert');
+
+    Route::post('/problem-reports/{id}/resolve', [ProblemReportController::class, 'resolve'])
+        ->name('problem-reports.resolve');
+
+    Route::post('/problem-reports/{id}/dismiss', [ProblemReportController::class, 'dismiss'])
+        ->name('problem-reports.dismiss');
+
+});
+
+// KEEP LAST — {id} below would otherwise swallow /problem-reports/create,
+// /problem-reports/my, etc. registered above as a route-model-binding lookup.
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/problem-reports/{id}', [ProblemReportController::class, 'show'])
+        ->name('problem-reports.show');
 
 });
 

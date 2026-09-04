@@ -50,12 +50,26 @@
         </div>
     @endif
 
+    @php
+        $canManageEvidence = $isOwner || $canApprove || $canAssign;
+    @endphp
+
     <!-- REQUEST DETAILS -->
     <div class="border rounded-lg p-5 bg-gray-50 mb-6">
 
-        <h3 class="text-xl font-semibold text-gray-800 mb-4">
-            🧾 Request Details
-        </h3>
+        <div class="flex items-center justify-between mb-4">
+
+            <h3 class="text-xl font-semibold text-gray-800">
+                🧾 Request Details
+            </h3>
+
+            @if($canManageEvidence)
+                <a href="{{ route('job-requests.edit', $jobRequest->id) }}" class="text-blue-600 hover:underline text-sm font-semibold">
+                    ✏️ Edit
+                </a>
+            @endif
+
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -104,6 +118,11 @@
                 <p class="font-semibold mt-1">{{ $jobRequest->work_summary }}</p>
             </div>
 
+            <div class="md:col-span-2">
+                <p class="text-sm text-gray-500">Remarks</p>
+                <p class="font-semibold mt-1">{{ $jobRequest->remarks ?? '-' }}</p>
+            </div>
+
         </div>
 
     </div>
@@ -111,7 +130,6 @@
     <!-- EVIDENCE SUBMITTED WITH REQUEST -->
     @php
         $requestEvidencePhotos = $jobRequest->photos->where('type', 'request_evidence');
-        $canManageEvidence = $isOwner || $canApprove || $canAssign;
     @endphp
 
     @if($requestEvidencePhotos->isNotEmpty() || $canManageEvidence)
@@ -450,11 +468,11 @@
 
     @endif
 
-    @if($isAssignedWorker && in_array($jobRequest->status, ['assigned', 'work_done']))
+    @if(($isAssignedWorker || $canManageEvidence) && in_array($jobRequest->status, ['assigned', 'work_done', 'completed']))
 
         <div class="border rounded-lg p-5 bg-teal-50 border-teal-200 mb-6">
 
-            @if($jobRequest->status === 'assigned')
+            @if($jobRequest->status === 'assigned' && $isAssignedWorker)
 
                 <p class="text-gray-700 mb-4">
                     You're assigned to this job. Once the work is finished, mark it done
@@ -462,7 +480,13 @@
                     can review and close it out.
                 </p>
 
-            @else
+            @elseif($jobRequest->status === 'assigned')
+
+                <p class="text-gray-700 mb-4">
+                    You can confirm this job's work is done and attach photos, even though you're not one of the assigned personnel.
+                </p>
+
+            @elseif($jobRequest->status === 'work_done')
 
                 <p class="text-gray-700 mb-4">
                     This job has already been marked done
@@ -471,6 +495,12 @@
                     @endif
                     and is awaiting sign-off. You can still add your own evidence photos below
                     until it's closed out.
+                </p>
+
+            @else
+
+                <p class="text-gray-700 mb-4">
+                    This job is already completed and closed out. You can still add photos here for the record.
                 </p>
 
             @endif

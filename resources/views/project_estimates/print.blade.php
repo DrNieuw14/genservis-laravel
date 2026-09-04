@@ -63,9 +63,17 @@
 
         }
 
+        .header-table{
+
+            width:auto;
+            margin:0 auto;
+
+        }
+
         .header-table td{
 
             border:none;
+            padding:0 6px;
 
         }
 

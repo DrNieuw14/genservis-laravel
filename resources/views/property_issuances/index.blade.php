@@ -77,41 +77,6 @@
 
     </form>
 
-    <!-- KPI CARDS -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
-        <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-green-100">Total Slips</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $totalSlips }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">🧾</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-blue-100">ICS Slips</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $totalIcs }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">📋</div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-2xl shadow-lg text-white p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="uppercase tracking-wider text-sm text-purple-100">PAR Slips</p>
-                    <h2 class="text-5xl font-extrabold mt-3">{{ $totalPar }}</h2>
-                </div>
-                <div class="text-5xl opacity-70">🏛️</div>
-            </div>
-        </div>
-
-    </div>
-
     <!-- TABLE -->
     <div class="overflow-x-auto border rounded-lg">
 

@@ -58,7 +58,10 @@ class ThesisMonitoringController extends Controller
             $advisee->members()->create(['student_name' => $name]);
         }
 
-        return back()->with('success', 'Advisee added.');
+        // Straight into logging the first movement — the natural next step
+        // right after adding an advisee — instead of back to the roster.
+        return redirect()->route('thesis-monitoring.show', $advisee->id)
+            ->with('success', 'Advisee added. Log their first movement below.');
     }
 
     public function update(Request $request, ThesisAdvisee $thesisAdvisee)

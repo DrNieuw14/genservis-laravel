@@ -97,6 +97,48 @@ class EnergyConservationReport extends Model
         return round(($this->consumptionDifference() / $this->previous_month_consumption) * 100, 2);
     }
 
+    // Effective rate per kWh for the cycle — bill divided by consumption —
+    // so coordinators can see how the utility's rate itself moved, separate
+    // from usage volume.
+    public function currentRate(): ?float
+    {
+        if (!$this->current_month_consumption || $this->current_month_bill === null) {
+            return null;
+        }
+
+        return round($this->current_month_bill / $this->current_month_consumption, 2);
+    }
+
+    // Previous cycle's effective rate — from the previous_month_bill/
+    // previous_month_consumption figures carried onto this same report,
+    // so the rate comparison doesn't need a second report lookup.
+    public function previousRate(): ?float
+    {
+        if (!$this->previous_month_consumption || $this->previous_month_bill === null) {
+            return null;
+        }
+
+        return round($this->previous_month_bill / $this->previous_month_consumption, 2);
+    }
+
+    public function rateDifference(): ?float
+    {
+        if ($this->currentRate() === null || $this->previousRate() === null) {
+            return null;
+        }
+
+        return round($this->currentRate() - $this->previousRate(), 2);
+    }
+
+    public function rateDifferencePercent(): ?float
+    {
+        if (!$this->previousRate() || $this->rateDifference() === null) {
+            return null;
+        }
+
+        return round(($this->rateDifference() / $this->previousRate()) * 100, 2);
+    }
+
     // The electric bill's actual reading cycle doesn't align with the
     // calendar month — it runs the 22nd of the prior month through the
     // 21st of report_month (e.g. report_month '2026-07' → "22 Jun – 21 Jul
@@ -122,13 +164,28 @@ class EnergyConservationReport extends Model
         return $start->format($startFormat) . ' – ' . $end->format('d M Y');
     }
 
-    // The report for the calendar month right before this one, if it
-    // exists — used to carry "current month" figures forward as next
-    // month's "previous month" figures instead of re-typing them.
+    // Short month-to-month label for chart axes (e.g. "Jul – Aug 2026"),
+    // dropping the day-of-cycle detail that monthLabel() carries for
+    // headings/print where the exact billing cycle matters.
+    public function chartMonthLabel(): string
+    {
+        $start = $this->periodStart();
+        $end = $this->periodEnd();
+
+        $startFormat = $start->year === $end->year ? 'M' : 'M Y';
+
+        return $start->format($startFormat) . ' – ' . $end->format('M Y');
+    }
+
+    // The most recent report before this one, if any — used to carry
+    // "current month" figures forward as next month's "previous month"
+    // figures instead of re-typing them. Falls back past gaps (e.g. a
+    // skipped month with no report) to whatever report is next-most-recent,
+    // rather than only matching the exact calendar month before this one.
     public function previousMonthReport(): ?self
     {
-        $prevMonth = \Illuminate\Support\Carbon::parse($this->report_month . '-01')->subMonth()->format('Y-m');
-
-        return static::where('report_month', $prevMonth)->first();
+        return static::where('report_month', '<', $this->report_month)
+            ->orderByDesc('report_month')
+            ->first();
     }
 }

@@ -9,7 +9,7 @@
 
     <style>
         .hero-bg {
-            background: url('/images/bg.jpg') no-repeat center center;
+            background: url('{{ asset('images/bg.jpg') }}') no-repeat center center;
             background-size: cover;
         }
 
@@ -27,7 +27,7 @@
 
             <!-- LEFT -->
             <div class="flex items-center space-x-3">
-                <img src="/images/logo.png" alt="Logo" class="h-10 w-auto object-contain">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-auto object-contain">
                 <h1 class="text-lg font-bold text-gray-800">
                     GenServis
                 </h1>
@@ -59,7 +59,7 @@
 
             <!-- LOGO -->
             <div class="flex justify-center mb-6">
-                <img src="/images/logo.png" class="h-24 w-auto object-contain drop-shadow-lg">
+                <img src="{{ asset('images/logo.png') }}" class="h-24 w-auto object-contain drop-shadow-lg">
             </div>
 
             <!-- TITLE -->
