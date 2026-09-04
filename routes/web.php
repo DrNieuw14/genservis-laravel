@@ -1152,13 +1152,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/supervisor/dashboard', function () {
         return view('supervisor.dashboard', [
-            'pendingCount'  => \App\Models\User::where('status', 'pending')->count(),
-            'approvedCount' => \App\Models\User::where('status', 'approved')->count(),
-            'rejectedCount' => \App\Models\User::where('status', 'rejected')->count(),
             'pendingUsers'  => \App\Models\User::where('status', 'pending')
                                     ->where('role', 'personnel')->latest()->get(),
-        
-            
+
             // ⚠ LOW STOCK
             'lowStockMaterials' =>
                 \App\Models\Material::whereColumn(

@@ -64,13 +64,14 @@ class RolePermissionSeeder extends Seeder
                     'onboard-users',
 
                     // User Access — viewing/assigning roles, activating or
-                    // suspending accounts, resetting forgotten passwords.
-                    // Deliberately NOT given manage-roles/manage-permissions
-                    // (role/permission *definitions* stay Administrator-only).
+                    // suspending accounts, resetting forgotten passwords, and
+                    // defining roles themselves (manage-roles — HR needs to
+                    // add new positions like OSAS Head as they come up).
                     'view-user-access',
                     'assign-roles',
                     'manage-user-status',
                     'reset-user-passwords',
+                    'manage-roles',
 
                     // Leave Management — general (all-employee) leave admin,
                     // a real HR function that was previously locked to the

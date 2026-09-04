@@ -9,22 +9,6 @@
             </div>
         @endif
 
-        {{-- Stats Row --}}
-        <div class="grid grid-cols-3 gap-6 mb-8">
-            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
-                <p class="text-4xl font-bold text-yellow-600">{{ $pendingCount }}</p>
-                <p class="text-sm text-yellow-700 mt-1 font-medium">Pending Approval</p>
-            </div>
-            <div class="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-                <p class="text-4xl font-bold text-green-600">{{ $approvedCount }}</p>
-                <p class="text-sm text-green-700 mt-1 font-medium">Approved Users</p>
-            </div>
-            <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-                <p class="text-4xl font-bold text-red-600">{{ $rejectedCount }}</p>
-                <p class="text-sm text-red-700 mt-1 font-medium">Rejected Users</p>
-            </div>
-        </div>
-
        {{-- Pending Users --}}
             <div class="bg-white rounded-xl shadow border border-gray-100 mb-8">
                 <div class="px-6 py-4 border-b flex items-center justify-between">

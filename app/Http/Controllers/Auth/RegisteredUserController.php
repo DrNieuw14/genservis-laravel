@@ -53,12 +53,12 @@ public function store(Request $request)
         'status' => 'pending',
     ]);
 
-    $supervisor = User::where('role', 'supervisor')->first();
+    $approvers = User::withPermission('approve-users')->get();
 
-    if ($supervisor) {
+    foreach ($approvers as $approver) {
 
         Notification::create([
-            'user_id' => $supervisor->id,
+            'user_id' => $approver->id,
             'type' => 'user_registration',
             'title' => 'New User Registration',
             'message' => $user->name . ' registered and needs approval',

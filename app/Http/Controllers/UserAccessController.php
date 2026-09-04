@@ -50,14 +50,6 @@ class UserAccessController extends Controller
 
             'users' => $users,
 
-            'totalUsers' => User::count(),
-
-            'activeUsers' => User::where('status', 'approved')->count(),
-
-            'pendingUsers' => User::where('status', 'pending')->count(),
-
-            'roles' => Role::orderBy('name')->get(),
-
         ]);
     }
 

@@ -62,6 +62,11 @@ class RoleSeeder extends Seeder
             [
                 'name' => 'Department Chair / Unit Head',
                 'description' => 'Manages PPMP line items for their own department'
+            ],
+
+            [
+                'name' => 'OSAS Head',
+                'description' => 'Head of the Office of Student Affairs and Services'
             ]
 
         ];

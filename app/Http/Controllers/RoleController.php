@@ -39,7 +39,13 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        // Submitted from the "Add New Role" modal (e.g. on the Assign Roles
+        // page) vs. the standalone Create Role page — kept in separate error
+        // bags so a validation failure doesn't collide with that page's own
+        // role-assignment errors (role_id / additional_role_ids).
+        $errorBag = $request->filled('redirect_to') ? 'createRole' : 'default';
+
+        $validated = $request->validateWithBag($errorBag, [
             'name' => 'required|string|max:255|unique:roles,name',
             'description' => 'nullable|string|max:255',
             'status' => 'required|boolean',
@@ -51,8 +57,15 @@ class RoleController extends Controller
 
         // TODO: Add Activity Log
 
-        return redirect()
-            ->route('roles.index')
+        $redirectTo = $request->input('redirect_to');
+
+        // Only ever follow a local path (e.g. back to Assign Roles) — never
+        // an absolute/external URL, to avoid an open redirect via this field.
+        $destination = (is_string($redirectTo) && str_starts_with($redirectTo, '/') && !str_starts_with($redirectTo, '//'))
+            ? $redirectTo
+            : route('roles.index');
+
+        return redirect($destination)
             ->with('success', 'Role created successfully.');
     }
 
